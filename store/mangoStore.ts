@@ -617,8 +617,6 @@ const mangoStore = create<MangoStore>()(
             }
           } catch (e) {
             console.error('Error reloading mango acct', e)
-            await actions.reloadMangoAccount()
-            await sleep(100)
           } finally {
             set((state) => {
               state.mangoAccount.initialLoad = false
@@ -664,19 +662,18 @@ const mangoStore = create<MangoStore>()(
                 console.error('Error parsing last account', e)
               }
             }
+            console.log('newSelectedMangoAccount', newSelectedMangoAccount)
 
-            if (newSelectedMangoAccount) {
-              await newSelectedMangoAccount.reloadSerum3OpenOrders(client)
-              set((state) => {
-                state.mangoAccount.current = newSelectedMangoAccount
-                state.mangoAccount.initialLoad = false
-              })
-              actions.fetchOpenOrders()
-            }
+            // await newSelectedMangoAccount.reloadSerum3OpenOrders(client)
+            set((state) => {
+              state.mangoAccount.current = newSelectedMangoAccount
+              state.mangoAccount.initialLoad = false
+            })
+            // actions.fetchOpenOrders()
 
-            await Promise.all(
-              mangoAccounts.map((ma) => ma.reloadSerum3OpenOrders(client)),
-            )
+            // await Promise.all(
+            //   mangoAccounts.map((ma) => ma.reloadSerum3OpenOrders(client)),
+            // )
 
             set((state) => {
               state.mangoAccounts = mangoAccounts

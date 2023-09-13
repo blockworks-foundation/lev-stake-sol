@@ -57,20 +57,21 @@ const HydrateStore = () => {
   useInterval(
     () => {
       actions.fetchGroup()
+      actions.reloadMangoAccount()
     },
-    (slowNetwork ? 60 : 30) * SECONDS,
+    (slowNetwork ? 60 : 20) * SECONDS,
   )
 
   // refetches open orders every 30 seconds
   // only the selected market's open orders are updated via websocket
-  useInterval(
-    () => {
-      if (mangoAccountAddress) {
-        actions.fetchOpenOrders()
-      }
-    },
-    (slowNetwork ? 60 : 30) * SECONDS,
-  )
+  // useInterval(
+  //   () => {
+  //     if (mangoAccountAddress) {
+  //       actions.fetchOpenOrders()
+  //     }
+  //   },
+  //   (slowNetwork ? 60 : 30) * SECONDS,
+  // )
 
   // refetch trade history and activity feed when switching accounts
   useEffect(() => {
@@ -81,13 +82,13 @@ const HydrateStore = () => {
   }, [mangoAccountAddress])
 
   // reload and parse market fills from the event queue
-  useInterval(
-    async () => {
-      const actions = mangoStore.getState().actions
-      actions.loadMarketFills()
-    },
-    (slowNetwork ? 60 : 20) * SECONDS,
-  )
+  // useInterval(
+  //   async () => {
+  //     const actions = mangoStore.getState().actions
+  //     actions.loadMarketFills()
+  //   },
+  //   (slowNetwork ? 60 : 20) * SECONDS,
+  // )
 
   // estimate the priority fee every 30 seconds
   useInterval(
@@ -133,7 +134,7 @@ const HydrateStore = () => {
         // don't fetch serum3OpenOrders if the slot is old
         if (context.slot > mangoStore.getState().mangoAccount.lastSlot) {
           if (newMangoAccount.serum3Active().length > 0) {
-            await newMangoAccount.reloadSerum3OpenOrders(client)
+            // await newMangoAccount.reloadSerum3OpenOrders(client)
             // check again that the slot is still the most recent after the reloading open orders
             if (context.slot > mangoStore.getState().mangoAccount.lastSlot) {
               set((s) => {
@@ -142,7 +143,7 @@ const HydrateStore = () => {
               })
             }
           }
-          actions.fetchOpenOrders()
+          // actions.fetchOpenOrders()
         }
       },
     )
@@ -173,12 +174,12 @@ const ReadOnlyMangoAccount = () => {
         const client = mangoStore.getState().client
         const pk = new PublicKey(ma)
         const readOnlyMangoAccount = await client.getMangoAccount(pk)
-        await readOnlyMangoAccount.reloadSerum3OpenOrders(client)
+        // await readOnlyMangoAccount.reloadSerum3OpenOrders(client)
         set((state) => {
           state.mangoAccount.current = readOnlyMangoAccount
           state.mangoAccount.initialLoad = false
         })
-        await actions.fetchOpenOrders()
+        // await actions.fetchOpenOrders()
       } catch (error) {
         console.error('error', error)
       }

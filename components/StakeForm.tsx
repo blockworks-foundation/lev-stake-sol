@@ -35,6 +35,7 @@ import useMangoGroup from 'hooks/useMangoGroup'
 import FormatNumericValue from './shared/FormatNumericValue'
 import { stakeAndCreate } from 'utils/transactions'
 import { MangoAccount } from '@blockworks-foundation/mango-v4'
+import { AnchorProvider } from '@project-serum/anchor'
 
 const set = mangoStore.getState().set
 
@@ -173,10 +174,15 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
         type: 'success',
         txid: tx,
       })
-
+      if (!mangoAccount) {
+        await actions.fetchMangoAccounts(
+          (client.program.provider as AnchorProvider).wallet.publicKey,
+        )
+      }
       await actions.reloadMangoAccount(slot)
-      actions.fetchWalletTokens(publicKey)
+      await actions.fetchWalletTokens(publicKey)
       setSubmitting(false)
+      setInputAmount('')
       onSuccess()
     } catch (e) {
       console.error('Error depositing:', e)
