@@ -1,0 +1,10 @@
+{
+    "clear-all": "清除全部",
+    "empty-state-desc": "都处理好了",
+    "empty-state-title": "这里没什么",
+    "notifications": "通知",
+    "sign-message": "签署讯息",
+    "sign-using-ledger": "Sign with Ledger",
+    "unauth-desc": "连接钱包而受到通知",
+    "unauth-title": "通知收件匣"
+}

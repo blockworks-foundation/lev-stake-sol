@@ -1,0 +1,766 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset */
+
+html,
+body,
+p,
+ol,
+ul,
+li,
+dl,
+dt,
+dd,
+blockquote,
+figure,
+fieldset,
+legend,
+textarea,
+pre,
+iframe,
+hr,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  padding: 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%;
+  font-weight: normal;
+}
+ul {
+  list-style: none;
+}
+button,
+input,
+select {
+  margin: 0;
+}
+html {
+  box-sizing: border-box;
+}
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+img,
+video {
+  height: auto;
+  max-width: 100%;
+}
+iframe {
+  border: 0;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+td,
+th {
+  padding: 0;
+}
+
+/* Theme */
+
+:root {
+  --active: theme('colors.light-theme.active.DEFAULT');
+  --active-dark: theme('colors.light-theme.active.dark');
+  --down: theme('colors.light-theme.down.DEFAULT');
+  --down-dark: theme('colors.light-theme.down.dark');
+  --down-muted: theme('colors.light-theme.down.muted');
+  --up: theme('colors.light-theme.up.DEFAULT');
+  --up-dark: theme('colors.light-theme.up.dark');
+  --up-muted: theme('colors.light-theme.up.muted');
+  --link: theme('colors.light-theme.link.DEFAULT');
+  --link-hover: theme('colors.light-theme.link.hover');
+  --bkg-1: theme('colors.light-theme.bkg-1');
+  --bkg-2: theme('colors.light-theme.bkg-2');
+  --bkg-3: theme('colors.light-theme.bkg-3');
+  --bkg-4: theme('colors.light-theme.bkg-4');
+  --fgd-1: theme('colors.light-theme.fgd-1');
+  --fgd-2: theme('colors.light-theme.fgd-2');
+  --fgd-3: theme('colors.light-theme.fgd-3');
+  --fgd-4: theme('colors.light-theme.fgd-4');
+  --button: theme('colors.light-theme.button.DEFAULT');
+  --input-bkg: theme('colors.light-theme.input.bkg');
+  --input-border: theme('colors.light-theme.input.border');
+  --input-border-hover: theme('colors.light-theme.input.borderDark');
+  --button-hover: theme('colors.light-theme.button.hover');
+  --error: theme('colors.light-theme.error');
+  --success: theme('colors.light-theme.success');
+  --warning: theme('colors.light-theme.warning');
+}
+
+[data-theme='Dark'] {
+  --active: theme('colors.dark-theme.active.DEFAULT');
+  --active-dark: theme('colors.dark-theme.active.dark');
+  --down: theme('colors.dark-theme.down.DEFAULT');
+  --down-dark: theme('colors.dark-theme.down.dark');
+  --down-muted: theme('colors.dark-theme.down.muted');
+  --up: theme('colors.dark-theme.up.DEFAULT');
+  --up-dark: theme('colors.dark-theme.up.dark');
+  --up-muted: theme('colors.dark-theme.up.muted');
+  --link: theme('colors.dark-theme.link.DEFAULT');
+  --link-hover: theme('colors.dark-theme.link.hover');
+  --bkg-1: theme('colors.dark-theme.bkg-1');
+  --bkg-2: theme('colors.dark-theme.bkg-2');
+  --bkg-3: theme('colors.dark-theme.bkg-3');
+  --bkg-4: theme('colors.dark-theme.bkg-4');
+  --fgd-1: theme('colors.dark-theme.fgd-1');
+  --fgd-2: theme('colors.dark-theme.fgd-2');
+  --fgd-3: theme('colors.dark-theme.fgd-3');
+  --fgd-4: theme('colors.dark-theme.fgd-4');
+  --button: theme('colors.dark-theme.button.DEFAULT');
+  --button-hover: theme('colors.dark-theme.button.hover');
+  --input-bkg: theme('colors.dark-theme.input.bkg');
+  --input-border: theme('colors.dark-theme.input.border');
+  --input-border-hover: theme('colors.dark-theme.input.borderDark');
+  --error: theme('colors.dark-theme.error');
+  --success: theme('colors.dark-theme.success');
+  --warning: theme('colors.dark-theme.warning');
+}
+
+[data-theme='Mango Classic'] {
+  --active: theme('colors.mango-classic-theme.active.DEFAULT');
+  --active-dark: theme('colors.mango-classic-theme.active.dark');
+  --down: theme('colors.mango-classic-theme.down.DEFAULT');
+  --down-dark: theme('colors.mango-classic-theme.down.dark');
+  --down-muted: theme('colors.mango-classic-theme.down.muted');
+  --up: theme('colors.mango-classic-theme.up.DEFAULT');
+  --up-dark: theme('colors.mango-classic-theme.up.dark');
+  --up-muted: theme('colors.mango-classic-theme.up.muted');
+  --link: theme('colors.mango-classic-theme.link.DEFAULT');
+  --link-hover: theme('colors.mango-classic-theme.link.hover');
+  --bkg-1: theme('colors.mango-classic-theme.bkg-1');
+  --bkg-2: theme('colors.mango-classic-theme.bkg-2');
+  --bkg-3: theme('colors.mango-classic-theme.bkg-3');
+  --bkg-4: theme('colors.mango-classic-theme.bkg-4');
+  --fgd-1: theme('colors.mango-classic-theme.fgd-1');
+  --fgd-2: theme('colors.mango-classic-theme.fgd-2');
+  --fgd-3: theme('colors.mango-classic-theme.fgd-3');
+  --fgd-4: theme('colors.mango-classic-theme.fgd-4');
+  --button: theme('colors.mango-classic-theme.button.DEFAULT');
+  --button-hover: theme('colors.mango-classic-theme.button.hover');
+  --input-bkg: theme('colors.mango-classic-theme.input.bkg');
+  --input-border: theme('colors.mango-classic-theme.input.border');
+  --input-border-hover: theme('colors.mango-classic-theme.input.borderDark');
+  --error: theme('colors.mango-classic-theme.error');
+  --success: theme('colors.mango-classic-theme.success');
+  --warning: theme('colors.mango-classic-theme.warning');
+}
+
+[data-theme='Medium'] {
+  --active: theme('colors.medium-theme.active.DEFAULT');
+  --active-dark: theme('colors.medium-theme.active.dark');
+  --down: theme('colors.medium-theme.down.DEFAULT');
+  --down-dark: theme('colors.medium-theme.down.dark');
+  --down-muted: theme('colors.medium-theme.down.muted');
+  --up: theme('colors.medium-theme.up.DEFAULT');
+  --up-dark: theme('colors.medium-theme.up.dark');
+  --up-muted: theme('colors.medium-theme.up.muted');
+  --link: theme('colors.medium-theme.link.DEFAULT');
+  --link-hover: theme('colors.medium-theme.link.hover');
+  --bkg-1: theme('colors.medium-theme.bkg-1');
+  --bkg-2: theme('colors.medium-theme.bkg-2');
+  --bkg-3: theme('colors.medium-theme.bkg-3');
+  --bkg-4: theme('colors.medium-theme.bkg-4');
+  --fgd-1: theme('colors.medium-theme.fgd-1');
+  --fgd-2: theme('colors.medium-theme.fgd-2');
+  --fgd-3: theme('colors.medium-theme.fgd-3');
+  --fgd-4: theme('colors.medium-theme.fgd-4');
+  --button: theme('colors.medium-theme.button.DEFAULT');
+  --button-hover: theme('colors.medium-theme.button.hover');
+  --input-bkg: theme('colors.medium-theme.input.bkg');
+  --input-border: theme('colors.medium-theme.input.border');
+  --input-border-hover: theme('colors.medium-theme.input.borderDark');
+  --error: theme('colors.medium-theme.error');
+  --success: theme('colors.medium-theme.success');
+  --warning: theme('colors.medium-theme.warning');
+}
+
+[data-theme='High Contrast'] {
+  --active: theme('colors.high-contrast-theme.active.DEFAULT');
+  --active-dark: theme('colors.high-contrast-theme.active.dark');
+  --down: theme('colors.high-contrast-theme.down.DEFAULT');
+  --down-dark: theme('colors.high-contrast-theme.down.dark');
+  --down-muted: theme('colors.high-contrast-theme.down.muted');
+  --up: theme('colors.high-contrast-theme.up.DEFAULT');
+  --up-dark: theme('colors.high-contrast-theme.up.dark');
+  --up-muted: theme('colors.high-contrast-theme.up.muted');
+  --link: theme('colors.high-contrast-theme.link.DEFAULT');
+  --link-hover: theme('colors.high-contrast-theme.link.hover');
+  --bkg-1: theme('colors.high-contrast-theme.bkg-1');
+  --bkg-2: theme('colors.high-contrast-theme.bkg-2');
+  --bkg-3: theme('colors.high-contrast-theme.bkg-3');
+  --bkg-4: theme('colors.high-contrast-theme.bkg-4');
+  --fgd-1: theme('colors.high-contrast-theme.fgd-1');
+  --fgd-2: theme('colors.high-contrast-theme.fgd-2');
+  --fgd-3: theme('colors.high-contrast-theme.fgd-3');
+  --fgd-4: theme('colors.high-contrast-theme.fgd-4');
+  --button: theme('colors.high-contrast-theme.button.DEFAULT');
+  --button-hover: theme('colors.high-contrast-theme.button.hover');
+  --input-bkg: theme('colors.high-contrast-theme.input.bkg');
+  --input-border: theme('colors.high-contrast-theme.input.border');
+  --input-border-hover: theme('colors.high-contrast-theme.input.borderDark');
+  --error: theme('colors.high-contrast-theme.error');
+  --success: theme('colors.high-contrast-theme.success');
+  --warning: theme('colors.high-contrast-theme.warning');
+}
+
+[data-theme='Blueberry'] {
+  --active: theme('colors.blueberry-theme.active.DEFAULT');
+  --active-dark: theme('colors.blueberry-theme.active.dark');
+  --down: theme('colors.blueberry-theme.down.DEFAULT');
+  --down-dark: theme('colors.blueberry-theme.down.dark');
+  --down-muted: theme('colors.blueberry-theme.down.muted');
+  --up: theme('colors.blueberry-theme.up.DEFAULT');
+  --up-dark: theme('colors.blueberry-theme.up.dark');
+  --up-muted: theme('colors.blueberry-theme.up.muted');
+  --link: theme('colors.blueberry-theme.link.DEFAULT');
+  --link-hover: theme('colors.blueberry-theme.link.hover');
+  --bkg-1: theme('colors.blueberry-theme.bkg-1');
+  --bkg-2: theme('colors.blueberry-theme.bkg-2');
+  --bkg-3: theme('colors.blueberry-theme.bkg-3');
+  --bkg-4: theme('colors.blueberry-theme.bkg-4');
+  --fgd-1: theme('colors.blueberry-theme.fgd-1');
+  --fgd-2: theme('colors.blueberry-theme.fgd-2');
+  --fgd-3: theme('colors.blueberry-theme.fgd-3');
+  --fgd-4: theme('colors.blueberry-theme.fgd-4');
+  --button: theme('colors.blueberry-theme.button.DEFAULT');
+  --button-hover: theme('colors.blueberry-theme.button.hover');
+  --input-bkg: theme('colors.blueberry-theme.input.bkg');
+  --input-border: theme('colors.blueberry-theme.input.border');
+  --input-border-hover: theme('colors.blueberry-theme.input.borderDark');
+  --error: theme('colors.blueberry-theme.error');
+  --success: theme('colors.blueberry-theme.success');
+  --warning: theme('colors.blueberry-theme.warning');
+}
+
+[data-theme='Banana'] {
+  --active: theme('colors.banana-theme.active.DEFAULT');
+  --active-dark: theme('colors.banana-theme.active.dark');
+  --down: theme('colors.banana-theme.down.DEFAULT');
+  --down-dark: theme('colors.banana-theme.down.dark');
+  --down-muted: theme('colors.banana-theme.down.muted');
+  --up: theme('colors.banana-theme.up.DEFAULT');
+  --up-dark: theme('colors.banana-theme.up.dark');
+  --up-muted: theme('colors.banana-theme.up.muted');
+  --link: theme('colors.banana-theme.link.DEFAULT');
+  --link-hover: theme('colors.banana-theme.link.hover');
+  --bkg-1: theme('colors.banana-theme.bkg-1');
+  --bkg-2: theme('colors.banana-theme.bkg-2');
+  --bkg-3: theme('colors.banana-theme.bkg-3');
+  --bkg-4: theme('colors.banana-theme.bkg-4');
+  --fgd-1: theme('colors.banana-theme.fgd-1');
+  --fgd-2: theme('colors.banana-theme.fgd-2');
+  --fgd-3: theme('colors.banana-theme.fgd-3');
+  --fgd-4: theme('colors.banana-theme.fgd-4');
+  --button: theme('colors.banana-theme.button.DEFAULT');
+  --button-hover: theme('colors.banana-theme.button.hover');
+  --input-bkg: theme('colors.banana-theme.input.bkg');
+  --input-border: theme('colors.banana-theme.input.border');
+  --input-border-hover: theme('colors.banana-theme.input.borderDark');
+  --error: theme('colors.banana-theme.error');
+  --success: theme('colors.banana-theme.success');
+  --warning: theme('colors.banana-theme.warning');
+}
+
+[data-theme='Olive'] {
+  --active: theme('colors.olive-theme.active.DEFAULT');
+  --active-dark: theme('colors.olive-theme.active.dark');
+  --down: theme('colors.olive-theme.down.DEFAULT');
+  --down-dark: theme('colors.olive-theme.down.dark');
+  --down-muted: theme('colors.olive-theme.down.muted');
+  --up: theme('colors.olive-theme.up.DEFAULT');
+  --up-dark: theme('colors.olive-theme.up.dark');
+  --up-muted: theme('colors.olive-theme.up.muted');
+  --link: theme('colors.olive-theme.link.DEFAULT');
+  --link-hover: theme('colors.olive-theme.link.hover');
+  --bkg-1: theme('colors.olive-theme.bkg-1');
+  --bkg-2: theme('colors.olive-theme.bkg-2');
+  --bkg-3: theme('colors.olive-theme.bkg-3');
+  --bkg-4: theme('colors.olive-theme.bkg-4');
+  --fgd-1: theme('colors.olive-theme.fgd-1');
+  --fgd-2: theme('colors.olive-theme.fgd-2');
+  --fgd-3: theme('colors.olive-theme.fgd-3');
+  --fgd-4: theme('colors.olive-theme.fgd-4');
+  --button: theme('colors.olive-theme.button.DEFAULT');
+  --button-hover: theme('colors.olive-theme.button.hover');
+  --input-bkg: theme('colors.olive-theme.input.bkg');
+  --input-border: theme('colors.olive-theme.input.border');
+  --input-border-hover: theme('colors.olive-theme.input.borderDark');
+  --error: theme('colors.olive-theme.error');
+  --success: theme('colors.olive-theme.success');
+  --warning: theme('colors.olive-theme.warning');
+}
+
+[data-theme='Lychee'] {
+  --active: theme('colors.lychee-theme.active.DEFAULT');
+  --active-dark: theme('colors.lychee-theme.active.dark');
+  --down: theme('colors.lychee-theme.down.DEFAULT');
+  --down-dark: theme('colors.lychee-theme.down.dark');
+  --down-muted: theme('colors.lychee-theme.down.muted');
+  --up: theme('colors.lychee-theme.up.DEFAULT');
+  --up-dark: theme('colors.lychee-theme.up.dark');
+  --up-muted: theme('colors.lychee-theme.up.muted');
+  --link: theme('colors.lychee-theme.link.DEFAULT');
+  --link-hover: theme('colors.lychee-theme.link.hover');
+  --bkg-1: theme('colors.lychee-theme.bkg-1');
+  --bkg-2: theme('colors.lychee-theme.bkg-2');
+  --bkg-3: theme('colors.lychee-theme.bkg-3');
+  --bkg-4: theme('colors.lychee-theme.bkg-4');
+  --fgd-1: theme('colors.lychee-theme.fgd-1');
+  --fgd-2: theme('colors.lychee-theme.fgd-2');
+  --fgd-3: theme('colors.lychee-theme.fgd-3');
+  --fgd-4: theme('colors.lychee-theme.fgd-4');
+  --button: theme('colors.lychee-theme.button.DEFAULT');
+  --button-hover: theme('colors.lychee-theme.button.hover');
+  --input-bkg: theme('colors.lychee-theme.input.bkg');
+  --input-border: theme('colors.lychee-theme.input.border');
+  --input-border-hover: theme('colors.lychee-theme.input.borderDark');
+  --error: theme('colors.lychee-theme.error');
+  --success: theme('colors.lychee-theme.success');
+  --warning: theme('colors.lychee-theme.warning');
+}
+
+[data-theme='Avocado'] {
+  --active: theme('colors.avocado-theme.active.DEFAULT');
+  --active-dark: theme('colors.avocado-theme.active.dark');
+  --down: theme('colors.avocado-theme.down.DEFAULT');
+  --down-dark: theme('colors.avocado-theme.down.dark');
+  --down-muted: theme('colors.avocado-theme.down.muted');
+  --up: theme('colors.avocado-theme.up.DEFAULT');
+  --up-dark: theme('colors.avocado-theme.up.dark');
+  --up-muted: theme('colors.avocado-theme.up.muted');
+  --link: theme('colors.avocado-theme.link.DEFAULT');
+  --link-hover: theme('colors.avocado-theme.link.hover');
+  --bkg-1: theme('colors.avocado-theme.bkg-1');
+  --bkg-2: theme('colors.avocado-theme.bkg-2');
+  --bkg-3: theme('colors.avocado-theme.bkg-3');
+  --bkg-4: theme('colors.avocado-theme.bkg-4');
+  --fgd-1: theme('colors.avocado-theme.fgd-1');
+  --fgd-2: theme('colors.avocado-theme.fgd-2');
+  --fgd-3: theme('colors.avocado-theme.fgd-3');
+  --fgd-4: theme('colors.avocado-theme.fgd-4');
+  --button: theme('colors.avocado-theme.button.DEFAULT');
+  --button-hover: theme('colors.avocado-theme.button.hover');
+  --input-bkg: theme('colors.avocado-theme.input.bkg');
+  --input-border: theme('colors.avocado-theme.input.border');
+  --input-border-hover: theme('colors.avocado-theme.input.borderDark');
+  --error: theme('colors.avocado-theme.error');
+  --success: theme('colors.avocado-theme.success');
+  --warning: theme('colors.avocado-theme.warning');
+}
+
+[data-theme='Bonk'] {
+  --active: theme('colors.bonk-theme.active.DEFAULT');
+  --active-dark: theme('colors.bonk-theme.active.dark');
+  --down: theme('colors.bonk-theme.down.DEFAULT');
+  --down-dark: theme('colors.bonk-theme.down.dark');
+  --down-muted: theme('colors.bonk-theme.down.muted');
+  --up: theme('colors.bonk-theme.up.DEFAULT');
+  --up-dark: theme('colors.bonk-theme.up.dark');
+  --up-muted: theme('colors.bonk-theme.up.muted');
+  --link: theme('colors.bonk-theme.link.DEFAULT');
+  --link-hover: theme('colors.bonk-theme.link.hover');
+  --bkg-1: theme('colors.bonk-theme.bkg-1');
+  --bkg-2: theme('colors.bonk-theme.bkg-2');
+  --bkg-3: theme('colors.bonk-theme.bkg-3');
+  --bkg-4: theme('colors.bonk-theme.bkg-4');
+  --fgd-1: theme('colors.bonk-theme.fgd-1');
+  --fgd-2: theme('colors.bonk-theme.fgd-2');
+  --fgd-3: theme('colors.bonk-theme.fgd-3');
+  --fgd-4: theme('colors.bonk-theme.fgd-4');
+  --button: theme('colors.bonk-theme.button.DEFAULT');
+  --button-hover: theme('colors.bonk-theme.button.hover');
+  --input-bkg: theme('colors.bonk-theme.input.bkg');
+  --input-border: theme('colors.bonk-theme.input.border');
+  --input-border-hover: theme('colors.bonk-theme.input.borderDark');
+  --error: theme('colors.bonk-theme.error');
+  --success: theme('colors.bonk-theme.success');
+  --warning: theme('colors.bonk-theme.warning');
+}
+
+[data-theme='Pepe'] {
+  --active: theme('colors.pepe-theme.active.DEFAULT');
+  --active-dark: theme('colors.pepe-theme.active.dark');
+  --down: theme('colors.pepe-theme.down.DEFAULT');
+  --down-dark: theme('colors.pepe-theme.down.dark');
+  --down-muted: theme('colors.pepe-theme.down.muted');
+  --up: theme('colors.pepe-theme.up.DEFAULT');
+  --up-dark: theme('colors.pepe-theme.up.dark');
+  --up-muted: theme('colors.pepe-theme.up.muted');
+  --link: theme('colors.pepe-theme.link.DEFAULT');
+  --link-hover: theme('colors.pepe-theme.link.hover');
+  --bkg-1: theme('colors.pepe-theme.bkg-1');
+  --bkg-2: theme('colors.pepe-theme.bkg-2');
+  --bkg-3: theme('colors.pepe-theme.bkg-3');
+  --bkg-4: theme('colors.pepe-theme.bkg-4');
+  --fgd-1: theme('colors.pepe-theme.fgd-1');
+  --fgd-2: theme('colors.pepe-theme.fgd-2');
+  --fgd-3: theme('colors.pepe-theme.fgd-3');
+  --fgd-4: theme('colors.pepe-theme.fgd-4');
+  --button: theme('colors.pepe-theme.button.DEFAULT');
+  --button-hover: theme('colors.pepe-theme.button.hover');
+  --input-bkg: theme('colors.pepe-theme.input.bkg');
+  --input-border: theme('colors.pepe-theme.input.border');
+  --input-border-hover: theme('colors.pepe-theme.input.borderDark');
+  --error: theme('colors.pepe-theme.error');
+  --success: theme('colors.pepe-theme.success');
+  --warning: theme('colors.pepe-theme.warning');
+}
+
+/* Base */
+
+body {
+  @apply font-body text-sm font-medium tracking-wider;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  @apply font-body;
+}
+
+button {
+  @apply default-transition tracking-wider focus:outline-none;
+  -webkit-font-feature-settings: 'zero' 1;
+  font-feature-settings: 'zero' 1;
+}
+
+svg {
+  @apply transition duration-500 ease-out;
+}
+
+.default-transition {
+  @apply transition duration-300 ease-out;
+}
+
+/* Type */
+
+h1,
+h2,
+h3,
+h4 {
+  @apply font-bold text-th-fgd-1;
+}
+
+h1 {
+  @apply text-3xl;
+}
+
+h2 {
+  @apply text-2xl;
+}
+
+h3 {
+  @apply text-lg;
+}
+
+p {
+  @apply text-th-fgd-3;
+}
+
+li {
+  @apply text-sm text-th-fgd-3;
+}
+
+a {
+  @apply default-transition text-th-fgd-1 md:hover:text-th-fgd-3;
+}
+
+/* Forms */
+
+input {
+  @apply default-transition;
+}
+
+input::placeholder {
+  @apply text-th-fgd-4;
+}
+
+/* Remove inner shadow from inputs on mobile iOS */
+textarea,
+input[type='text'] {
+  -webkit-appearance: none;
+}
+
+/* Animations */
+
+@keyframes sideways-bounce {
+  0%,
+  100% {
+    transform: translateX(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateX(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+.sideways-bounce {
+  animation: sideways-bounce 1s infinite;
+}
+
+/* Table */
+
+table p {
+  @apply font-mono text-sm text-th-fgd-2;
+}
+
+/* Scrollbars */
+
+.font-mono {
+  -webkit-font-feature-settings: 'zero' 1;
+  font-feature-settings: 'zero' 1;
+}
+
+.hide-scroll::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  -webkit-appearance: none;
+}
+
+.hide-scroll::-webkit-scrollbar-thumb {
+  border: 0px solid transparent;
+  background-clip: padding-box;
+}
+
+.hide-scroll::-webkit-scrollbar-thumb:hover {
+  border: 0;
+}
+
+.hide-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.thin-scroll::-webkit-scrollbar-thumb {
+  @apply rounded bg-th-bkg-4;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.thin-scroll::-webkit-scrollbar-thumb:hover {
+  border: 0;
+}
+
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scroll::-webkit-scrollbar-thumb:window-inactive {
+  @apply bg-th-bkg-4;
+}
+
+/* Chart */
+
+.TVChartContainer {
+  height: 100%;
+  width: 100%;
+}
+
+.tradingview-chart {
+  display: contents;
+}
+
+/* slider */
+
+input[type='range'] {
+  @apply default-transition h-1.5 appearance-none rounded bg-th-bkg-3 bg-gradient-to-r from-th-active to-th-active bg-no-repeat focus-visible:bg-th-bkg-4;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  @apply h-5 w-5 cursor-ew-resize appearance-none rounded-full bg-th-active-dark shadow;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  @apply appearance-none border-0 bg-transparent shadow-none;
+}
+
+.intro-bg {
+  background-color: var(--bkg-1);
+  background-image: radial-gradient(at -40% -10%, #5b48ad 0, transparent 40%),
+    radial-gradient(at 150% 150%, #e54033 0, transparent 50%);
+}
+
+/* orderbook flash */
+
+@keyframes green-flash {
+  from {
+    background-color: var(--up-muted);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+@-webkit-keyframes green-flash {
+  from {
+    background-color: var(--up-muted);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+@-moz-keyframes green-flash {
+  from {
+    background-color: var(--up-muted);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+@keyframes red-flash {
+  from {
+    background-color: var(--down-muted);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+@-webkit-keyframes red-flash {
+  from {
+    background-color: var(--down-muted);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+@-moz-keyframes red-flash {
+  from {
+    background-color: var(--down-muted);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+.green-flash {
+  -moz-animation: green-flash 0.5s ease 0s 1 alternate;
+  -webkit-animation: green-flash 0.5s ease 0s 1 alternate;
+  animation: green-flash 0.5s ease 0s 1 alternate;
+}
+
+.red-flash {
+  -moz-animation: red-flash 0.5s ease 0s 1 alternate;
+  -webkit-animation: red-flash 0.5s ease 0s 1 alternate;
+  animation: red-flash 0.5s ease 0s 1 alternate;
+}
+
+.tooltip-underline {
+  @apply default-transition w-max border-b border-dashed border-current hover:cursor-help hover:border-transparent;
+}
+
+.radial-gradient-bg {
+  background-image: radial-gradient(
+    at 300% 100%,
+    var(--button) 0,
+    transparent 75%
+  );
+  @apply bg-th-bkg-1;
+}
+
+#tsparticles {
+  @apply absolute h-screen w-full;
+}
+
+/* raised button */
+
+.raised-button {
+  @apply relative flex items-center justify-center bg-th-button text-th-fgd-1 transition-none;
+  box-shadow: 0 6px var(--button-hover);
+}
+
+.raised-button:hover {
+  background-color: var(--button);
+  box-shadow: 0 4px var(--button-hover);
+  top: 2px;
+}
+
+.raised-button:active {
+  box-shadow: 0 0 var(--button-hover);
+  top: 6px;
+}
+
+/* raised buy button */
+
+.raised-buy-button {
+  @apply relative flex items-center justify-center bg-th-up text-black transition-none;
+  box-shadow: 0 6px var(--up-dark);
+}
+
+.raised-buy-button:hover {
+  background-color: var(--up) !important;
+  box-shadow: 0 4px var(--up-dark);
+  top: 2px;
+}
+
+.raised-buy-button:active {
+  box-shadow: 0 0 var(--up-dark);
+  top: 6px;
+}
+
+/* raised sell button */
+
+.raised-sell-button {
+  @apply relative flex items-center justify-center bg-th-down text-white transition-none;
+  box-shadow: 0 6px var(--down-dark);
+}
+
+.raised-sell-button:hover {
+  background-color: var(--down) !important;
+  box-shadow: 0 4px var(--down-dark);
+  top: 2px;
+}
+
+.raised-sell-button:active {
+  box-shadow: 0 0 var(--down-dark);
+  top: 6px;
+}
+
+.pagination {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  justify-content: center;
+  display: flex;
+  padding-left: 0;
+  list-style: none;
+}
+
+.page-link {
+  display: block;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin: 0 2px;
+  text-decoration: none;
+}
+
+a.page-link:hover {
+  background-color: #cccccc;
+}
+
+.page-item.active .page-link {
+  color: #ffffff;
+  background-color: #007bff;
+}

@@ -1,0 +1,14 @@
+{
+  "advanced-order": "Advanced Order Type",
+  "advanced-order-details": "Advanced order types in the chart window may only be cancelled. If new conditions are required, cancel this order and use the trade order form.",
+  "cancel-order": "Cancel Order",
+  "cancel-order-details": "Cancel your order for {{orderSide}} {{orderSize}} {{marketName}} at {{orderPrice}}",
+  "modify-order": "Modify Order",
+  "modify-order-details": "Edit your {{marketName}} order from {{orderSide}} {{orderSize}} at {{currentOrderPrice}} to {{orderSide}} {{orderSize}} at {{updatedOrderPrice}}",
+  "order-details": " ({{orderType}} {{orderSide}}) if price is {{triggerCondition}} {{triggerPrice}}",
+  "outside-range": "Order Price Outside Range",
+  "slippage-accept": "Use the trade order form if you wish to accept the potential slippage.",
+  "slippage-warning": "{{updatedOrderPrice}} is greater than 5% {{aboveBelow}} the current market price of {{selectedMarketPrice}}. Executing this trade could incur significant slippage.",
+  "toggle-order-line": "Toggle order line visibility",
+  "toggle-trade-executions": "Show trade executions. Limited to your last 250 trades across all markets."
+}

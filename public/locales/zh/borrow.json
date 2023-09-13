@@ -1,0 +1,11 @@
+{
+    "assets-to-borrow": "可借资产",
+    "available-to-borrow": "可借余额",
+    "borrowed-amount": "借贷数量",
+    "connect-borrows": "连接而查看你的借贷",
+    "current-borrow-value": "借贷价值",
+    "liability-weight-desc": "计算帐户健康时债务权重会增加债务价值。",
+    "no-borrows": "无借贷",
+    "tooltip-available": "你可借的最多资产",
+    "your-borrows": "你的借贷"
+}

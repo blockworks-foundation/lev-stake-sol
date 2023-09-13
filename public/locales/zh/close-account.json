@@ -1,0 +1,19 @@
+{
+    "are-you-sure": "你确定吗? 关户将会",
+    "before-you-continue": "继续之前",
+    "close-account": "关户",
+    "closing-account": "正在关闭帐户...",
+    "close-all-borrows": "归还借贷",
+    "close-open-orders": "取消订单",
+    "close-perp-positions": "取消及结清所有合约持仓",
+    "closing-account-will": "关闭Mango帐户将会：",
+    "delete-your-account": "删除您的Mango帐户",
+    "error-deleting-account": "删除Mango帐户出错",
+    "goodbye": "下次见👋",
+    "recover-x-sol": "恢复{{amount}} SOL (帐户押金)",
+    "settle-balances": "结清余额",
+    "transaction-confirmed": "交易成功",
+    "withdraw-assets-worth": "提取价值{{value}}的资产",
+    "you-must": "关户之前",
+    "account-closed": "帐户关闭了👋"
+}

@@ -1,0 +1,20 @@
+{
+    "base-liquidation-fee": "基本清算費用",
+    "closest-to-liquidation": "Positions Closest to Liquidation",
+    "daily": "日",
+    "hourly": "小時",
+    "largest-perp-positions": "Largest Positions",
+    "perp-details": "{{market}}統計",
+    "perp-open-interest": "Perp Open Interest",
+    "perp-volume": "Perp Volume",
+    "pnl-liquidation-fee": "正數盈虧清算費用",
+    "settle-pnl-factor": "結清盈虧因素",
+    "six-hourly": "6-小時",
+    "tooltip-base-liquidation-fee": "當清算者接管持倉時，被清算者將支付此費用。",
+    "tooltip-funding-limits": "資金費用的最高與最低（一天）。",
+    "tooltip-init-asset-liability-weight": "永續合約對您初始賬戶健康狀況的貢獻。資產權重適用於多頭持倉，債務權重適用於空頭持倉。初始健康狀況控制您提取和開立新持倉的能力，並顯示為賬戶的可用抵押品。",
+    "tooltip-maint-asset-liability-weight": "永續合約對您維護賬戶健康狀況的貢獻。資產權重適用於多頭持倉，債務權重適用於空頭持倉。維護健康狀況在您帳戶頁面上顯示。如果該值達到零，您的帳戶將被清算。",
+    "tooltip-pnl-liquidation-fee": "當清算者接管有未結算正盈虧的持倉時，被清算者將支付此費用。",
+    "tooltip-settle-pnl-factor": "作為一種漏洞緩解措施，未實現盈虧的結算僅限於每個時間段內名義價值的倍數。",
+    "volume": "交易量"
+}

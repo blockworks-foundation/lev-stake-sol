@@ -1,0 +1,15 @@
+{
+    "mango-account": "帐户地址",
+    "mango-account-name": "帐户标签",
+    "no-results": "无结果",
+    "no-results-desc": "尝试其他搜寻。搜寻区分大小写",
+    "profile-name": "个人档案标签",
+    "results": "结果",
+    "search": "搜寻",
+    "search-accounts": "搜寻帐户",
+    "search-by": "搜寻方式",
+    "search-for": "搜寻",
+    "search-failed": "出错了。稍后再试。",
+    "wallet-pk": "钱包地址",
+    "open-orders-pk": "未结订单地址"
+}

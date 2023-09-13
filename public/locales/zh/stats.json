@@ -1,0 +1,20 @@
+{
+    "base-liquidation-fee": "基本清算费用",
+    "closest-to-liquidation": "Positions Closest to Liquidation",
+    "daily": "日",
+    "hourly": "小时",
+    "largest-perp-positions": "Largest Positions",
+    "perp-details": "{{market}}统计",
+    "perp-open-interest": "Perp Open Interest",
+    "perp-volume": "Perp Volume",
+    "pnl-liquidation-fee": "正数盈亏清算费用",
+    "settle-pnl-factor": "结清盈亏因素",
+    "six-hourly": "6-小时",
+    "tooltip-base-liquidation-fee": "当清算者接管持仓时，被清算者将支付此费用。",
+    "tooltip-funding-limits": "资金费用的最高与最低（一天）。",
+    "tooltip-init-asset-liability-weight": "永续合约对您初始账户健康状况的贡献。资产权重适用于多头持仓，债务权重适用于空头持仓。初始健康状况控制您提取和开立新持仓的能力，并显示为账户的可用抵押品。",
+    "tooltip-maint-asset-liability-weight": "永续合约对您维护账户健康状况的贡献。资产权重适用于多头持仓，债务权重适用于空头持仓。维护健康状况在您帐户页面上显示。如果该值达到零，您的帐户将被清算。",
+    "tooltip-pnl-liquidation-fee": "当清算者接管有未结算正盈亏的持仓时，被清算者将支付此费用。",
+    "tooltip-settle-pnl-factor": "作为一种漏洞缓解措施，未实现盈亏的结算仅限于每个时间段内名义价值的倍数。",
+    "volume": "交易量"
+}
