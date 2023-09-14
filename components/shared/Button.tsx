@@ -33,7 +33,7 @@ const Button: FunctionComponent<ButtonCombinedProps> = ({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`rounded-md ${
+      className={`rounded-xl ${
         themeData.buttonStyle === 'raised'
           ? 'raised-button'
           : secondary
@@ -43,7 +43,7 @@ const Button: FunctionComponent<ButtonCombinedProps> = ({
         size === 'medium'
           ? 'h-10 px-4'
           : size === 'large'
-          ? 'h-12 px-6'
+          ? 'h-14 px-8'
           : 'h-8 px-3'
       } font-display ${
         theme === 'High Contrast' && !secondary

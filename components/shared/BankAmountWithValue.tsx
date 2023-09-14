@@ -16,13 +16,13 @@ const BankAmountWithValue = ({
   value?: number
 }) => {
   return (
-    <p className={`font-mono text-th-fgd-2 ${stacked ? 'text-right' : ''}`}>
+    <p className={`font-mono text-th-fgd-1 ${stacked ? 'text-right' : ''}`}>
       <>
         <FormatNumericValue
           value={amount}
           decimals={amount && fixDecimals ? bank.mintDecimals : undefined}
         />{' '}
-        <span className={`text-th-fgd-4 ${stacked ? 'block' : ''}`}>
+        <span className={`text-th-fgd-3 ${stacked ? 'block' : ''}`}>
           <FormatNumericValue
             value={value ? value : Number(amount) * bank.uiPrice}
             decimals={fixDecimals ? 2 : undefined}
