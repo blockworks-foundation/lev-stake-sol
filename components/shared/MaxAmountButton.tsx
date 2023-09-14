@@ -23,7 +23,7 @@ const MaxAmountButton = ({
       disabled={disabled}
       onClick={onClick}
     >
-      <p className="mr-1 text-th-fgd-4">{label}:</p>
+      <p className="mr-1 text-th-fgd-2">{label}:</p>
       <span className="font-mono">
         <FormatNumericValue value={value} decimals={decimals} />
       </span>

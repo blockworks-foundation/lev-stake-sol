@@ -7,7 +7,9 @@ const Label = ({
   optional?: boolean
   className?: string
 }) => (
-  <p className={`mb-2 text-left text-sm text-th-fgd-3 ${className}`}>
+  <p
+    className={`mb-2 text-left text-base font-bold text-th-fgd-2 ${className}`}
+  >
     {text}{' '}
     {optional ? (
       <span className="ml-1 text-xs text-th-fgd-4">(Optional)</span>

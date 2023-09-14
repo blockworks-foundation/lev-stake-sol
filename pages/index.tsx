@@ -7,8 +7,9 @@ import mangoStore from '@store/mangoStore'
 import type { NextPage } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useCallback, useEffect, useState } from 'react'
-import { ACCOUNT_ACTION_MODAL_INNER_HEIGHT } from 'utils/constants'
 import { ACCOUNT_PREFIX } from 'utils/transactions'
+
+const STAKEABLE_TOKENS = ['mSOL', 'JitoSOL', 'stSOL', 'LDO']
 
 export async function getStaticProps({ locale }: { locale: string }) {
   return {
@@ -22,7 +23,8 @@ const set = mangoStore.getState().set
 
 const Index: NextPage = () => {
   const [activeTab, setActiveTab] = useState('Stake')
-  const [selectedToken, setSelectedToken] = useState('MSOL')
+  const [activeFormTab, setActiveFormTab] = useState('Add')
+  const [selectedToken, setSelectedToken] = useState(STAKEABLE_TOKENS[0])
 
   useEffect(() => {
     const mangoAccounts = mangoStore.getState().mangoAccounts
@@ -45,68 +47,67 @@ const Index: NextPage = () => {
   }, [])
 
   return (
-    <div className="m-auto max-w-4xl flex-col">
+    <div className="mx-auto max-w-4xl flex-col pb-20">
       <div className="flex-col">
         {/* <div className="mb-4 text-center text-5xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
           LEVERAGE STAKE SOL
         </div> */}
-        <div className="mt-8 flex justify-center space-x-4">
-          <div className="flex-col">
+        <div className="mb-6 grid grid-cols-2 rounded-xl border border-th-fgd-1">
+          <button
+            className={`col-span-1 mx-auto w-full rounded-l-xl border-r border-th-fgd-1 py-4 font-bold ${
+              activeTab === 'Stake'
+                ? 'bg-th-bkg-2 text-th-fgd-1'
+                : 'text-th-fgd-3'
+            }`}
+            onClick={() => setActiveTab('Stake')}
+          >
+            Stake
+          </button>
+          <button
+            className={`col-span-1 mx-auto w-full rounded-r-xl py-4 font-bold ${
+              activeTab === 'Positions'
+                ? 'bg-th-bkg-2 text-th-fgd-1'
+                : 'text-th-fgd-3'
+            }`}
+            onClick={() => setActiveTab('Positions')}
+          >
+            Your Positions
+          </button>
+        </div>
+        {/* <h2 className="mb-4 text-xl">Tokens</h2> */}
+        <div className="grid grid-cols-4 rounded-t-2xl border border-b-0 border-th-fgd-1">
+          {STAKEABLE_TOKENS.map((token) => (
             <TokenButton
+              key={token}
               handleTokenSelect={handleTokenSelect}
               selectedToken={selectedToken}
-              tokenName="MSOL"
+              tokenName={token}
             />
-            <div className="text-center">mSOL</div>
-          </div>
-          <div className="flex-col">
-            <TokenButton
-              handleTokenSelect={handleTokenSelect}
-              selectedToken={selectedToken}
-              tokenName="JitoSOL"
-            />
-            <div className="text-center">JitoSOL</div>
-          </div>
-          <div className="flex-col">
-            <TokenButton
-              handleTokenSelect={handleTokenSelect}
-              selectedToken={selectedToken}
-              tokenName="stSOL"
-            />
-            <div className="text-center">stSOL</div>
-          </div>
-          <div className="flex-col">
-            <TokenButton
-              handleTokenSelect={handleTokenSelect}
-              selectedToken={selectedToken}
-              tokenName="LDO"
-            />
-            <div className="text-center">LDO</div>
-          </div>
+          ))}
         </div>
       </div>
-      <div className="mt-4 flex w-full max-w-4xl">
+      <div className="grid max-w-4xl grid-cols-12">
         <div
-          className={`min-h-[${ACCOUNT_ACTION_MODAL_INNER_HEIGHT}] relative z-20 rounded-xl border border-black bg-th-bkg-1 p-2 text-th-fgd-1`}
+          className={`col-span-7 rounded-bl-2xl border border-th-fgd-1 bg-th-bkg-1 text-th-fgd-1`}
         >
-          <div className={`relative h-[500px]`}>
-            <div className="m-6">
+          <div className={`p-8 pt-6`}>
+            <div className="pb-2">
               <TabUnderline
-                activeValue={activeTab}
-                values={['Stake', 'Unstake']}
-                onChange={(v) => setActiveTab(v)}
+                activeValue={activeFormTab}
+                values={['Add', 'Remove']}
+                onChange={(v) => setActiveFormTab(v)}
               />
             </div>
-            {activeTab === 'Stake' ? (
+            {activeFormTab === 'Add' ? (
               <StakeForm onSuccess={onClose} token={selectedToken} />
             ) : null}
-            {activeTab === 'Unstake' ? (
+            {activeFormTab === 'Remove' ? (
               <UnstakeForm onSuccess={onClose} token={selectedToken} />
             ) : null}
           </div>
         </div>
         <div
-          className={`min-h-[${ACCOUNT_ACTION_MODAL_INNER_HEIGHT}] relative z-10 -ml-4 rounded rounded-r-xl border-y border-r border-black bg-th-bkg-2 p-2 pl-8 text-th-fgd-1`}
+          className={`col-span-5 rounded-br-2xl border-y border-r border-th-fgd-1 bg-th-bkg-2 p-8 pt-6`}
         >
           <AccountStats token={selectedToken} />
         </div>

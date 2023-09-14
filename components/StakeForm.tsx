@@ -23,7 +23,7 @@ import { floorToDecimal, withValueLimit } from 'utils/numbers'
 import BankAmountWithValue from './shared/BankAmountWithValue'
 // import useBanksWithBalances from 'hooks/useBanksWithBalances'
 import { isMangoError } from 'types'
-import TokenListButton from './shared/TokenListButton'
+// import TokenListButton from './shared/TokenListButton'
 import TokenLogo from './shared/TokenLogo'
 import SecondaryConnectButton from './shared/SecondaryConnectButton'
 import useMangoAccountAccounts from 'hooks/useMangoAccountAccounts'
@@ -94,7 +94,8 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
   const { group } = useMangoGroup()
 
   const stakeBank = useMemo(() => {
-    return group?.banksMapByName.get(selectedToken)?.[0]
+    const bankName = selectedToken === 'mSOL' ? 'MSOL' : selectedToken
+    return group?.banksMapByName.get(bankName)?.[0]
   }, [selectedToken, group])
 
   const solBank = useMemo(() => {
@@ -236,8 +237,8 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
         /> */}
       </EnterBottomExitBottom>
       <FadeInFadeOut show={!showTokenList}>
-        <div className="m-6 flex flex-col justify-between">
-          <div>
+        <div className="flex flex-col justify-between">
+          <div className="pb-8">
             <SolBalanceWarnings
               amount={inputAmount}
               className="mb-4"
@@ -246,7 +247,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
             />
             <div className="grid grid-cols-2">
               <div className="col-span-2 flex justify-between">
-                <Label text={`Stake Token`} />
+                <Label text="Amount" />
                 <div className="mb-2 flex items-center space-x-2">
                   <MaxAmountButton
                     decimals={tokenMax.maxDecimals}
@@ -265,38 +266,49 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                   </Tooltip>
                 </div>
               </div>
-              <div className="col-span-1">
+              {/* <div className="col-span-1">
                 <TokenListButton
                   token={selectedToken}
                   logo={<TokenLogo bank={stakeBank} />}
                   setShowList={setShowTokenList}
                 />
-              </div>
-              <div className="col-span-1">
-                <NumberFormat
-                  name="amountIn"
-                  id="amountIn"
-                  inputMode="decimal"
-                  thousandSeparator=","
-                  allowNegative={false}
-                  isNumericString={true}
-                  decimalScale={6}
-                  className={
-                    'w-full rounded-lg rounded-l-none border border-th-input-border bg-th-input-bkg p-3 text-right font-mono text-xl text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:border-th-input-border-hover md:hover:focus-visible:border-th-fgd-4'
-                  }
-                  placeholder="0.00"
-                  value={inputAmount}
-                  onValueChange={(e: NumberFormatValues) => {
-                    setInputAmount(
-                      !Number.isNaN(Number(e.value)) ? e.value : '',
-                    )
-                  }}
-                  isAllowed={withValueLimit}
-                />
+              </div> */}
+              <div className="col-span-2">
+                <div className="relative">
+                  <NumberFormat
+                    name="amountIn"
+                    id="amountIn"
+                    inputMode="decimal"
+                    thousandSeparator=","
+                    allowNegative={false}
+                    isNumericString={true}
+                    decimalScale={6}
+                    className="w-full rounded-xl border border-th-input-border bg-th-input-bkg p-3 pl-12 pr-4 text-left font-mono text-xl text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:border-th-input-border-hover md:hover:focus-visible:border-th-fgd-4"
+                    placeholder="0.00"
+                    value={inputAmount}
+                    onValueChange={(e: NumberFormatValues) => {
+                      setInputAmount(
+                        !Number.isNaN(Number(e.value)) ? e.value : '',
+                      )
+                    }}
+                    isAllowed={withValueLimit}
+                  />
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                    <TokenLogo bank={stakeBank} size={24} />
+                  </div>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                    <span className="font-bold text-th-fgd-1">
+                      {selectedToken}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="mt-3">
-              <div>Leverage: {leverage}x</div>
+            <div className="mt-4">
+              <div className="flex items-center justify-between">
+                <Label text="Leverage" />
+                <p className="font-bold text-th-fgd-1">{leverage}x</p>
+              </div>
               <LeverageSlider
                 amount={leverage}
                 leverageMax={3}
@@ -306,7 +318,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
             </div>
             {stakeBank && solBank ? (
               <>
-                <div className="mt-2 space-y-1.5 px-2 py-4 text-sm">
+                <div className="mt-2 space-y-1.5 px-2 py-4">
                   <div className="flex justify-between">
                     <p>{t('deposit-amount')}</p>
                     <BankAmountWithValue
@@ -315,19 +327,21 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                     />
                   </div>
                   <div className="flex justify-between">
-                    <p>SOL borrowed</p>
+                    <p>SOL Borrowed</p>
                     {solBank ? (
-                      <FormatNumericValue
-                        value={solAmountToBorrow}
-                        decimals={3}
-                      />
+                      <span className="text-th-fgd-1">
+                        <FormatNumericValue
+                          value={solAmountToBorrow}
+                          decimals={3}
+                        />
+                      </span>
                     ) : null}
                   </div>
                 </div>
-                <div className="space-y-1.5 border-t border-th-bkg-3 px-2 py-4 text-sm ">
+                <div className="space-y-1.5 border-t border-th-bkg-3 px-2 pt-4">
                   <div className="flex justify-between">
                     <p>{selectedToken} Leveraged APR</p>
-                    <span>
+                    <span className="text-th-fgd-1">
                       <FormatNumericValue
                         value={7.28 * leverage}
                         decimals={2}
@@ -337,7 +351,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                   </div>
                   <div className="flex justify-between">
                     <p>{selectedToken} Deposit Rate</p>
-                    <span>
+                    <span className="text-th-fgd-1">
                       <FormatNumericValue
                         value={stakeBank.getDepositRateUi()}
                         decimals={2}
@@ -347,7 +361,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                   </div>
                   <div className="flex justify-between">
                     <p>SOL Borrow Rate</p>
-                    <span>
+                    <span className="text-th-fgd-1">
                       <FormatNumericValue
                         value={solBank.getDepositRateUi()}
                         decimals={2}

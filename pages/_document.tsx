@@ -12,10 +12,10 @@ class MyDocument extends Document {
           ></Script>
         </Head>
         <body className="hide-scroll">
-          <div className="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-lime-600 via-yellow-300 to-red-600">
-            <Main />
-            <NextScript />
-          </div>
+          {/* <div className="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-lime-600 via-yellow-300 to-red-600"> */}
+          <Main />
+          <NextScript />
+          {/* </div> */}
         </body>
       </Html>
     )
