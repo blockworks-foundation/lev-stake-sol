@@ -1,3 +1,4 @@
+import useStakeApr from 'hooks/useStakeAprs'
 import Image from 'next/image'
 
 const TokenButton = ({
@@ -9,6 +10,8 @@ const TokenButton = ({
   selectedToken: string
   handleTokenSelect: (v: string) => void
 }) => {
+  const { data: stakeAprs } = useStakeApr()
+
   return (
     <button
       className={`col-span-1 flex items-center justify-center border-r border-th-fgd-1 p-4  first:rounded-tl-2xl last:rounded-tr-2xl last:border-transparent hover:cursor-pointer ${
@@ -26,7 +29,12 @@ const TokenButton = ({
         <span className="mt-2 text-lg font-bold text-th-fgd-1">
           {tokenName}
         </span>
-        <span>14.89%</span>
+        <span>
+          {stakeAprs?.[tokenName.toLowerCase()]
+            ? (stakeAprs?.[tokenName.toLowerCase()] * 100).toFixed(2)
+            : null}
+          %
+        </span>
       </div>
     </button>
   )
