@@ -9,7 +9,7 @@ import {
   // INPUT_TOKEN_DEFAULT,
 } from '../utils/constants'
 import { notify } from '../utils/notifications'
-import { TokenAccount } from '../utils/tokens'
+import { TokenAccount, formatTokenSymbol } from '../utils/tokens'
 // import ActionTokenList from './account/ActionTokenList'
 import Label from './forms/Label'
 import Button, { IconButton } from './shared/Button'
@@ -94,8 +94,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
   const { group } = useMangoGroup()
 
   const stakeBank = useMemo(() => {
-    const bankName = selectedToken === 'mSOL' ? 'MSOL' : selectedToken
-    return group?.banksMapByName.get(bankName)?.[0]
+    return group?.banksMapByName.get(selectedToken)?.[0]
   }, [selectedToken, group])
 
   const solBank = useMemo(() => {
@@ -298,7 +297,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                   </div>
                   <div className="absolute right-4 top-1/2 -translate-y-1/2">
                     <span className="font-bold text-th-fgd-1">
-                      {selectedToken}
+                      {formatTokenSymbol(selectedToken)}
                     </span>
                   </div>
                 </div>

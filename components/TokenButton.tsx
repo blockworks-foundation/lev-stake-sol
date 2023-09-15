@@ -1,5 +1,6 @@
 import useStakeApr from 'hooks/useStakeAprs'
 import Image from 'next/image'
+import { formatTokenSymbol } from 'utils/tokens'
 
 const TokenButton = ({
   handleTokenSelect,
@@ -27,7 +28,7 @@ const TokenButton = ({
           alt="Select a token"
         />
         <span className="mt-2 text-lg font-bold text-th-fgd-1">
-          {tokenName}
+          {formatTokenSymbol(tokenName)}
         </span>
         <span>
           {stakeAprs?.[tokenName.toLowerCase()]

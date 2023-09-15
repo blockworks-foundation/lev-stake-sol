@@ -34,7 +34,7 @@ const Index: NextPage = () => {
   }, [selectedToken])
 
   return (
-    <div className="mx-auto max-w-4xl flex-col pb-20">
+    <div className="mx-auto max-w-5xl flex-col pb-20">
       <div className="mb-6 grid grid-cols-3 rounded-xl border border-th-fgd-1">
         <button
           className={`col-span-1 mx-auto w-full rounded-l-xl border-r border-th-fgd-1 py-4 font-bold ${
@@ -54,7 +54,7 @@ const Index: NextPage = () => {
           }`}
           onClick={() => setActiveTab('Positions')}
         >
-          Your Positions
+          Positions
         </button>
         <button
           className={`col-span-1 mx-auto w-full rounded-r-xl py-4 font-bold ${
@@ -67,19 +67,25 @@ const Index: NextPage = () => {
           Transaction History
         </button>
       </div>
-      <TabContent activeTab={activeTab} />
+      <TabContent activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   )
 }
 
 export default Index
 
-const TabContent = ({ activeTab }: { activeTab: string }) => {
+const TabContent = ({
+  activeTab,
+  setActiveTab,
+}: {
+  activeTab: string
+  setActiveTab: (tab: string) => void
+}) => {
   switch (activeTab) {
     case 'Stake':
       return <Stake />
     case 'Positions':
-      return <Positions />
+      return <Positions setActiveTab={setActiveTab} />
     case 'History':
       return <TransactionHistory />
     default:

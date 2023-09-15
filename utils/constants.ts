@@ -1,7 +1,7 @@
 import { PublicKey } from '@metaplex-foundation/js'
 
 // lev stake
-export const STAKEABLE_TOKENS = ['mSOL', 'JitoSOL', 'stSOL', 'bSOL']
+export const STAKEABLE_TOKENS = ['MSOL', 'JitoSOL', 'stSOL', 'bSOL', 'LDO']
 // end
 
 export const LAST_ACCOUNT_KEY = 'mangoAccount-0.4'

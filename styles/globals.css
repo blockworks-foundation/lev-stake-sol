@@ -466,7 +466,7 @@ h2 {
 }
 
 h3 {
-  @apply text-lg;
+  @apply text-xl;
 }
 
 p {

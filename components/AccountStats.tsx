@@ -1,7 +1,9 @@
+import { formatTokenSymbol } from 'utils/tokens'
+
 const AccountStats = ({ token }: { token: string }) => {
   return (
     <>
-      <h2 className="mb-4 text-2xl">{`Boosted ${token}`}</h2>
+      <h2 className="mb-4 text-2xl">{`Boosted ${formatTokenSymbol(token)}`}</h2>
       <div className="grid grid-cols-1 gap-6">
         <div>
           <p className="mb-1">Est. APR</p>
