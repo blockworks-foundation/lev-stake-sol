@@ -1,10 +1,12 @@
 import useMangoGroup from 'hooks/useMangoGroup'
 import { useMemo } from 'react'
-import { STAKEABLE_TOKENS } from 'utils/constants'
+import { SHOW_INACTIVE_POSITIONS_KEY, STAKEABLE_TOKENS } from 'utils/constants'
 import TokenLogo from './shared/TokenLogo'
 import Button from './shared/Button'
 import { formatTokenSymbol } from 'utils/tokens'
 import mangoStore from '@store/mangoStore'
+import Switch from './forms/Switch'
+import useLocalStorageState from 'hooks/useLocalStorageState'
 
 const set = mangoStore.getState().set
 
@@ -14,6 +16,8 @@ const Positions = ({
   setActiveTab: (tab: string) => void
 }) => {
   const { group } = useMangoGroup()
+  const [showInactivePositions, setShowInactivePositions] =
+    useLocalStorageState(SHOW_INACTIVE_POSITIONS_KEY, true)
 
   const banks = useMemo(() => {
     if (!group) return []
@@ -35,8 +39,16 @@ const Positions = ({
       }
       positions.push({ balance, bank })
     }
-    return positions.sort((a, b) => b.balance - a.balance)
-  }, [banks])
+    const sortedPositions = positions.sort((a, b) => b.balance - a.balance)
+    return showInactivePositions
+      ? sortedPositions
+      : sortedPositions.filter((pos) => pos.balance > 0)
+  }, [banks, showInactivePositions])
+
+  const numberOfPositions = useMemo(() => {
+    if (!positions.length) return 0
+    return positions.filter((pos) => pos.balance > 0).length
+  }, [positions])
 
   const handleAddOrManagePosition = (token: string) => {
     setActiveTab('Stake')
@@ -47,6 +59,17 @@ const Positions = ({
 
   return positions.length ? (
     <div className="space-y-3">
+      <div className="mb-4 flex items-center justify-between">
+        <p>{`You have ${numberOfPositions} active position${
+          numberOfPositions > 1 ? 's' : ''
+        }`}</p>
+        <Switch
+          checked={showInactivePositions}
+          onChange={(checked) => setShowInactivePositions(checked)}
+        >
+          Show Inactive
+        </Switch>
+      </div>
       {positions.map((position, i) => {
         const { balance, bank } = position
         return bank ? (
