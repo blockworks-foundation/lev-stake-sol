@@ -25,7 +25,7 @@ const Stake = () => {
 
   return (
     <>
-      <div className="grid grid-cols-5 rounded-t-2xl border border-b-0 border-th-fgd-1">
+      <div className="grid grid-cols-4 rounded-t-2xl border border-b-0 border-th-fgd-1">
         {STAKEABLE_TOKENS.map((token) => (
           <TokenButton
             key={token}
