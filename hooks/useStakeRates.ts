@@ -7,7 +7,7 @@ import {
   PERIOD,
 } from '@glitchful-dev/sol-apy-sdk'
 
-const fetchApr = async () => {
+const fetchRates = async () => {
   const [msolPrices, jitoPrices, bsolPrices, lidoPrices] = await Promise.all([
     fetchAndParsePricesCsv(DATA_SOURCE.MARINADE_CSV),
     fetchAndParsePricesCsv(DATA_SOURCE.JITO_CSV),
@@ -17,34 +17,34 @@ const fetchApr = async () => {
   console.log('jitosol', jitoPrices)
 
   // may be null if the price range cannot be calculated
-  const msolRange = getPriceRangeFromPeriod(msolPrices, PERIOD.DAYS_14)
-  const jitoRange = getPriceRangeFromPeriod(jitoPrices, PERIOD.DAYS_14)
-  const bsolRange = getPriceRangeFromPeriod(bsolPrices, PERIOD.DAYS_14)
-  const lidoRange = getPriceRangeFromPeriod(lidoPrices, PERIOD.DAYS_14)
+  const msolRange = getPriceRangeFromPeriod(msolPrices, PERIOD.DAYS_7)
+  const jitoRange = getPriceRangeFromPeriod(jitoPrices, PERIOD.DAYS_7)
+  const bsolRange = getPriceRangeFromPeriod(bsolPrices, PERIOD.DAYS_7)
+  const lidoRange = getPriceRangeFromPeriod(lidoPrices, PERIOD.DAYS_7)
+  console.log('msol prices', msolPrices)
 
-  const aprData: Record<string, number> = {}
+  const rateData: Record<string, number> = {}
 
   if (msolRange) {
-    console.log('APR: ', calcYield(msolRange)?.apr) // 0.06493501845986677 => 6.49 %
     console.log('APY: ', calcYield(msolRange)?.apy) // 0.06707557862842384 => 6.71 %
-    aprData.msol = calcYield(msolRange)?.apr
+    rateData.msol = calcYield(msolRange)?.apy
   }
   if (jitoRange) {
-    aprData.jitosol = calcYield(jitoRange)?.apr
+    rateData.jitosol = calcYield(jitoRange)?.apy
   }
   if (bsolRange) {
-    aprData.bsol = calcYield(bsolRange)?.apr
+    rateData.bsol = calcYield(bsolRange)?.apy
   }
   if (lidoRange) {
-    aprData.stsol = calcYield(lidoRange)?.apr
+    rateData.stsol = calcYield(lidoRange)?.apy
   }
-  return aprData
+  return rateData
 }
 
-fetchApr()
+fetchRates()
 
-export default function useStakeApr() {
-  const response = useQuery(['apr'], () => fetchApr(), {
+export default function useStakeRates() {
+  const response = useQuery(['stake-rates'], () => fetchRates(), {
     cacheTime: 1000 * 60 * 5,
     staleTime: 1000 * 60,
     retry: 3,

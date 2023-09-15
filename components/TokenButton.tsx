@@ -1,4 +1,4 @@
-import useStakeApr from 'hooks/useStakeAprs'
+import useStakeRates from 'hooks/useStakeRates'
 import Image from 'next/image'
 import { formatTokenSymbol } from 'utils/tokens'
 import SheenLoader from './shared/SheenLoader'
@@ -13,12 +13,12 @@ const TokenButton = ({
   handleTokenSelect: (v: string) => void
 }) => {
   const {
-    data: stakeAprs,
-    isLoading: loadingStakeAprs,
-    isFetching: fetchingStakeAprs,
-  } = useStakeApr()
+    data: stakeRates,
+    isLoading: loadingStakeRates,
+    isFetching: fetchingStakeRates,
+  } = useStakeRates()
 
-  const loadingAprs = loadingStakeAprs || fetchingStakeAprs
+  const loadingRates = loadingStakeRates || fetchingStakeRates
 
   return (
     <button
@@ -38,12 +38,12 @@ const TokenButton = ({
           {formatTokenSymbol(tokenName)}
         </span>
         <span>
-          {loadingAprs ? (
+          {loadingRates ? (
             <SheenLoader className="mt-0.5">
               <div className="h-5 w-10 bg-th-bkg-3" />
             </SheenLoader>
-          ) : stakeAprs?.[tokenName.toLowerCase()] ? (
-            `${(stakeAprs?.[tokenName.toLowerCase()] * 100).toFixed(2)}%`
+          ) : stakeRates?.[tokenName.toLowerCase()] ? (
+            `${(stakeRates?.[tokenName.toLowerCase()] * 100).toFixed(2)}%`
           ) : null}
         </span>
       </div>

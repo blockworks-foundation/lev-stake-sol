@@ -132,7 +132,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
     if (!solPrice || !stakePrice || !Number(inputAmount)) return 0
     const priceDifference = (stakePrice - solPrice) / solPrice
     const borrowAmount =
-      (1 + priceDifference) * Number(inputAmount) * (leverage - 1)
+      (1 + priceDifference) * Number(inputAmount) * Math.min(leverage - 1, 1)
 
     return borrowAmount
   }, [leverage, solBank, stakeBank, inputAmount])
@@ -339,7 +339,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                 </div>
                 <div className="space-y-1.5 border-t border-th-bkg-3 px-2 pt-4">
                   <div className="flex justify-between">
-                    <p>{selectedToken} Leveraged APR</p>
+                    <p>{selectedToken} Leveraged APY</p>
                     <span className="text-th-fgd-1">
                       <FormatNumericValue
                         value={7.28 * leverage}
@@ -362,7 +362,9 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                     <p>SOL Borrow Rate</p>
                     <span className="text-th-fgd-1">
                       <FormatNumericValue
-                        value={solBank.getDepositRateUi()}
+                        value={
+                          solBank.getDepositRateUi() * Math.min(leverage - 1, 1)
+                        }
                         decimals={2}
                       />
                       %

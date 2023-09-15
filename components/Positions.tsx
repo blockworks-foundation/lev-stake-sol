@@ -107,7 +107,7 @@ const Positions = ({
                   </span>
                 </div>
                 <div>
-                  <p className="mb-1">Est. APR</p>
+                  <p className="mb-1">Est. APY</p>
                   <span className="text-xl font-bold">14.89%</span>
                 </div>
                 <div>
