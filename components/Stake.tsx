@@ -1,37 +1,26 @@
-import { STAKEABLE_TOKENS } from 'pages'
 import TokenButton from './TokenButton'
-import { useCallback, useEffect, useState } from 'react'
-import mangoStore from '@store/mangoStore'
-import { ACCOUNT_PREFIX } from 'utils/transactions'
+import { useCallback, useState } from 'react'
 import TabUnderline from './shared/TabUnderline'
 import StakeForm from '@components/StakeForm'
 import UnstakeForm from '@components/UnstakeForm'
 import AccountStats from './AccountStats'
+import mangoStore from '@store/mangoStore'
+import { STAKEABLE_TOKENS } from 'utils/constants'
 
 const set = mangoStore.getState().set
 
 const Stake = () => {
   const [activeFormTab, setActiveFormTab] = useState('Add')
-  const [selectedToken, setSelectedToken] = useState(STAKEABLE_TOKENS[0])
-
-  useEffect(() => {
-    const mangoAccounts = mangoStore.getState().mangoAccounts
-    const selectedMangoAccount = mangoAccounts.find(
-      (ma) => ma.name === `${ACCOUNT_PREFIX}${selectedToken}`,
-    )
-    console.log('selectedMangoAccount', selectedMangoAccount)
-
-    set((s) => {
-      s.mangoAccount.current = selectedMangoAccount
-    })
-  }, [selectedToken])
+  const selectedToken = mangoStore((s) => s.selectedToken)
 
   const onClose = useCallback(() => {
     console.log('StakeForm onSuccess')
   }, [])
 
   const handleTokenSelect = useCallback((token: string) => {
-    setSelectedToken(token)
+    set((state) => {
+      state.selectedToken = token
+    })
   }, [])
 
   return (

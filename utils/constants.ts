@@ -1,5 +1,9 @@
 import { PublicKey } from '@metaplex-foundation/js'
 
+// lev stake
+export const STAKEABLE_TOKENS = ['mSOL', 'JitoSOL', 'stSOL', 'bSOL', 'LDO']
+// end
+
 export const LAST_ACCOUNT_KEY = 'mangoAccount-0.4'
 
 export const CLIENT_TX_TIMEOUT = 90000

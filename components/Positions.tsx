@@ -1,7 +1,7 @@
 import useMangoGroup from 'hooks/useMangoGroup'
 import { useMemo } from 'react'
 import useMangoAccount from 'hooks/useMangoAccount'
-import { STAKEABLE_TOKENS } from 'pages'
+import { STAKEABLE_TOKENS } from 'utils/constants'
 
 const Positions = () => {
   const { mangoAccount } = useMangoAccount()

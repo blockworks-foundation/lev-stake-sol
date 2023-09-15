@@ -1,11 +1,13 @@
 import Positions from '@components/Positions'
 import Stake from '@components/Stake'
 import TransactionHistory from '@components/TransactionHistory'
+import mangoStore from '@store/mangoStore'
 import type { NextPage } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { ACCOUNT_PREFIX } from 'utils/transactions'
 
-export const STAKEABLE_TOKENS = ['mSOL', 'JitoSOL', 'stSOL', 'bSOL', 'LDO']
+const set = mangoStore.getState().set
 
 export async function getStaticProps({ locale }: { locale: string }) {
   return {
@@ -17,6 +19,19 @@ export async function getStaticProps({ locale }: { locale: string }) {
 
 const Index: NextPage = () => {
   const [activeTab, setActiveTab] = useState('Stake')
+  const selectedToken = mangoStore((s) => s.selectedToken)
+
+  useEffect(() => {
+    const mangoAccounts = mangoStore.getState().mangoAccounts
+    const selectedMangoAccount = mangoAccounts.find(
+      (ma) => ma.name === `${ACCOUNT_PREFIX}${selectedToken}`,
+    )
+    console.log('selectedMangoAccount', selectedMangoAccount)
+
+    set((s) => {
+      s.mangoAccount.current = selectedMangoAccount
+    })
+  }, [selectedToken])
 
   return (
     <div className="mx-auto max-w-4xl flex-col pb-20">

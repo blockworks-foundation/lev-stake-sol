@@ -44,6 +44,7 @@ import {
   OUTPUT_TOKEN_DEFAULT,
   PAGINATION_PAGE_LENGTH,
   RPC_PROVIDER_KEY,
+  STAKEABLE_TOKENS,
   SWAP_MARGIN_KEY,
 } from '../utils/constants'
 import {
@@ -140,6 +141,9 @@ export const DEFAULT_TRADE_FORM: TradeForm = {
 }
 
 export type MangoStore = {
+  // leverage stake
+  selectedToken: string
+  //end
   activityFeed: {
     feed: Array<ActivityFeed>
     loading: boolean
@@ -307,6 +311,9 @@ const mangoStore = create<MangoStore>()(
     const client = initMangoClient(provider)
 
     return {
+      // leverage stake
+      selectedToken: STAKEABLE_TOKENS[0],
+      //end
       activityFeed: {
         feed: [],
         loading: true,
