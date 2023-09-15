@@ -37,7 +37,7 @@ const Stake = () => {
       </div>
       <div className="grid grid-cols-12">
         <div
-          className={`col-span-7 rounded-bl-2xl border border-th-fgd-1 bg-th-bkg-1 text-th-fgd-1`}
+          className={`order-2 col-span-12 rounded-b-2xl border border-th-fgd-1 bg-th-bkg-1 text-th-fgd-1 md:order-2 md:col-span-7 md:rounded-br-none`}
         >
           <div className={`p-8 pt-6`}>
             <div className="pb-2">
@@ -56,7 +56,7 @@ const Stake = () => {
           </div>
         </div>
         <div
-          className={`col-span-5 rounded-br-2xl border-y border-r border-th-fgd-1 bg-th-bkg-2 p-8 pt-6`}
+          className={`order-1 col-span-12 border-x border-t border-th-fgd-1 bg-th-bkg-2 p-8 pt-6 md:order-2 md:col-span-5 md:rounded-br-2xl md:border-b md:border-l-0`}
         >
           <AccountStats token={selectedToken} />
         </div>

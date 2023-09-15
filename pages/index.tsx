@@ -34,7 +34,7 @@ const Index: NextPage = () => {
   }, [selectedToken])
 
   return (
-    <div className="mx-auto max-w-5xl flex-col pb-20">
+    <div className="mx-auto max-w-6xl px-6 pb-12 md:pb-20 lg:px-12">
       <div className="mb-6 grid grid-cols-3 rounded-xl border border-th-fgd-1">
         <button
           className={`col-span-1 mx-auto w-full rounded-l-xl border-r border-th-fgd-1 py-4 font-bold ${

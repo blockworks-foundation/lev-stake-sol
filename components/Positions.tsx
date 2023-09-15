@@ -70,68 +70,70 @@ const Positions = ({
           Show Inactive
         </Switch>
       </div>
-      {positions.map((position, i) => {
-        const { balance, bank } = position
-        return bank ? (
-          <div
-            className="rounded-2xl border border-th-fgd-1 p-6"
-            key={i + balance}
-          >
-            <div className="mb-6 flex items-center justify-between border-b border-th-bkg-4 pb-6">
-              <div className="flex items-center space-x-3">
-                <TokenLogo bank={bank} size={40} />
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        {positions.map((position, i) => {
+          const { balance, bank } = position
+          return bank ? (
+            <div
+              className="rounded-2xl border border-th-fgd-1 p-6"
+              key={i + balance}
+            >
+              <div className="mb-6 flex flex-col border-b border-th-bkg-4 pb-6 md:flex-row md:items-center md:justify-between">
+                <div className="mb-4 flex items-center space-x-3 md:mb-0">
+                  <TokenLogo bank={bank} size={40} />
+                  <div>
+                    <h3>{formatTokenSymbol(bank.name)}</h3>
+                    <span
+                      className={`text-sm ${
+                        balance ? 'text-th-fgd-1' : 'text-th-fgd-4'
+                      }`}
+                    >
+                      {balance ? 'Opened 2 weeks ago' : 'No Position'}
+                    </span>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => handleAddOrManagePosition(bank.name)}
+                  secondary
+                >
+                  {balance ? 'Manage' : 'Add Position'}
+                </Button>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <h3>{formatTokenSymbol(bank.name)}</h3>
-                  <span
-                    className={`text-sm ${
-                      balance ? 'text-th-fgd-1' : 'text-th-fgd-4'
-                    }`}
-                  >
-                    {balance ? 'Opened 2 weeks ago' : 'No Position'}
+                  <p className="mb-1">Position Size</p>
+                  <span className="text-xl font-bold">
+                    {balance} {formatTokenSymbol(bank.name)}
+                  </span>
+                </div>
+                <div>
+                  <p className="mb-1">Est. APR</p>
+                  <span className="text-xl font-bold">14.89%</span>
+                </div>
+                <div>
+                  <p className="mb-1">Leverage</p>
+                  <span className="text-xl font-bold">
+                    {balance ? '3x' : '0x'}
+                  </span>
+                </div>
+                <div>
+                  <p className="mb-1">Earned</p>
+                  <span className="text-xl font-bold">
+                    {balance ? '3.321 SOL' : '0 SOL'}
+                  </span>
+                </div>
+                <div>
+                  <p className="mb-1">Liquidation Price</p>
+                  <span className="whitespace-nowrap text-xl font-bold">
+                    {balance ? '1.234' : '0'}{' '}
+                    {`${formatTokenSymbol(bank.name)}/SOL`}
                   </span>
                 </div>
               </div>
-              <Button
-                onClick={() => handleAddOrManagePosition(bank.name)}
-                secondary
-              >
-                {balance ? 'Manage' : 'Add Position'}
-              </Button>
             </div>
-            <div className="grid grid-cols-5 gap-4">
-              <div>
-                <p className="mb-1">Position Size</p>
-                <span className="text-xl font-bold">
-                  {balance} {formatTokenSymbol(bank.name)}
-                </span>
-              </div>
-              <div>
-                <p className="mb-1">Est. APR</p>
-                <span className="text-xl font-bold">14.89%</span>
-              </div>
-              <div>
-                <p className="mb-1">Leverage</p>
-                <span className="text-xl font-bold">
-                  {balance ? '3x' : '0x'}
-                </span>
-              </div>
-              <div>
-                <p className="mb-1">Earned</p>
-                <span className="text-xl font-bold">
-                  {balance ? '3.321 SOL' : '0 SOL'}
-                </span>
-              </div>
-              <div>
-                <p className="mb-1">Liquidation Price</p>
-                <span className="text-xl font-bold">
-                  {balance ? '1.234' : '0'}{' '}
-                  {`${formatTokenSymbol(bank.name)}/SOL`}
-                </span>
-              </div>
-            </div>
-          </div>
-        ) : null
-      })}
+          ) : null
+        })}
+      </div>
     </div>
   ) : null
 }

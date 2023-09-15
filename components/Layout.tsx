@@ -1,7 +1,6 @@
 import { Fragment, ReactNode, useEffect, useMemo, useState } from 'react'
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import mangoStore from '@store/mangoStore'
-import BottomBar from './mobile/BottomBar'
 import TopBar from './TopBar'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { ACCEPT_TERMS_KEY, SECONDS } from '../utils/constants'
@@ -26,16 +25,8 @@ const Layout = ({ children }: { children: ReactNode }) => {
       className={`${themeData.fonts.body.variable} ${themeData.fonts.display.variable} ${themeData.fonts.mono.variable} font-sans`}
     >
       <div className={`min-h-screen grow text-th-fgd-2 transition-all`}>
-        <div className="fixed bottom-0 left-0 z-20 w-full md:hidden">
-          <BottomBar />
-        </div>
-        {/* note: overflow-x-hidden below prevents position sticky from working in activity feed  */}
-        <div
-          className={`w-full transition-all duration-${sideBarAnimationDuration} ease-in-out`}
-        >
-          <TopBar />
-          {children}
-        </div>
+        <TopBar />
+        {children}
         <DeployRefreshManager />
         <TermsOfUse />
       </div>
