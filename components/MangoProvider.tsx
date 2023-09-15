@@ -1,7 +1,6 @@
 import { useCallback, useEffect } from 'react'
 import mangoStore from '@store/mangoStore'
-import { Keypair, PublicKey } from '@solana/web3.js'
-import { useRouter } from 'next/router'
+import { Keypair } from '@solana/web3.js'
 import useMangoAccount from 'hooks/useMangoAccount'
 import useInterval from './shared/useInterval'
 import { LAST_WALLET_NAME, PRIORITY_FEE_KEY, SECONDS } from 'utils/constants'
@@ -9,14 +8,11 @@ import useNetworkSpeed from 'hooks/useNetworkSpeed'
 import { useWallet } from '@solana/wallet-adapter-react'
 import useLocalStorageState from 'hooks/useLocalStorageState'
 import { DEFAULT_PRIORITY_FEE_LEVEL } from './settings/RpcSettings'
-import { useHiddenMangoAccounts } from 'hooks/useHiddenMangoAccounts'
 
 const set = mangoStore.getState().set
 const actions = mangoStore.getState().actions
 
 const HydrateStore = () => {
-  const router = useRouter()
-  const { name: marketName } = router.query
   const { mangoAccountPk, mangoAccountAddress } = useMangoAccount()
   const connection = mangoStore((s) => s.connection)
   const slowNetwork = useNetworkSpeed()
@@ -46,13 +42,8 @@ const HydrateStore = () => {
   }, [wallet, setLastWalletName])
 
   useEffect(() => {
-    if (marketName && typeof marketName === 'string') {
-      set((s) => {
-        s.selectedMarket.name = marketName
-      })
-    }
     actions.fetchGroup()
-  }, [marketName])
+  }, [])
 
   useInterval(
     () => {
@@ -156,51 +147,10 @@ const HydrateStore = () => {
   return null
 }
 
-const ReadOnlyMangoAccount = () => {
-  const router = useRouter()
-  const groupLoaded = mangoStore((s) => s.groupLoaded)
-  const ma = router.query?.address
-  const { hiddenAccounts } = useHiddenMangoAccounts()
-
-  useEffect(() => {
-    if (!groupLoaded) return
-    const set = mangoStore.getState().set
-    const group = mangoStore.getState().group
-
-    async function loadUnownedMangoAccount() {
-      try {
-        if (!ma || !group || hiddenAccounts?.includes(ma as string)) return
-
-        const client = mangoStore.getState().client
-        const pk = new PublicKey(ma)
-        const readOnlyMangoAccount = await client.getMangoAccount(pk)
-        // await readOnlyMangoAccount.reloadSerum3OpenOrders(client)
-        set((state) => {
-          state.mangoAccount.current = readOnlyMangoAccount
-          state.mangoAccount.initialLoad = false
-        })
-        // await actions.fetchOpenOrders()
-      } catch (error) {
-        console.error('error', error)
-      }
-    }
-
-    if (ma) {
-      set((state) => {
-        state.mangoAccount.initialLoad = true
-      })
-      loadUnownedMangoAccount()
-    }
-  }, [ma, groupLoaded, router])
-
-  return null
-}
-
 const MangoProvider = () => {
   return (
     <>
       <HydrateStore />
-      <ReadOnlyMangoAccount />
     </>
   )
 }

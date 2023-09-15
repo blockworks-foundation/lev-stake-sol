@@ -24,8 +24,6 @@ import {
   PerpPosition,
   BookSide,
   ParsedFillEvent,
-  getLargestPerpPositions,
-  getClosestToLiquidationPerpPositions,
 } from '@blockworks-foundation/mango-v4'
 
 import EmptyWallet from '../utils/wallet'
@@ -264,9 +262,6 @@ export type MangoStore = {
     reloadMangoAccount: (slot?: number) => Promise<void>
     fetchMangoAccounts: (ownerPk: PublicKey) => Promise<void>
     fetchNfts: (connection: Connection, walletPk: PublicKey) => void
-    fetchOpenOrders: (refetchMangoAccount?: boolean) => Promise<void>
-    fetchPerpStats: () => void
-    fetchPositionsStats: () => void
     fetchProfileDetails: (walletPk: string) => void
     fetchSwapHistory: (
       mangoAccountPk: string,
@@ -274,11 +269,8 @@ export type MangoStore = {
       offset?: number,
       limit?: number,
     ) => Promise<void>
-    fetchTokenStats: () => void
-    fetchTourSettings: (walletPk: string) => void
     fetchWalletTokens: (walletPk: PublicKey) => Promise<void>
     connectMangoClientWithWallet: (wallet: WalletAdapter) => Promise<void>
-    loadMarketFills: () => Promise<void>
     updateConnection: (url: string) => void
     estimatePriorityFee: (feeMultiplier: number) => Promise<void>
   }
@@ -632,7 +624,7 @@ const mangoStore = create<MangoStore>()(
         },
         fetchMangoAccounts: async (ownerPk: PublicKey) => {
           const set = get().set
-          const actions = get().actions
+          // const actions = get().actions
           try {
             const group = get().group
             const client = get().client
@@ -711,159 +703,6 @@ const mangoStore = create<MangoStore>()(
             })
           }
         },
-        fetchOpenOrders: async (refetchMangoAccount = false) => {
-          const set = get().set
-          const client = get().client
-          const group = get().group
-          if (refetchMangoAccount) {
-            await get().actions.reloadMangoAccount()
-          }
-          const mangoAccount = get().mangoAccount.current
-          if (!mangoAccount || !group) return
-
-          try {
-            const openOrders: Record<string, Order[] | PerpOrder[]> = {}
-            let serumOpenOrderAccounts: OpenOrders[] = []
-
-            const activeSerumMarketIndices = [
-              ...new Set(mangoAccount.serum3Active().map((s) => s.marketIndex)),
-            ]
-            if (activeSerumMarketIndices.length) {
-              await Promise.all(
-                activeSerumMarketIndices.map(async (serum3Orders) => {
-                  const market =
-                    group.getSerum3MarketByMarketIndex(serum3Orders)
-                  if (market) {
-                    const orders =
-                      await mangoAccount.loadSerum3OpenOrdersForMarket(
-                        client,
-                        group,
-                        market.serumMarketExternal,
-                      )
-                    openOrders[market.serumMarketExternal.toString()] = orders
-                  }
-                }),
-              )
-            }
-
-            if (mangoAccount.serum3Active().length) {
-              serumOpenOrderAccounts = Array.from(
-                mangoAccount.serum3OosMapByMarketIndex.values(),
-              )
-              await mangoAccount.loadSerum3OpenOrdersAccounts(client)
-            }
-
-            const activePerpMarketIndices = [
-              ...new Set(
-                mangoAccount.perpOrdersActive().map((p) => p.orderMarket),
-              ),
-            ]
-            await Promise.all(
-              activePerpMarketIndices.map(async (perpMktIndex) => {
-                const market = group.getPerpMarketByMarketIndex(perpMktIndex)
-                const orders = await mangoAccount.loadPerpOpenOrdersForMarket(
-                  client,
-                  group,
-                  perpMktIndex,
-                  market._bids ? false : true,
-                )
-                openOrders[market.publicKey.toString()] = orders
-              }),
-            )
-
-            set((s) => {
-              s.mangoAccount.openOrders = openOrders
-              s.mangoAccount.openOrderAccounts = serumOpenOrderAccounts
-            })
-          } catch (e) {
-            console.error('Failed loading open orders ', e)
-          }
-        },
-        fetchPerpStats: async () => {
-          const set = get().set
-          const group = get().group
-          if (!group) return []
-          set((state) => {
-            state.perpStats.loading = true
-          })
-          try {
-            const response = await fetch(
-              `${MANGO_DATA_API_URL}/perp-historical-stats?mango-group=${group?.publicKey.toString()}`,
-            )
-            const data = await response.json()
-
-            set((state) => {
-              state.perpStats.data = data
-              state.perpStats.loading = false
-            })
-          } catch {
-            set((state) => {
-              state.perpStats.loading = false
-            })
-            notify({
-              title: 'Failed to fetch token stats data',
-              type: 'error',
-            })
-          }
-        },
-        fetchPositionsStats: async () => {
-          const set = get().set
-          const group = get().group
-          const client = get().client
-          if (!group) return
-          try {
-            const allMangoAccounts = await client.getAllMangoAccounts(
-              group,
-              true,
-            )
-            if (allMangoAccounts && allMangoAccounts.length) {
-              const [largestPositions, closestToLiq]: [
-                PositionStat[],
-                PositionStat[],
-              ] = await Promise.all([
-                getLargestPerpPositions(client, group, allMangoAccounts),
-                getClosestToLiquidationPerpPositions(
-                  client,
-                  group,
-                  allMangoAccounts,
-                ),
-              ])
-              set((state) => {
-                if (largestPositions && largestPositions.length) {
-                  const positionsToShow = largestPositions.slice(0, 5)
-                  for (const position of positionsToShow) {
-                    const ma = allMangoAccounts.find(
-                      (acc) => acc.publicKey === position.mangoAccount,
-                    )
-                    position.account = ma
-                  }
-                  state.perpStats.positions.largest = positionsToShow
-                }
-                if (closestToLiq && closestToLiq.length) {
-                  const positionsToShow = closestToLiq.slice(0, 5)
-                  for (const position of positionsToShow) {
-                    const ma = allMangoAccounts.find(
-                      (acc) => acc.publicKey === position.mangoAccount,
-                    )
-                    position.account = ma
-                  }
-                  state.perpStats.positions.closestToLiq = positionsToShow
-                }
-              })
-            }
-          } catch (e) {
-            console.log('failed to fetch perp positions stats', e)
-          } finally {
-            const notLoaded =
-              mangoStore.getState().perpStats.positions.initialLoad
-            set((state) => {
-              state.perpStats.positions.loading = false
-              if (notLoaded) {
-                state.perpStats.positions.initialLoad = false
-              }
-            })
-          }
-        },
         fetchSwapHistory: async (
           mangoAccountPk: string,
           timeout = 0,
@@ -910,72 +749,6 @@ const mangoStore = create<MangoStore>()(
               })
             }
           }, timeout)
-        },
-        fetchTokenStats: async () => {
-          const set = get().set
-          const group = get().group
-          if (!group) return
-          set((state) => {
-            state.tokenStats.loading = true
-          })
-          try {
-            const response = await fetch(
-              `${MANGO_DATA_API_URL}/token-historical-stats?mango-group=${group?.publicKey.toString()}`,
-            )
-            const data = await response.json()
-            let mangoStats: MangoTokenStatsItem[] = []
-            if (data && data.length) {
-              mangoStats = data.reduce(
-                (a: MangoTokenStatsItem[], c: TokenStatsItem) => {
-                  const banks = Array.from(group.banksMapByMint)
-                    .map(([_mintAddress, banks]) => banks)
-                    .map((b) => b[0])
-                  const bank: Bank | undefined = banks.find(
-                    (b) => b.tokenIndex === c.token_index,
-                  )
-                  const hasDate = a.find(
-                    (d: MangoTokenStatsItem) => d.date === c.date_hour,
-                  )
-                  if (!hasDate) {
-                    a.push({
-                      date: c.date_hour,
-                      depositValue: Math.floor(c.total_deposits * c.price),
-                      borrowValue: Math.floor(c.total_borrows * c.price),
-                      feesCollected: c.collected_fees * bank!.uiPrice,
-                    })
-                  } else {
-                    hasDate.depositValue =
-                      hasDate.depositValue +
-                      Math.floor(c.total_deposits * c.price)
-                    hasDate.borrowValue =
-                      hasDate.borrowValue +
-                      Math.floor(c.total_borrows * c.price)
-                    hasDate.feesCollected =
-                      hasDate.feesCollected + c.collected_fees * bank!.uiPrice
-                  }
-                  return a.sort(
-                    (a, b) =>
-                      new Date(a.date).getTime() - new Date(b.date).getTime(),
-                  )
-                },
-                [],
-              )
-            }
-            set((state) => {
-              state.tokenStats.data = data
-              state.tokenStats.mangoStats = mangoStats
-              state.tokenStats.initialLoad = true
-              state.tokenStats.loading = false
-            })
-          } catch {
-            set((state) => {
-              state.tokenStats.loading = false
-            })
-            notify({
-              title: 'Failed to fetch token stats data',
-              type: 'error',
-            })
-          }
         },
         fetchWalletTokens: async (walletPk: PublicKey) => {
           const set = get().set
@@ -1049,66 +822,6 @@ const mangoStore = create<MangoStore>()(
             set((state) => {
               state.profile.loadDetails = false
             })
-          }
-        },
-        async fetchTourSettings(walletPk: string) {
-          const set = get().set
-          set((state) => {
-            state.settings.loading = true
-          })
-          try {
-            const response = await fetch(
-              `${MANGO_DATA_API_URL}/user-data/settings-unsigned?wallet-pk=${walletPk}`,
-            )
-            const data = await response.json()
-            set((state) => {
-              state.settings.tours = data
-              state.settings.loading = false
-            })
-          } catch (e) {
-            console.error(e)
-            set((state) => {
-              state.settings.loading = false
-            })
-          }
-        },
-        async loadMarketFills() {
-          const set = get().set
-          const selectedMarket = get().selectedMarket.current
-          const group = get().group
-          const client = get().client
-          const connection = get().connection
-          try {
-            let serumMarket
-            let perpMarket
-            if (!group || !selectedMarket) return
-
-            if (selectedMarket instanceof Serum3Market) {
-              serumMarket = group.getSerum3ExternalMarket(
-                selectedMarket.serumMarketExternal,
-              )
-            } else {
-              perpMarket = selectedMarket
-            }
-
-            let loadedFills: (ParsedFillEvent | SerumEvent)[] = []
-            if (serumMarket) {
-              const serumFills = (await serumMarket.loadFills(
-                connection,
-                10000,
-              )) as SerumEvent[]
-              loadedFills = serumFills.filter((f) => !f?.eventFlags?.maker)
-            } else if (perpMarket) {
-              const perpFills = (await perpMarket.loadFills(
-                client,
-              )) as unknown as ParsedFillEvent[]
-              loadedFills = perpFills.reverse()
-            }
-            set((state) => {
-              state.selectedMarket.fills = loadedFills
-            })
-          } catch (err) {
-            console.error('Error fetching fills:', err)
           }
         },
         updateConnection(endpointUrl) {
