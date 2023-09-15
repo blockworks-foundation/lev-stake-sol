@@ -167,7 +167,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
         solAmountToBorrow,
         stakeBank.mint,
         parseFloat(inputAmount),
-        newAccountNum,
+        newAccountNum + 300,
       )
       notify({
         title: 'Transaction confirmed',
