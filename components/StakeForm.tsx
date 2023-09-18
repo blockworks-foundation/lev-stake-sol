@@ -339,7 +339,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                 </div>
                 <div className="space-y-1.5 border-t border-th-bkg-3 px-2 pt-4">
                   <div className="flex justify-between">
-                    <p>{selectedToken} Leveraged APY</p>
+                    <p>{formatTokenSymbol(selectedToken)} Leveraged APY</p>
                     <span className="text-th-fgd-1">
                       <FormatNumericValue
                         value={7.28 * leverage}
@@ -349,7 +349,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <p>{selectedToken} Deposit Rate</p>
+                    <p>{formatTokenSymbol(selectedToken)} Deposit Rate</p>
                     <span className="text-th-fgd-1">
                       <FormatNumericValue
                         value={stakeBank.getDepositRateUi()}
@@ -392,7 +392,8 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                 </div>
               ) : (
                 <div className="flex items-center">
-                  Leverage Stake {inputAmount} {selectedToken}
+                  Leverage Stake {inputAmount}{' '}
+                  {formatTokenSymbol(selectedToken)}
                 </div>
               )}
             </Button>

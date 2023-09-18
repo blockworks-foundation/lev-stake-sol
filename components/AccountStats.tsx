@@ -45,13 +45,12 @@ const AccountStats = ({ token }: { token: string }) => {
           <p className="mb-1">Max Est. APY</p>
           <span className="text-2xl font-bold">
             {loadingRates ? (
-              <SheenLoader className="mt-0.5">
-                <div className="h-5 w-10 bg-th-bkg-3" />
+              <SheenLoader className="mt-1">
+                <div className="h-8 w-20 bg-th-bkg-3" />
               </SheenLoader>
             ) : stakeRates?.[token.toLowerCase()] ? (
               `${(stakeRates?.[token.toLowerCase()] * 100).toFixed(2)}%`
             ) : null}
-            % SOL
           </span>
         </div>
         <div>
@@ -68,7 +67,7 @@ const AccountStats = ({ token }: { token: string }) => {
           <p className="mb-1">Total Staked</p>
           <span className="text-2xl font-bold">
             <FormatNumericValue value={tokenDeposits || 0} decimals={1} />{' '}
-            {token}
+            {formatTokenSymbol(token)}
           </span>
         </div>
       </div>

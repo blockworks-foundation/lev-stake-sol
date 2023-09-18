@@ -305,12 +305,12 @@ function UnstakeForm({ onSuccess, token: selectedToken }: UnstakeFormProps) {
                 <div className="flex items-center">
                   <ExclamationCircleIcon className="mr-2 h-5 w-5 flex-shrink-0" />
                   {t('swap:insufficient-balance', {
-                    symbol: selectedToken,
+                    symbol: formatTokenSymbol(selectedToken),
                   })}
                 </div>
               ) : (
                 <div className="flex items-center">
-                  Unstake {inputAmount} {selectedToken}
+                  Unstake {inputAmount} {formatTokenSymbol(selectedToken)}
                 </div>
               )}
             </Button>

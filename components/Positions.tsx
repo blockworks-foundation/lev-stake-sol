@@ -7,6 +7,8 @@ import { formatTokenSymbol } from 'utils/tokens'
 import mangoStore from '@store/mangoStore'
 import Switch from './forms/Switch'
 import useLocalStorageState from 'hooks/useLocalStorageState'
+import useStakeRates from 'hooks/useStakeRates'
+import SheenLoader from './shared/SheenLoader'
 
 const set = mangoStore.getState().set
 
@@ -16,6 +18,7 @@ const Positions = ({
   setActiveTab: (tab: string) => void
 }) => {
   const { group } = useMangoGroup()
+  const { data: stakeRates, isLoading: loadingRates } = useStakeRates()
   const [showInactivePositions, setShowInactivePositions] =
     useLocalStorageState(SHOW_INACTIVE_POSITIONS_KEY, true)
 
@@ -108,7 +111,17 @@ const Positions = ({
                 </div>
                 <div>
                   <p className="mb-1">Est. APY</p>
-                  <span className="text-xl font-bold">14.89%</span>
+                  <span className="text-xl font-bold">
+                    {loadingRates ? (
+                      <SheenLoader className="mt-1">
+                        <div className="h-6 w-16 bg-th-bkg-2" />
+                      </SheenLoader>
+                    ) : stakeRates?.[bank.name.toLowerCase()] ? (
+                      `${(stakeRates?.[bank.name.toLowerCase()] * 100).toFixed(
+                        2,
+                      )}%`
+                    ) : null}
+                  </span>
                 </div>
                 <div>
                   <p className="mb-1">Leverage</p>
