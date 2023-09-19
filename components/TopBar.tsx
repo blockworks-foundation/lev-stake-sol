@@ -10,6 +10,7 @@ import { useRouter } from 'next/router'
 // import SolanaTps from './SolanaTps'
 import useOnlineStatus from 'hooks/useOnlineStatus'
 import mangoStore from '@store/mangoStore'
+import ThemeToggle from './ThemeToggle'
 
 const TopBar = () => {
   const { connected } = useWallet()
@@ -27,7 +28,7 @@ const TopBar = () => {
 
   return (
     <div className="mb-8 flex h-16 items-center justify-between px-6 shadow">
-      <div className="flex w-full items-center justify-between md:space-x-4">
+      <div className="flex w-full items-center justify-between">
         <span className="mb-0 flex items-center">
           {query.token || query.market ? (
             <button
@@ -53,7 +54,8 @@ const TopBar = () => {
             </p>
           </div>
         ) : null}
-        <div className="flex items-center">
+        <div className="flex items-center space-x-4">
+          <ThemeToggle />
           {connected ? <ConnectedMenu /> : <ConnectWalletButton />}
         </div>
       </div>
