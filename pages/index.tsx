@@ -64,7 +64,7 @@ const Index: NextPage = () => {
           }`}
           onClick={() => setActiveTab('History')}
         >
-          Transaction History
+          History
         </button>
       </div>
       <TabContent activeTab={activeTab} setActiveTab={setActiveTab} />

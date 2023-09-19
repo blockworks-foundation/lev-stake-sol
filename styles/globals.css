@@ -425,7 +425,7 @@ th {
 /* Base */
 
 body {
-  @apply font-body text-base font-medium leading-tight tracking-wider;
+  @apply font-body text-base font-normal leading-tight tracking-wider;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

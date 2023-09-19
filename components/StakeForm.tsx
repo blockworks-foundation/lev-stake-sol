@@ -328,7 +328,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                   <div className="flex justify-between">
                     <p>SOL Borrowed</p>
                     {solBank ? (
-                      <span className="text-th-fgd-1">
+                      <span className="font-mono text-th-fgd-1">
                         <FormatNumericValue
                           value={solAmountToBorrow}
                           decimals={3}
@@ -340,7 +340,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                 <div className="space-y-1.5 border-t border-th-bkg-3 px-2 pt-4">
                   <div className="flex justify-between">
                     <p>{formatTokenSymbol(selectedToken)} Leveraged APY</p>
-                    <span className="text-th-fgd-1">
+                    <span className="font-mono text-th-fgd-1">
                       <FormatNumericValue
                         value={7.28 * leverage}
                         decimals={2}
@@ -350,7 +350,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                   </div>
                   <div className="flex justify-between">
                     <p>{formatTokenSymbol(selectedToken)} Deposit Rate</p>
-                    <span className="text-th-fgd-1">
+                    <span className="font-mono text-th-fgd-1">
                       <FormatNumericValue
                         value={stakeBank.getDepositRateUi()}
                         decimals={2}
@@ -360,7 +360,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                   </div>
                   <div className="flex justify-between">
                     <p>SOL Borrow Rate</p>
-                    <span className="text-th-fgd-1">
+                    <span className="font-mono text-th-fgd-1">
                       <FormatNumericValue
                         value={
                           solBank.getDepositRateUi() * Math.min(leverage - 1, 1)

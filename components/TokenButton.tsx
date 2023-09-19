@@ -37,7 +37,7 @@ const TokenButton = ({
         <span className="mt-2 text-lg font-bold text-th-fgd-1">
           {formatTokenSymbol(tokenName)}
         </span>
-        <span>
+        <span className="font-mono">
           {loadingRates ? (
             <SheenLoader className="mt-0.5">
               <div className="h-5 w-10 bg-th-bkg-3" />

@@ -1,5 +1,4 @@
 import localFont from 'next/font/local'
-import { Nunito, Short_Stack } from 'next/font/google'
 
 // this font should be used as the mono variant for all themes
 
@@ -34,29 +33,33 @@ export const ttCommonsExpanded = localFont({
   variable: '--font-display',
 })
 
-// bonk skin
-
-export const nunitoDisplay = Nunito({
-  weight: '900',
-  subsets: ['latin'],
-  variable: '--font-display',
-})
-
-export const nunitoBody = Nunito({
-  subsets: ['latin'],
+export const publicSans = localFont({
+  src: [
+    {
+      path: '../fonts/PublicSans-Regular.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../fonts/PublicSans-Medium.woff2',
+      weight: '500',
+      style: 'medium',
+    },
+    {
+      path: '../fonts/PublicSans-Bold.woff2',
+      weight: '700',
+      style: 'bold',
+    },
+  ],
   variable: '--font-body',
 })
 
-// pepe theme
-
-export const shortStackDisplay = Short_Stack({
-  weight: '400',
-  subsets: ['latin'],
+export const publicSansDisplay = localFont({
+  src: '../fonts/PublicSans-Bold.woff2',
   variable: '--font-display',
 })
 
-export const shortStackBody = Short_Stack({
-  weight: '400',
-  subsets: ['latin'],
-  variable: '--font-body',
+export const publicSansMono = localFont({
+  src: '../fonts/PublicSans-Regular.woff2',
+  variable: '--font-mono',
 })

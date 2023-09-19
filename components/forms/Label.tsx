@@ -8,7 +8,7 @@ const Label = ({
   className?: string
 }) => (
   <p
-    className={`mb-2 text-left text-base font-bold text-th-fgd-2 ${className}`}
+    className={`mb-2 text-left text-base font-medium text-th-fgd-1 ${className}`}
   >
     {text}{' '}
     {optional ? (

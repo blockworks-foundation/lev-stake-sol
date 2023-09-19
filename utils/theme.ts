@@ -1,11 +1,10 @@
 import { ThemeData } from 'types'
 import {
-  nunitoBody,
-  nunitoDisplay,
-  shortStackBody,
-  shortStackDisplay,
-  ttCommons,
-  ttCommonsExpanded,
+  publicSans,
+  publicSansDisplay,
+  // publicSansMono,
+  // ttCommons,
+  // ttCommonsExpanded,
   ttCommonsMono,
 } from './fonts'
 
@@ -36,7 +35,11 @@ type NftThemeMeta = {
 export const nftThemeMeta: NftThemeMeta = {
   default: {
     buttonStyle: 'flat',
-    fonts: { body: ttCommons, display: ttCommonsExpanded, mono: ttCommonsMono },
+    fonts: {
+      body: publicSans,
+      display: publicSansDisplay,
+      mono: ttCommonsMono,
+    },
     logoPath: '/logos/logo-mark.svg',
     platformName: 'Mango',
     rainAnimationImagePath: '',
@@ -46,38 +49,6 @@ export const nftThemeMeta: NftThemeMeta = {
     topTilePath: '',
     tvChartTheme: 'Dark',
     tvImagePath: '',
-    useGradientBg: false,
-  },
-  Bonk: {
-    buttonStyle: 'raised',
-    fonts: { body: nunitoBody, display: nunitoDisplay, mono: ttCommonsMono },
-    logoPath: '/images/themes/bonk/bonk-logo.png',
-    platformName: 'Bongo',
-    rainAnimationImagePath: '/images/themes/bonk/bonk-animation-logo.png',
-    sideImagePath: '/images/themes/bonk/sidenav-image.png',
-    sideTilePath: '/images/themes/bonk/bonk-tile.png',
-    sideTilePathExpanded: '/images/themes/bonk/bonk-tile-expanded.png',
-    topTilePath: '/images/themes/bonk/bonk-tile.png',
-    tvChartTheme: 'Light',
-    tvImagePath: '/images/themes/bonk/tv-chart-image.png',
-    useGradientBg: true,
-  },
-  Pepe: {
-    buttonStyle: 'raised',
-    fonts: {
-      body: shortStackBody,
-      display: shortStackDisplay,
-      mono: ttCommonsMono,
-    },
-    logoPath: '/images/themes/pepe/pepe-logo.png',
-    platformName: 'Pepe',
-    rainAnimationImagePath: '/images/themes/pepe/pepe-logo.png',
-    sideImagePath: '/images/themes/pepe/sidenav-image.png',
-    sideTilePath: '/images/themes/pepe/pepe-vert-tile.png',
-    sideTilePathExpanded: '/images/themes/pepe/pepe-vert-tile-expanded.png',
-    topTilePath: '/images/themes/pepe/pepe-hori-tile.png',
-    tvChartTheme: 'Dark',
-    tvImagePath: '/images/themes/pepe/tv-chart-image.png',
     useGradientBg: false,
   },
 }
