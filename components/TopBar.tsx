@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   ArrowLeftIcon,
   ExclamationTriangleIcon,
@@ -11,8 +11,6 @@ import { useRouter } from 'next/router'
 import useOnlineStatus from 'hooks/useOnlineStatus'
 import mangoStore from '@store/mangoStore'
 
-const set = mangoStore.getState().set
-
 const TopBar = () => {
   const { connected } = useWallet()
   const themeData = mangoStore((s) => s.themeData)
@@ -23,21 +21,12 @@ const TopBar = () => {
   const router = useRouter()
   const { query } = router
 
-  const handleShowSetup = useCallback(() => {
-    set((s) => {
-      s.showUserSetup = true
-    })
-  }, [])
-
   useEffect(() => {
     setTimeout(() => setCopied(''), 2000)
   }, [copied])
 
   return (
-    <div
-      className={`flex h-16 items-center justify-between`}
-      style={{ backgroundImage: `url(${themeData.topTilePath})` }}
-    >
+    <div className="mb-8 flex h-16 items-center justify-between px-6 shadow">
       <div className="flex w-full items-center justify-between md:space-x-4">
         <span className="mb-0 flex items-center">
           {query.token || query.market ? (
@@ -48,7 +37,7 @@ const TopBar = () => {
               <ArrowLeftIcon className="h-5 w-5" />
             </button>
           ) : null}
-          <div className="flex h-[63px] w-16 items-center justify-center bg-th-bkg-1 md:hidden">
+          <div className="flex items-center justify-center bg-th-bkg-1 md:hidden">
             <img
               className="h-9 w-9 flex-shrink-0"
               src={themeData.logoPath}
@@ -65,13 +54,7 @@ const TopBar = () => {
           </div>
         ) : null}
         <div className="flex items-center">
-          {connected ? (
-            <div className="flex h-[63px] items-center rounded-full bg-th-bkg-1">
-              <ConnectedMenu />
-            </div>
-          ) : (
-            <ConnectWalletButton handleShowSetup={handleShowSetup} />
-          )}
+          {connected ? <ConnectedMenu /> : <ConnectWalletButton />}
         </div>
       </div>
     </div>

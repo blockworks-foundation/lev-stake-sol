@@ -8,8 +8,6 @@ import { notify } from '../../utils/notifications'
 import ProfileImage from '../profile/ProfileImage'
 import { abbreviateAddress } from '../../utils/formatting'
 import { useViewport } from 'hooks/useViewport'
-import { TV_USER_ID_KEY } from 'utils/constants'
-import useLocalStorageState from 'hooks/useLocalStorageState'
 import Loading from '@components/shared/Loading'
 
 const set = mangoStore.getState().set
@@ -19,9 +17,6 @@ const ConnectedMenu = () => {
   const { t } = useTranslation('common')
   const { publicKey, disconnect, wallet } = useWallet()
   const { isDesktop } = useViewport()
-  const [tvUserId, setTvUserId] = useLocalStorageState(TV_USER_ID_KEY, '')
-
-  // const profileDetails = mangoStore((s) => s.profile.details)
   const loadProfileDetails = mangoStore((s) => s.profile.loadDetails)
   const groupLoaded = mangoStore((s) => s.groupLoaded)
   const mangoAccountLoading = mangoStore((s) => s.mangoAccount.initialLoad)
@@ -32,8 +27,6 @@ const ConnectedMenu = () => {
       state.mangoAccount.current = undefined
       state.mangoAccounts = []
       state.mangoAccount.initialLoad = true
-      state.mangoAccount.openOrders = {}
-      state.mangoAccount.interestTotals = { data: [], loading: false }
     })
     disconnect()
     notify({
@@ -46,22 +39,18 @@ const ConnectedMenu = () => {
     if (publicKey && wallet && groupLoaded) {
       actions.connectMangoClientWithWallet(wallet)
       actions.fetchMangoAccounts(publicKey)
-      // actions.fetchTourSettings(publicKey?.toString() as string)
       actions.fetchProfileDetails(publicKey.toString())
       actions.fetchWalletTokens(publicKey)
-      if (!tvUserId) {
-        setTvUserId(publicKey.toString())
-      }
     }
-  }, [publicKey, wallet, groupLoaded, tvUserId, setTvUserId])
+  }, [publicKey, wallet, groupLoaded])
 
   return (
     <>
       <Popover>
         <div className="relative">
           <Popover.Button
-            className={`default-transition h-16 rounded-full ${
-              isDesktop ? 'w-48 px-4' : 'w-16'
+            className={`default-transition h-12 rounded-full ${
+              isDesktop ? 'w-48 pl-1.5' : 'w-12'
             } hover:bg-th-bkg-2 focus:outline-none focus-visible:bg-th-bkg-3`}
           >
             <div
@@ -75,7 +64,9 @@ const ConnectedMenu = () => {
                   isOwnerProfile
                 />
               ) : (
-                <Loading className="h-6 w-6" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-th-bkg-2">
+                  <Loading className="h-6 w-6" />
+                </div>
               )}
               {!loadProfileDetails && isDesktop ? (
                 <div className="ml-2.5 overflow-hidden text-left">
@@ -103,9 +94,9 @@ const ConnectedMenu = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Popover.Panel className="absolute right-0 top-[61px] z-20 mt-1 w-48 space-y-1.5 rounded-md rounded-t-none bg-th-bkg-2 px-4 py-2.5 focus:outline-none md:rounded-r-none">
+            <Popover.Panel className="absolute right-0 top-[52px] z-20 mt-1 w-48 space-y-1.5 rounded-md rounded-t-none bg-th-bkg-2 px-4 py-2.5 focus:outline-none">
               <button
-                className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none focus-visible:text-th-active md:hover:cursor-pointer md:hover:text-th-fgd-1"
+                className="flex w-full flex-row items-center rounded-none py-0.5 text-sm font-normal focus:outline-none focus-visible:text-th-active md:hover:cursor-pointer md:hover:text-th-fgd-1"
                 onClick={handleDisconnect}
               >
                 <ArrowRightOnRectangleIcon className="h-4 w-4" />
