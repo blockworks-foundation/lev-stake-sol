@@ -12,13 +12,7 @@ const TokenButton = ({
   selectedToken: string
   handleTokenSelect: (v: string) => void
 }) => {
-  const {
-    data: stakeRates,
-    isLoading: loadingStakeRates,
-    isFetching: fetchingStakeRates,
-  } = useStakeRates()
-
-  const loadingRates = loadingStakeRates || fetchingStakeRates
+  const { data: stakeRates, isLoading } = useStakeRates()
 
   return (
     <button
@@ -38,7 +32,7 @@ const TokenButton = ({
           {formatTokenSymbol(tokenName)}
         </span>
         <span className="font-mono">
-          {loadingRates ? (
+          {isLoading ? (
             <SheenLoader className="mt-0.5">
               <div className="h-5 w-10 bg-th-bkg-3" />
             </SheenLoader>

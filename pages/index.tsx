@@ -5,7 +5,7 @@ import mangoStore from '@store/mangoStore'
 import type { NextPage } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useEffect, useState } from 'react'
-import { ACCOUNT_PREFIX } from 'utils/transactions'
+import { BOOST_ACCOUNT_PREFIX } from 'utils/constants'
 
 const set = mangoStore.getState().set
 
@@ -24,7 +24,7 @@ const Index: NextPage = () => {
   useEffect(() => {
     const mangoAccounts = mangoStore.getState().mangoAccounts
     const selectedMangoAccount = mangoAccounts.find(
-      (ma) => ma.name === `${ACCOUNT_PREFIX}${selectedToken}`,
+      (ma) => ma.name === `${BOOST_ACCOUNT_PREFIX}${selectedToken}`,
     )
     console.log('selectedMangoAccount', selectedMangoAccount)
 

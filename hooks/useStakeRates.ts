@@ -17,10 +17,10 @@ const fetchRates = async () => {
   console.log('jitosol', jitoPrices)
 
   // may be null if the price range cannot be calculated
-  const msolRange = getPriceRangeFromPeriod(msolPrices, PERIOD.DAYS_7)
-  const jitoRange = getPriceRangeFromPeriod(jitoPrices, PERIOD.DAYS_7)
-  const bsolRange = getPriceRangeFromPeriod(bsolPrices, PERIOD.DAYS_7)
-  const lidoRange = getPriceRangeFromPeriod(lidoPrices, PERIOD.DAYS_7)
+  const msolRange = getPriceRangeFromPeriod(msolPrices, PERIOD.DAYS_30)
+  const jitoRange = getPriceRangeFromPeriod(jitoPrices, PERIOD.DAYS_30)
+  const bsolRange = getPriceRangeFromPeriod(bsolPrices, PERIOD.DAYS_30)
+  const lidoRange = getPriceRangeFromPeriod(lidoPrices, PERIOD.DAYS_30)
   console.log('msol prices', msolPrices)
 
   const rateData: Record<string, number> = {}
@@ -51,5 +51,8 @@ export default function useStakeRates() {
     refetchOnWindowFocus: true,
   })
 
-  return response
+  return {
+    data: response.data,
+    isLoading: response.isFetching || response.isLoading,
+  }
 }

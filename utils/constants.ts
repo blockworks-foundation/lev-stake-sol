@@ -8,6 +8,8 @@ export const SHOW_INACTIVE_POSITIONS_KEY = 'showInactivePositions-0.1'
 
 export const LAST_ACCOUNT_KEY = 'mangoAccount-0.4'
 
+export const BOOST_ACCOUNT_PREFIX = 'Leverage Stake'
+
 export const CLIENT_TX_TIMEOUT = 90000
 
 export const SECONDS = 1000

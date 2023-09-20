@@ -9,6 +9,8 @@ import Switch from './forms/Switch'
 import useLocalStorageState from 'hooks/useLocalStorageState'
 import useStakeRates from 'hooks/useStakeRates'
 import SheenLoader from './shared/SheenLoader'
+import useStakeAccounts from 'hooks/useStakeAccounts'
+import FormatNumericValue from './shared/FormatNumericValue'
 
 const set = mangoStore.getState().set
 
@@ -21,6 +23,7 @@ const Positions = ({
   const { data: stakeRates, isLoading: loadingRates } = useStakeRates()
   const [showInactivePositions, setShowInactivePositions] =
     useLocalStorageState(SHOW_INACTIVE_POSITIONS_KEY, true)
+  const { stakeAccounts } = useStakeAccounts()
 
   const banks = useMemo(() => {
     if (!group) return []
@@ -33,20 +36,21 @@ const Positions = ({
   }, [group])
 
   const positions = useMemo(() => {
-    if (!banks.length) return []
+    if (!banks.length || !stakeAccounts?.length) return []
     const positions = []
     for (const bank of banks) {
-      let balance = 0
-      if (bank?.name === 'JitoSOL') {
-        balance = 100
-      }
+      if (!bank) continue
+      const acct = stakeAccounts.find((acc) => acc.getTokenBalanceUi(bank) > 0)
+      const balance = acct ? acct.getTokenBalanceUi(bank) : 0
       positions.push({ balance, bank })
     }
     const sortedPositions = positions.sort((a, b) => b.balance - a.balance)
     return showInactivePositions
       ? sortedPositions
       : sortedPositions.filter((pos) => pos.balance > 0)
-  }, [banks, showInactivePositions])
+  }, [banks, showInactivePositions, stakeAccounts])
+
+  console.log('positions', positions)
 
   const numberOfPositions = useMemo(() => {
     if (!positions.length) return 0
@@ -106,7 +110,8 @@ const Positions = ({
                 <div>
                   <p className="mb-1">Position Size</p>
                   <span className="text-xl font-bold">
-                    {balance} {formatTokenSymbol(bank.name)}
+                    <FormatNumericValue value={balance} decimals={6} />{' '}
+                    {formatTokenSymbol(bank.name)}
                   </span>
                 </div>
                 <div>

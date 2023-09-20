@@ -36,6 +36,7 @@ import FormatNumericValue from './shared/FormatNumericValue'
 import { stakeAndCreate } from 'utils/transactions'
 import { MangoAccount } from '@blockworks-foundation/mango-v4'
 import { AnchorProvider } from '@project-serum/anchor'
+import useStakeRates from 'hooks/useStakeRates'
 
 const set = mangoStore.getState().set
 
@@ -92,12 +93,13 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
   // const banks = useBanksWithBalances('walletBalance')
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { group } = useMangoGroup()
+  const { data: stakeRates } = useStakeRates()
 
   const stakeBank = useMemo(() => {
     return group?.banksMapByName.get(selectedToken)?.[0]
   }, [selectedToken, group])
 
-  const solBank = useMemo(() => {
+  const borrowBank = useMemo(() => {
     return group?.banksMapByName.get('SOL')?.[0]
   }, [group])
 
@@ -126,8 +128,8 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
   //   setShowTokenList(false)
   // }
 
-  const solAmountToBorrow = useMemo(() => {
-    const solPrice = solBank?.uiPrice
+  const amountToBorrow = useMemo(() => {
+    const solPrice = borrowBank?.uiPrice
     const stakePrice = stakeBank?.uiPrice
     if (!solPrice || !stakePrice || !Number(inputAmount)) return 0
     const priceDifference = (stakePrice - solPrice) / solPrice
@@ -135,7 +137,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
       (1 + priceDifference) * Number(inputAmount) * Math.min(leverage - 1, 1)
 
     return borrowAmount
-  }, [leverage, solBank, stakeBank, inputAmount])
+  }, [leverage, borrowBank, stakeBank, inputAmount])
 
   const handleRefreshWalletBalances = useCallback(async () => {
     if (!publicKey) return
@@ -157,14 +159,14 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
     setSubmitting(true)
     try {
       console.log('starting deposit')
-      console.log('solAmountToBorrow', solAmountToBorrow)
+      console.log('amountToBorrow', amountToBorrow)
 
       const newAccountNum = getNextAccountNumber(mangoAccounts)
       const { signature: tx, slot } = await stakeAndCreate(
         client,
         group,
         mangoAccount,
-        solAmountToBorrow,
+        amountToBorrow,
         stakeBank.mint,
         parseFloat(inputAmount),
         newAccountNum + 300,
@@ -195,7 +197,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
         type: 'error',
       })
     }
-  }, [stakeBank, publicKey, inputAmount, solAmountToBorrow, onSuccess])
+  }, [stakeBank, publicKey, inputAmount, amountToBorrow, onSuccess])
 
   const showInsufficientBalance =
     tokenMax.maxAmount < Number(inputAmount) ||
@@ -211,6 +213,28 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
       state.swap.outputBank = group?.banksMapByName.get(selectedToken)?.[0]
     })
   }, [selectedToken])
+
+  const stakeBankDepositRate = useMemo(() => {
+    return stakeBank ? stakeBank.getDepositRateUi() : 0
+  }, [stakeBank])
+
+  const borrowBankBorrowRate = useMemo(() => {
+    return borrowBank ? borrowBank.getBorrowRateUi() : 0
+  }, [borrowBank])
+
+  const borrowBankStakeRate = useMemo(() => {
+    return stakeRates ? stakeRates[selectedToken.toLowerCase()] * 100 : 0
+  }, [stakeRates, selectedToken])
+
+  const leveragedAPY = useMemo(() => {
+    return borrowBankStakeRate ? borrowBankStakeRate * leverage : 0
+  }, [borrowBankStakeRate, leverage])
+
+  const estimatedNetAPY = useMemo(() => {
+    return (
+      borrowBankStakeRate * leverage - borrowBankBorrowRate * (leverage - 1)
+    )
+  }, [borrowBankStakeRate, leverage, borrowBankBorrowRate])
 
   return (
     <>
@@ -315,7 +339,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                 step={0.1}
               />
             </div>
-            {stakeBank && solBank ? (
+            {stakeBank && borrowBank ? (
               <>
                 <div className="mt-2 space-y-1.5 px-2 py-4">
                   <div className="flex justify-between">
@@ -327,10 +351,10 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                   </div>
                   <div className="flex justify-between">
                     <p>SOL Borrowed</p>
-                    {solBank ? (
+                    {borrowBank ? (
                       <span className="font-mono text-th-fgd-1">
                         <FormatNumericValue
-                          value={solAmountToBorrow}
+                          value={amountToBorrow}
                           decimals={3}
                         />
                       </span>
@@ -339,20 +363,26 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                 </div>
                 <div className="space-y-1.5 border-t border-th-bkg-3 px-2 pt-4">
                   <div className="flex justify-between">
-                    <p>{formatTokenSymbol(selectedToken)} Leveraged APY</p>
-                    <span className="font-mono text-th-fgd-1">
+                    <p className="font-bold">Estimated Net APY</p>
+                    <span className="font-mono text-green-600">
                       <FormatNumericValue
-                        value={7.28 * leverage}
+                        value={estimatedNetAPY}
                         decimals={2}
                       />
                       %
                     </span>
                   </div>
                   <div className="flex justify-between">
+                    <p>{formatTokenSymbol(selectedToken)} Leveraged APY</p>
+                    <span className="font-mono text-green-600">
+                      <FormatNumericValue value={leveragedAPY} decimals={2} />%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
                     <p>{formatTokenSymbol(selectedToken)} Deposit Rate</p>
                     <span className="font-mono text-th-fgd-1">
                       <FormatNumericValue
-                        value={stakeBank.getDepositRateUi()}
+                        value={stakeBankDepositRate}
                         decimals={2}
                       />
                       %
@@ -360,11 +390,9 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
                   </div>
                   <div className="flex justify-between">
                     <p>SOL Borrow Rate</p>
-                    <span className="font-mono text-th-fgd-1">
+                    <span className="font-mono text-red-600">
                       <FormatNumericValue
-                        value={
-                          solBank.getDepositRateUi() * Math.min(leverage - 1, 1)
-                        }
+                        value={borrowBankBorrowRate}
                         decimals={2}
                       />
                       %

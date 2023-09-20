@@ -31,8 +31,7 @@ import {
   VersionedTransaction,
 } from '@solana/web3.js'
 import { floorToDecimal } from './numbers'
-
-export const ACCOUNT_PREFIX = 'Leverage Stake '
+import { BOOST_ACCOUNT_PREFIX } from './constants'
 
 export const unstakeAndClose = async (
   client: MangoClient,
@@ -130,18 +129,18 @@ export const unstakeAndClose = async (
   )
   instructions.push(...withdrawIx)
 
-  if (withdrawMax) {
-    const closeIx = await client.program.methods
-      .accountClose(false)
-      .accounts({
-        group: group.publicKey,
-        account: mangoAccount.publicKey,
-        owner: (client.program.provider as AnchorProvider).wallet.publicKey,
-        solDestination: mangoAccount.owner,
-      })
-      .instruction()
-    instructions.push(closeIx)
-  }
+  // if (withdrawMax) {
+  //   const closeIx = await client.program.methods
+  //     .accountClose(false)
+  //     .accounts({
+  //       group: group.publicKey,
+  //       account: mangoAccount.publicKey,
+  //       owner: (client.program.provider as AnchorProvider).wallet.publicKey,
+  //       solDestination: mangoAccount.owner,
+  //     })
+  //     .instruction()
+  //   instructions.push(closeIx)
+  // }
 
   return await client.sendAndConfirmTransactionForGroup(group, instructions, {
     alts: [...group.addressLookupTablesList, ...swapAlts],
@@ -177,7 +176,7 @@ export const stakeAndCreate = async (
         0, // serum
         0, // perp
         0, // perp OO
-        name ?? `${ACCOUNT_PREFIX}${stakeBank.name}`,
+        name ?? `${BOOST_ACCOUNT_PREFIX}${stakeBank.name}`,
       )
       .accounts({
         group: group.publicKey,

@@ -34,6 +34,7 @@ import {
   TokenAccount,
 } from '../utils/tokens'
 import {
+  BOOST_ACCOUNT_PREFIX,
   CONNECTION_COMMITMENT,
   DEFAULT_MARKET_NAME,
   INPUT_TOKEN_DEFAULT,
@@ -80,7 +81,6 @@ import groupBy from 'lodash/groupBy'
 import sampleSize from 'lodash/sampleSize'
 import { Token } from 'types/jupiter'
 import { sleep } from 'utils'
-import { ACCOUNT_PREFIX } from 'utils/transactions'
 
 const GROUP = new PublicKey('78b8f4cGCwmZ9ysPFMWLaLTkkaYnUjwMJYStWe5RTSSX')
 
@@ -655,7 +655,7 @@ const mangoStore = create<MangoStore>()(
             if (!selectedMangoAccount || !selectedAccountIsNotInAccountsList) {
               try {
                 newSelectedMangoAccount = mangoAccounts.find(
-                  (m) => m.name.toString() === `${ACCOUNT_PREFIX}MSOL`,
+                  (m) => m.name.toString() === `${BOOST_ACCOUNT_PREFIX}MSOL`,
                 )
               } catch (e) {
                 console.error('Error parsing last account', e)
