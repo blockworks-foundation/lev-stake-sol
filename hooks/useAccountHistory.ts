@@ -34,6 +34,7 @@ const fetchHistory = async (
 
 export default function useAccountHistory() {
   const { mangoAccount } = useMangoAccount()
+  console.log('mango account in history', mangoAccount)
 
   const response = useQuery<Array<ActivityFeed> | EmptyObject | null>(
     ['history'],

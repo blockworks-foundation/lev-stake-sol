@@ -24,9 +24,15 @@ const Index: NextPage = () => {
   useEffect(() => {
     const mangoAccounts = mangoStore.getState().mangoAccounts
     const selectedMangoAccount = mangoAccounts.find(
-      (ma) => ma.name === `${BOOST_ACCOUNT_PREFIX}${selectedToken}`,
+      (ma) =>
+        ma.name.toLowerCase() ===
+        `${(BOOST_ACCOUNT_PREFIX + selectedToken).toLowerCase()}`,
     )
-    console.log('selectedMangoAccount', selectedMangoAccount)
+    console.log(
+      'selectedMangoAccount',
+      (BOOST_ACCOUNT_PREFIX + selectedToken).toLowerCase(),
+      selectedMangoAccount,
+    )
 
     set((s) => {
       s.mangoAccount.current = selectedMangoAccount
