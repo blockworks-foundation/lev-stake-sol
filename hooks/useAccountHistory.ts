@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { MANGO_DATA_API_URL } from 'utils/constants'
 import { ActivityFeed, EmptyObject } from 'types'
 import dayjs from 'dayjs'
-import useMangoAccount from './useMangoAccount'
+import useStakeAccounts from './useStakeAccounts'
 
 const fetchHistory = async (
   mangoAccountPk: string,
@@ -33,23 +33,33 @@ const fetchHistory = async (
 }
 
 export default function useAccountHistory() {
-  const { mangoAccount } = useMangoAccount()
-  console.log('mango account in history', mangoAccount)
+  const { stakeAccounts } = useStakeAccounts()
 
-  const response = useQuery<Array<ActivityFeed> | EmptyObject | null>(
+  const response = useQuery<Array<ActivityFeed[]> | EmptyObject | null>(
     ['history'],
     () =>
-      mangoAccount?.publicKey
-        ? fetchHistory(mangoAccount.publicKey.toString())
-        : null,
+      stakeAccounts?.length
+        ? Promise.all(
+            stakeAccounts.map((acc) => fetchHistory(acc.publicKey.toString())),
+          )
+        : // ? fetchHistory(mangoAccount.publicKey.toString())
+          null,
     {
       cacheTime: 1000 * 60 * 5,
       staleTime: 1000 * 60,
       retry: 3,
       refetchOnWindowFocus: true,
-      enabled: !!mangoAccount,
+      enabled: !!stakeAccounts,
     },
   )
 
-  return response
+  console.log('tx his reponse', response)
+
+  return {
+    history:
+      response?.data && Array.isArray(response.data)
+        ? response.data.flat()
+        : [],
+    isLoading: response.isLoading || response.isFetching,
+  }
 }
