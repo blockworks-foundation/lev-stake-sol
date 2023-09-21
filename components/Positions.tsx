@@ -154,8 +154,8 @@ const Positions = ({
                 <div>
                   <p className="mb-1">Liquidation Price</p>
                   <span className="whitespace-nowrap text-xl font-bold">
-                    {stakeBalance ? '1.234' : '0'}{' '}
-                    {`${formatTokenSymbol(bank.name)}/SOL`}
+                    {stakeBalance ? 'X.XX' : '0'}{' '}
+                    {`${formatTokenSymbol(bank.name)}/${BORROW_TOKEN}`}
                   </span>
                 </div>
               </div>
