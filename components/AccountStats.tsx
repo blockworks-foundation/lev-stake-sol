@@ -1,14 +1,13 @@
-import useStakeRates from 'hooks/useStakeRates'
 import { formatTokenSymbol } from 'utils/tokens'
-import SheenLoader from './shared/SheenLoader'
 import { useMemo } from 'react'
 import Decimal from 'decimal.js'
 import useMangoGroup from 'hooks/useMangoGroup'
 import FormatNumericValue from './shared/FormatNumericValue'
+import mangoStore from '@store/mangoStore'
 
 const AccountStats = ({ token }: { token: string }) => {
-  const { data: stakeRates, isLoading: loadingRates } = useStakeRates()
   const { group } = useMangoGroup()
+  const estimatedMaxAPY = mangoStore((s) => s.estimatedMaxAPY.current)
 
   const solBank = useMemo(() => {
     return group?.banksMapByName.get('SOL')?.[0]
@@ -44,13 +43,7 @@ const AccountStats = ({ token }: { token: string }) => {
         <div>
           <p className="mb-1">Max Est. APY</p>
           <span className="text-2xl font-bold">
-            {loadingRates ? (
-              <SheenLoader className="mt-1">
-                <div className="h-8 w-20 bg-th-bkg-3" />
-              </SheenLoader>
-            ) : stakeRates?.[token.toLowerCase()] ? (
-              `${(stakeRates?.[token.toLowerCase()] * 100).toFixed(2)}%`
-            ) : null}
+            {estimatedMaxAPY ? `${estimatedMaxAPY.toFixed(2)}%` : 0}
           </span>
         </div>
         <div>

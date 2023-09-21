@@ -36,12 +36,11 @@ import FormatNumericValue from './shared/FormatNumericValue'
 import { stakeAndCreate } from 'utils/transactions'
 import { MangoAccount } from '@blockworks-foundation/mango-v4'
 import { AnchorProvider } from '@project-serum/anchor'
-import useStakeRates from 'hooks/useStakeRates'
+import useBankRates from 'hooks/useBankRates'
 
 const set = mangoStore.getState().set
 
-interface DepositFormProps {
-  onSuccess: () => void
+interface StakeFormProps {
   token: string
 }
 
@@ -79,7 +78,7 @@ const getNextAccountNumber = (accounts: MangoAccount[]): number => {
   return 0
 }
 
-function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
+function StakeForm({ token: selectedToken }: StakeFormProps) {
   const { t } = useTranslation(['common', 'account'])
   const [inputAmount, setInputAmount] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -93,7 +92,12 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
   // const banks = useBanksWithBalances('walletBalance')
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { group } = useMangoGroup()
-  const { data: stakeRates } = useStakeRates()
+  const {
+    stakeBankDepositRate,
+    borrowBankBorrowRate,
+    leveragedAPY,
+    estimatedNetAPY,
+  } = useBankRates(selectedToken, leverage)
 
   const stakeBank = useMemo(() => {
     return group?.banksMapByName.get(selectedToken)?.[0]
@@ -122,11 +126,6 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
     const max = floorToDecimal(tokenMax.maxAmount, 6)
     setInputAmount(max.toFixed())
   }, [tokenMax])
-
-  // const handleSelectToken = (token: string) => {
-  //   setSelectedToken(token)
-  //   setShowTokenList(false)
-  // }
 
   const amountToBorrow = useMemo(() => {
     const solPrice = borrowBank?.uiPrice
@@ -185,7 +184,6 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
       await actions.fetchWalletTokens(publicKey)
       setSubmitting(false)
       setInputAmount('')
-      onSuccess()
     } catch (e) {
       console.error('Error depositing:', e)
       setSubmitting(false)
@@ -197,7 +195,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
         type: 'error',
       })
     }
-  }, [stakeBank, publicKey, inputAmount, amountToBorrow, onSuccess])
+  }, [stakeBank, publicKey, inputAmount, amountToBorrow])
 
   const showInsufficientBalance =
     tokenMax.maxAmount < Number(inputAmount) ||
@@ -213,28 +211,6 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
       state.swap.outputBank = group?.banksMapByName.get(selectedToken)?.[0]
     })
   }, [selectedToken])
-
-  const stakeBankDepositRate = useMemo(() => {
-    return stakeBank ? stakeBank.getDepositRateUi() : 0
-  }, [stakeBank])
-
-  const borrowBankBorrowRate = useMemo(() => {
-    return borrowBank ? borrowBank.getBorrowRateUi() : 0
-  }, [borrowBank])
-
-  const borrowBankStakeRate = useMemo(() => {
-    return stakeRates ? stakeRates[selectedToken.toLowerCase()] * 100 : 0
-  }, [stakeRates, selectedToken])
-
-  const leveragedAPY = useMemo(() => {
-    return borrowBankStakeRate ? borrowBankStakeRate * leverage : 0
-  }, [borrowBankStakeRate, leverage])
-
-  const estimatedNetAPY = useMemo(() => {
-    return (
-      borrowBankStakeRate * leverage - borrowBankBorrowRate * (leverage - 1)
-    )
-  }, [borrowBankStakeRate, leverage, borrowBankBorrowRate])
 
   return (
     <>
@@ -437,7 +413,7 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
               desc={
                 <>
                   {t('error-token-positions-full')}{' '}
-                  <Link href="/settings" onClick={() => onSuccess()} shallow>
+                  <Link href="/settings" shallow>
                     {t('manage')}
                   </Link>
                 </>
@@ -450,4 +426,4 @@ function DepositForm({ onSuccess, token: selectedToken }: DepositFormProps) {
   )
 }
 
-export default DepositForm
+export default StakeForm

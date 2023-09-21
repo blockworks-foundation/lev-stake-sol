@@ -141,6 +141,9 @@ export const DEFAULT_TRADE_FORM: TradeForm = {
 export type MangoStore = {
   // leverage stake
   selectedToken: string
+  estimatedMaxAPY: {
+    current: number
+  }
   //end
   activityFeed: {
     feed: Array<ActivityFeed>
@@ -305,6 +308,9 @@ const mangoStore = create<MangoStore>()(
     return {
       // leverage stake
       selectedToken: STAKEABLE_TOKENS[0],
+      estimatedMaxAPY: {
+        current: 0,
+      },
       //end
       activityFeed: {
         feed: [],

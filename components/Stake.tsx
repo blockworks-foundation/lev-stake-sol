@@ -13,10 +13,6 @@ const Stake = () => {
   const [activeFormTab, setActiveFormTab] = useState('Add')
   const selectedToken = mangoStore((s) => s.selectedToken)
 
-  const onClose = useCallback(() => {
-    console.log('StakeForm onSuccess')
-  }, [])
-
   const handleTokenSelect = useCallback((token: string) => {
     set((state) => {
       state.selectedToken = token
@@ -48,10 +44,10 @@ const Stake = () => {
               />
             </div>
             {activeFormTab === 'Add' ? (
-              <StakeForm onSuccess={onClose} token={selectedToken} />
+              <StakeForm token={selectedToken} />
             ) : null}
             {activeFormTab === 'Remove' ? (
-              <UnstakeForm onSuccess={onClose} token={selectedToken} />
+              <UnstakeForm token={selectedToken} />
             ) : null}
           </div>
         </div>

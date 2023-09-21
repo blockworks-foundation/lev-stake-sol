@@ -38,7 +38,6 @@ import { unstakeAndClose } from 'utils/transactions'
 const set = mangoStore.getState().set
 
 interface UnstakeFormProps {
-  onSuccess: () => void
   token: string
 }
 
@@ -63,7 +62,7 @@ export const walletBalanceForToken = (
   }
 }
 
-function UnstakeForm({ onSuccess, token: selectedToken }: UnstakeFormProps) {
+function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
   const { t } = useTranslation(['common', 'account'])
   const [inputAmount, setInputAmount] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -154,7 +153,6 @@ function UnstakeForm({ onSuccess, token: selectedToken }: UnstakeFormProps) {
       await actions.fetchMangoAccounts(mangoAccount.owner)
       await actions.fetchWalletTokens(publicKey)
       setSubmitting(false)
-      onSuccess()
     } catch (e) {
       console.error('Error depositing:', e)
       setSubmitting(false)
@@ -166,7 +164,7 @@ function UnstakeForm({ onSuccess, token: selectedToken }: UnstakeFormProps) {
         type: 'error',
       })
     }
-  }, [stakeBank, publicKey, inputAmount, onSuccess])
+  }, [stakeBank, publicKey, inputAmount])
 
   const showInsufficientBalance =
     tokenMax.maxAmount < Number(inputAmount) ||
@@ -326,7 +324,7 @@ function UnstakeForm({ onSuccess, token: selectedToken }: UnstakeFormProps) {
               desc={
                 <>
                   {t('error-token-positions-full')}{' '}
-                  <Link href="/settings" onClick={() => onSuccess()} shallow>
+                  <Link href="/settings" shallow>
                     {t('manage')}
                   </Link>
                 </>
