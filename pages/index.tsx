@@ -1,5 +1,6 @@
 import Positions from '@components/Positions'
 import Stake from '@components/Stake'
+import Stats from '@components/Stats'
 import TransactionHistory from '@components/TransactionHistory'
 import mangoStore from '@store/mangoStore'
 import type { NextPage } from 'next'
@@ -18,7 +19,7 @@ export async function getStaticProps({ locale }: { locale: string }) {
 }
 
 const Index: NextPage = () => {
-  const [activeTab, setActiveTab] = useState('Stake')
+  const [activeTab, setActiveTab] = useState('Boost')
   const selectedToken = mangoStore((s) => s.selectedToken)
 
   useEffect(() => {
@@ -40,37 +41,47 @@ const Index: NextPage = () => {
   }, [selectedToken])
 
   return (
-    <div className="mx-auto max-w-6xl px-6 pb-12 md:pb-20 lg:px-12">
-      <div className="mb-6 grid grid-cols-3 rounded-xl border border-th-fgd-1">
+    <div className="mx-auto max-w-3xl px-6 pb-12 md:pb-20 lg:px-12">
+      <div className="mb-6 grid grid-cols-4 rounded-lg border-2 border-th-fgd-1 bg-white text-lg">
         <button
-          className={`col-span-1 mx-auto w-full rounded-l-xl border-r border-th-fgd-1 py-4 font-bold ${
-            activeTab === 'Stake'
-              ? 'bg-th-bkg-2 text-th-fgd-1'
-              : 'text-th-fgd-3'
+          className={`col-span-1 mx-auto w-full rounded-l-[5px] border-r border-th-fgd-1 pb-2 pt-3 font-display ${
+            activeTab === 'Boost'
+              ? 'text-shadow inner-shadow-top-sm bg-th-primary-2 text-th-active'
+              : 'inner-shadow-bottom-sm default-transition bg-th-bkg-1 text-th-fgd-1 md:hover:bg-th-bkg-2'
           }`}
-          onClick={() => setActiveTab('Stake')}
+          onClick={() => setActiveTab('Boost')}
         >
-          Stake
+          Boost!
         </button>
         <button
-          className={`col-span-1 mx-auto w-full border-r border-th-fgd-1 py-4 font-bold ${
+          className={`col-span-1 mx-auto w-full border-r border-th-fgd-1 pb-2 pt-3 font-display ${
             activeTab === 'Positions'
-              ? 'bg-th-bkg-2 text-th-fgd-1'
-              : 'text-th-fgd-3'
+              ? 'text-shadow inner-shadow-top-sm bg-th-primary-2 text-th-active'
+              : 'inner-shadow-bottom-sm default-transition bg-th-bkg-1 text-th-fgd-1 md:hover:bg-th-bkg-2'
           }`}
           onClick={() => setActiveTab('Positions')}
         >
           Positions
         </button>
         <button
-          className={`col-span-1 mx-auto w-full rounded-r-xl py-4 font-bold ${
+          className={`col-span-1 mx-auto w-full border-r border-th-fgd-1 pb-2 pt-3 font-display ${
             activeTab === 'History'
-              ? 'bg-th-bkg-2 text-th-fgd-1'
-              : 'text-th-fgd-3'
+              ? 'text-shadow inner-shadow-top-sm bg-th-primary-2 text-th-active'
+              : 'inner-shadow-bottom-sm default-transition bg-th-bkg-1 text-th-fgd-1 md:hover:bg-th-bkg-2'
           }`}
           onClick={() => setActiveTab('History')}
         >
           History
+        </button>
+        <button
+          className={`col-span-1 mx-auto w-full rounded-r-[5px] pb-2 pt-3 font-display ${
+            activeTab === 'Stats'
+              ? 'text-shadow inner-shadow-top-sm bg-th-primary-2 text-th-active'
+              : 'inner-shadow-bottom-sm default-transition bg-th-bkg-1 text-th-fgd-1 md:hover:bg-th-bkg-2'
+          }`}
+          onClick={() => setActiveTab('Stats')}
+        >
+          Stats
         </button>
       </div>
       <TabContent activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -88,12 +99,14 @@ const TabContent = ({
   setActiveTab: (tab: string) => void
 }) => {
   switch (activeTab) {
-    case 'Stake':
+    case 'Boost':
       return <Stake />
     case 'Positions':
       return <Positions setActiveTab={setActiveTab} />
     case 'History':
       return <TransactionHistory />
+    case 'Stats':
+      return <Stats />
     default:
       return <Stake />
   }

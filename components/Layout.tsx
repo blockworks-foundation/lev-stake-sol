@@ -22,9 +22,9 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   return (
     <main
-      className={`${themeData.fonts.body.variable} ${themeData.fonts.display.variable} ${themeData.fonts.mono.variable} font-sans`}
+      className={`${themeData.fonts.body.variable} ${themeData.fonts.display.variable} ${themeData.fonts.mono.variable} font-sans bg-[#889FD3] bg-[url('/images/rays.svg')] bg-cover bg-fixed bg-center`}
     >
-      <div className={`min-h-screen grow text-th-fgd-2 transition-all`}>
+      <div className={`min-h-screen`}>
         <TopBar />
         {children}
         <DeployRefreshManager />

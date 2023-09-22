@@ -17,7 +17,7 @@ const ThemeToggle = () => {
   }
 
   return (
-    <IconButton onClick={() => handleToggleTheme(isDarkTheme)} size="medium">
+    <IconButton onClick={() => handleToggleTheme(isDarkTheme)} size="large">
       {isDarkTheme ? (
         <SunIcon className="h-5 w-5" />
       ) : (

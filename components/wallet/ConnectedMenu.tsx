@@ -49,14 +49,11 @@ const ConnectedMenu = () => {
       <Popover>
         <div className="relative">
           <Popover.Button
-            className={`default-transition h-12 rounded-full ${
-              isDesktop ? 'w-48 pl-1.5' : 'w-12'
-            } hover:bg-th-bkg-2 focus:outline-none focus-visible:bg-th-bkg-3`}
+            className={`raised-button-neutral h-12 rounded-full ${
+              isDesktop ? 'w-44' : 'w-12'
+            } focus:outline-none`}
           >
-            <div
-              className="flex items-center justify-center md:justify-start"
-              id="account-step-one"
-            >
+            <div className="ml-1.5 flex items-center" id="account-step-one">
               {!mangoAccountLoading ? (
                 <ProfileImage
                   imageSize="40"
@@ -69,18 +66,13 @@ const ConnectedMenu = () => {
                 </div>
               )}
               {!loadProfileDetails && isDesktop ? (
-                <div className="ml-2.5 overflow-hidden text-left">
-                  <p className="text-xs text-th-fgd-3">
+                <div className="ml-2.5 mt-1.5 overflow-hidden text-left">
+                  <p className="text-xxs text-th-fgd-3">
                     {wallet?.adapter.name}
                   </p>
-                  <p className="truncate pr-2 text-sm font-bold text-th-fgd-1">
+                  <p className="-mt-0.5 truncate pr-2 font-display text-base text-th-fgd-1">
                     {publicKey ? abbreviateAddress(publicKey) : ''}
                   </p>
-                  {/* <p className="truncate pr-2 text-sm font-bold capitalize text-th-fgd-1">
-                      {profileDetails?.profile_name
-                        ? profileDetails.profile_name
-                        : 'Profile Unavailabe'}
-                    </p> */}
                 </div>
               ) : null}
             </div>
@@ -94,18 +86,18 @@ const ConnectedMenu = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Popover.Panel className="absolute right-0 top-[52px] z-20 mt-1 w-48 space-y-1.5 rounded-md rounded-t-none bg-th-bkg-2 px-4 py-2.5 focus:outline-none">
+            <Popover.Panel className="absolute right-0 top-14 z-20 mt-1 w-44 space-y-1.5 rounded-xl border-2 border-th-fgd-1 bg-th-bkg-1 px-4 py-2.5 focus:outline-none">
               <button
-                className="flex w-full flex-row items-center rounded-none py-0.5 text-sm font-normal focus:outline-none focus-visible:text-th-active md:hover:cursor-pointer md:hover:text-th-fgd-1"
+                className="flex w-full flex-row items-center rounded-none py-0.5 text-sm font-bold focus:outline-none md:hover:cursor-pointer md:hover:text-th-fgd-4"
                 onClick={handleDisconnect}
               >
-                <ArrowRightOnRectangleIcon className="h-4 w-4" />
+                <ArrowRightOnRectangleIcon className="h-5 w-5" />
                 <div className="pl-2 text-left">
-                  <div className="pb-0.5">{t('disconnect')}</div>
+                  <span>{t('disconnect')}</span>
                   {publicKey ? (
-                    <div className="font-mono text-xs text-th-fgd-4">
+                    <p className="font-mono text-xs text-th-fgd-4">
                       {abbreviateAddress(publicKey)}
-                    </div>
+                    </p>
                   ) : null}
                 </div>
               </button>

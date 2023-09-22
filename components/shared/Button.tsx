@@ -1,5 +1,3 @@
-import mangoStore from '@store/mangoStore'
-import { useTheme } from 'next-themes'
 import { forwardRef, FunctionComponent, ReactNode, Ref } from 'react'
 
 interface AllButtonProps {
@@ -27,33 +25,25 @@ const Button: FunctionComponent<ButtonCombinedProps> = ({
   type = 'button',
   ...props
 }) => {
-  const { theme } = useTheme()
-  const themeData = mangoStore((s) => s.themeData)
   return (
     <button
       onClick={onClick}
       disabled={disabled}
       className={`rounded-xl ${
-        themeData.buttonStyle === 'raised'
-          ? 'raised-button'
-          : secondary
+        secondary
           ? 'border border-th-button focus-visible:border-th-fgd-4 md:hover:border-th-button-hover'
-          : 'bg-th-button focus-visible:border focus-visible:border-th-fgd-4 md:hover:bg-th-button-hover'
+          : 'raised-button text-shadow text-2xl text-th-active focus-visible:border focus-visible:border-th-fgd-4'
       } ${
         size === 'medium'
           ? 'h-10 px-4'
           : size === 'large'
           ? 'h-14 px-8'
           : 'h-8 px-3'
-      } font-display ${
-        theme === 'High Contrast' && !secondary
-          ? 'text-th-bkg-1'
-          : 'text-th-fgd-1'
-      } disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
+      } font-display disabled:cursor-not-allowed disabled:opacity-80 ${className}`}
       type={type}
       {...props}
     >
-      {children}
+      <span className="mt-1">{children}</span>
     </button>
   )
 }
@@ -84,9 +74,7 @@ export const IconButton = forwardRef<
           ? 'h-10 w-10'
           : ''
       } items-center justify-center rounded-full ${
-        hideBg
-          ? 'md:hover:text-th-active'
-          : 'border border-th-button focus-visible:border-th-fgd-3 md:hover:border-th-button-hover'
+        hideBg ? 'md:hover:text-th-active' : 'raised-button-neutral'
       } text-th-fgd-1 focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 
       disabled:text-th-fgd-4 md:disabled:hover:text-th-fgd-4 ${className} focus-visible:text-th-active`}
       ref={ref}

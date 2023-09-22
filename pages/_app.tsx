@@ -1,4 +1,6 @@
 import '../styles/globals.css'
+import 'react-range-slider-input/dist/style.css'
+
 import type { AppProps } from 'next/app'
 import { useCallback, useMemo } from 'react'
 import {

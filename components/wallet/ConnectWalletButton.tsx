@@ -31,54 +31,56 @@ export default function ConnectWalletButton() {
   }, [wallets, lastWalletName])
 
   return (
-    <div className="flex w-48 items-center justify-between rounded-full bg-th-bkg-3 pr-1.5">
-      <button
-        onClick={() => {
-          if (wallet) {
-            connect()
-          } else {
-            select(lastWalletName)
-          }
-        }}
-        className="relative flex h-12 rounded-full bg-th-bkg-3"
-      >
-        <div className="relative z-10 flex h-full items-center justify-center space-x-3 pl-4 pr-2">
-          {connected && mangoAccountLoading ? (
-            <div></div>
-          ) : (
-            <div
-              className={`flex h-[28px] w-[28px] items-center justify-center rounded-full ${
-                wallet?.adapter.name === 'Solflare' ? 'bg-black' : ''
-              }`}
-            >
-              <img
-                src={walletIcon}
-                className={`
+    <div className="relative">
+      <div className="raised-button-neutral flex h-12 w-44 items-center rounded-full bg-th-bkg-3">
+        <button
+          onClick={() => {
+            if (wallet) {
+              connect()
+            } else {
+              select(lastWalletName)
+            }
+          }}
+          className="relative flex h-12 rounded-full"
+        >
+          <div className="relative z-10 flex h-full items-center justify-center space-x-2 px-4">
+            {connected && mangoAccountLoading ? (
+              <div></div>
+            ) : (
+              <div
+                className={`flex h-[28px] w-[28px] items-center justify-center rounded-full ${
+                  wallet?.adapter.name === 'Solflare' ? 'bg-black' : ''
+                }`}
+              >
+                <img
+                  src={walletIcon}
+                  className={`
                       ${
                         wallet?.adapter.name === 'Solflare'
                           ? 'h-auto w-[20px]'
                           : 'h-auto w-[28px]'
                       }`}
-                alt={`${wallet?.adapter.name} icon`}
-              />
-            </div>
-          )}
-          <div className="text-left">
-            <div className=" mb-1 flex font-display text-sm leading-none text-th-fgd-1">
-              {t('connect')}
-            </div>
+                  alt={`${wallet?.adapter.name} icon`}
+                />
+              </div>
+            )}
+            <div className="text-left">
+              <div className=" mb-1 flex font-display text-base leading-none text-th-fgd-1">
+                {t('connect')}
+              </div>
 
-            <div className="text-xxs font-normal leading-3 text-th-fgd-3">
-              {lastWalletName}
+              <div className="-mt-1 text-xxs font-normal leading-none text-th-fgd-3">
+                {lastWalletName}
+              </div>
             </div>
           </div>
-        </div>
-      </button>
+        </button>
+      </div>
       <Popover>
         {({ open }) => (
           <>
             <Popover.Button
-              className={`flex h-9 w-9 items-center justify-center rounded-full bg-th-bkg-3 text-th-fgd-3 hover:brightness-[1.1] focus:outline-none focus-visible:bg-th-bkg-4`}
+              className={`absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-th-bkg-2 text-th-fgd-3 focus:outline-none focus-visible:bg-th-bkg-3 md:hover:bg-th-bkg-3`}
             >
               <ChevronDownIcon
                 className={`h-6 w-6 flex-shrink-0 ${
@@ -95,10 +97,10 @@ export default function ConnectWalletButton() {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Popover.Panel className="absolute right-6 top-16 z-20 w-48 rounded-md rounded-t-none bg-th-bkg-2 px-4 py-2.5 outline-none">
+              <Popover.Panel className="absolute right-0 top-14 z-20 mt-1 w-44 space-y-2 rounded-xl border-2 border-th-fgd-1 bg-th-bkg-1 px-4 py-2.5 focus:outline-none">
                 {detectedWallets.map((wallet, index) => (
                   <button
-                    className="flex w-full flex-row items-center justify-between rounded-none py-2 text-sm font-normal focus:outline-none focus-visible:text-th-active md:hover:cursor-pointer md:hover:text-th-active"
+                    className="flex w-full flex-row items-center rounded-none py-0.5 text-sm font-bold focus:outline-none md:hover:cursor-pointer md:hover:text-th-fgd-4"
                     onClick={() => {
                       select(wallet.adapter.name)
                     }}

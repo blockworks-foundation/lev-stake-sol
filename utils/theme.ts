@@ -1,12 +1,5 @@
 import { ThemeData } from 'types'
-import {
-  publicSans,
-  publicSansDisplay,
-  // publicSansMono,
-  // ttCommons,
-  // ttCommonsExpanded,
-  ttCommonsMono,
-} from './fonts'
+import { lalezar, robotoFlex, robotoMono } from './fonts'
 
 export const breakpoints = {
   sm: 640,
@@ -28,27 +21,17 @@ export const breakpoints = {
   // => @media (min-width: 1792px) { ... }
 }
 
-type NftThemeMeta = {
+type Theme = {
   [key: string]: ThemeData
 }
 
-export const nftThemeMeta: NftThemeMeta = {
+export const themeData: Theme = {
   default: {
-    buttonStyle: 'flat',
     fonts: {
-      body: publicSans,
-      display: publicSansDisplay,
-      mono: ttCommonsMono,
+      body: robotoFlex,
+      display: lalezar,
+      mono: robotoMono,
     },
-    logoPath: '/logos/logo-mark.svg',
-    platformName: 'Mango',
-    rainAnimationImagePath: '',
-    sideImagePath: '',
-    sideTilePath: '',
-    sideTilePathExpanded: '',
-    topTilePath: '',
-    tvChartTheme: 'Dark',
-    tvImagePath: '',
-    useGradientBg: false,
+    logoPath: '/logos/boost.png',
   },
 }

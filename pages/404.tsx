@@ -24,7 +24,7 @@ export default function Custom404() {
       className="mx-auto flex max-w-xl flex-col items-center justify-center text-center"
       style={{ height: 'calc(100vh - 80px)' }}
     >
-      <RektIcon className="mb-4 h-14 w-auto -rotate-6 transform text-th-down" />
+      <RektIcon className="text-th-down mb-4 h-14 w-auto -rotate-6 transform" />
       <h1 className="mt-1 text-3xl text-th-fgd-1 sm:text-4xl">
         404: {t('404-heading')}
       </h1>

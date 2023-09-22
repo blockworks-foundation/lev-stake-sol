@@ -1,4 +1,8 @@
-import { ArrowPathIcon, ExclamationCircleIcon } from '@heroicons/react/20/solid'
+import {
+  ArrowPathIcon,
+  ChevronDownIcon,
+  ExclamationCircleIcon,
+} from '@heroicons/react/20/solid'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useTranslation } from 'next-i18next'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -20,7 +24,6 @@ import Tooltip from '@components/shared/Tooltip'
 import SolBalanceWarnings from '@components/shared/SolBalanceWarnings'
 import useSolBalance from 'hooks/useSolBalance'
 import { floorToDecimal, withValueLimit } from 'utils/numbers'
-import BankAmountWithValue from './shared/BankAmountWithValue'
 // import useBanksWithBalances from 'hooks/useBanksWithBalances'
 import { isMangoError } from 'types'
 // import TokenListButton from './shared/TokenListButton'
@@ -37,8 +40,12 @@ import { stakeAndCreate } from 'utils/transactions'
 import { MangoAccount } from '@blockworks-foundation/mango-v4'
 import { AnchorProvider } from '@project-serum/anchor'
 import useBankRates from 'hooks/useBankRates'
+import { Disclosure } from '@headlessui/react'
 
 const set = mangoStore.getState().set
+
+export const NUMBERFORMAT_CLASSES =
+  'inner-shadow-top-sm w-full rounded-xl border border-th-bkg-3 bg-th-input-bkg p-3 pl-12 pr-4 text-left font-mono text-xl text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:border-th-input-border-hover md:hover:focus-visible:border-th-fgd-4'
 
 interface StakeFormProps {
   token: string
@@ -201,8 +208,8 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     tokenMax.maxAmount < Number(inputAmount) ||
     (selectedToken === 'SOL' && maxSolDeposit <= 0)
 
-  const changeLeverage = useCallback((v: string) => {
-    setLeverage(Number(v) * 1)
+  const changeLeverage = useCallback((v: number) => {
+    setLeverage(v * 1)
   }, [])
 
   useEffect(() => {
@@ -260,18 +267,11 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                       onClick={handleRefreshWalletBalances}
                       hideBg
                     >
-                      <ArrowPathIcon className="h-4 w-4" />
+                      <ArrowPathIcon className="h-5 w-5" />
                     </IconButton>
                   </Tooltip>
                 </div>
               </div>
-              {/* <div className="col-span-1">
-                <TokenListButton
-                  token={selectedToken}
-                  logo={<TokenLogo bank={stakeBank} />}
-                  setShowList={setShowTokenList}
-                />
-              </div> */}
               <div className="col-span-2">
                 <div className="relative">
                   <NumberFormat
@@ -282,7 +282,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                     allowNegative={false}
                     isNumericString={true}
                     decimalScale={6}
-                    className="w-full rounded-xl border border-th-input-border bg-th-input-bkg p-3 pl-12 pr-4 text-left font-mono text-xl text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:border-th-input-border-hover md:hover:focus-visible:border-th-fgd-4"
+                    className={NUMBERFORMAT_CLASSES}
                     placeholder="0.00"
                     value={inputAmount}
                     onValueChange={(e: NumberFormatValues) => {
@@ -306,76 +306,117 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
             <div className="mt-4">
               <div className="flex items-center justify-between">
                 <Label text="Leverage" />
-                <p className="font-bold text-th-fgd-1">{leverage}x</p>
+                <p className="mb-2 font-mono text-th-fgd-1">{leverage}x</p>
               </div>
               <LeverageSlider
-                amount={leverage}
                 leverageMax={3}
                 onChange={changeLeverage}
                 step={0.1}
               />
             </div>
             {stakeBank && borrowBank ? (
-              <>
-                <div className="mt-2 space-y-1.5 px-2 py-4">
-                  <div className="flex justify-between">
-                    <p>{t('deposit-amount')}</p>
-                    <BankAmountWithValue
-                      amount={inputAmount}
-                      bank={stakeBank}
-                    />
-                  </div>
-                  <div className="flex justify-between">
-                    <p>SOL Borrowed</p>
-                    {borrowBank ? (
-                      <span className="font-mono text-th-fgd-1">
-                        <FormatNumericValue
-                          value={amountToBorrow}
-                          decimals={3}
-                        />
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
-                <div className="space-y-1.5 border-t border-th-bkg-3 px-2 pt-4">
-                  <div className="flex justify-between">
-                    <p className="font-bold">Estimated Net APY</p>
-                    <span className="font-mono text-green-600">
-                      <FormatNumericValue
-                        value={estimatedNetAPY}
-                        decimals={2}
-                      />
-                      %
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <p>{formatTokenSymbol(selectedToken)} Leveraged APY</p>
-                    <span className="font-mono text-green-600">
-                      <FormatNumericValue value={leveragedAPY} decimals={2} />%
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <p>{formatTokenSymbol(selectedToken)} Deposit Rate</p>
-                    <span className="font-mono text-th-fgd-1">
-                      <FormatNumericValue
-                        value={stakeBankDepositRate}
-                        decimals={2}
-                      />
-                      %
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <p>SOL Borrow Rate</p>
-                    <span className="font-mono text-red-600">
-                      <FormatNumericValue
-                        value={borrowBankBorrowRate}
-                        decimals={2}
-                      />
-                      %
-                    </span>
-                  </div>
-                </div>
-              </>
+              <div className="pt-8">
+                <Disclosure>
+                  {({ open }) => (
+                    <>
+                      <Disclosure.Button
+                        className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-2 text-left focus:outline-none ${
+                          open ? 'rounded-b-none border-b-0' : ''
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <p className="font-medium">Est. Net APY</p>
+                          <div className="flex items-center space-x-2">
+                            <span className="mt-1 font-display text-2xl text-th-success">
+                              <FormatNumericValue
+                                value={estimatedNetAPY}
+                                decimals={2}
+                              />
+                              %
+                            </span>
+                            <ChevronDownIcon
+                              className={`${
+                                open ? 'rotate-180' : 'rotate-360'
+                              } h-6 w-6 flex-shrink-0 text-th-fgd-1`}
+                            />
+                          </div>
+                        </div>
+                      </Disclosure.Button>
+                      <Disclosure.Panel className="space-y-2 rounded-xl rounded-t-none border-2 border-t-0 border-th-bkg-3 px-4 pb-4">
+                        <div className="flex justify-between">
+                          <p className="text-th-fgd-4">
+                            {formatTokenSymbol(selectedToken)} Leveraged APY
+                          </p>
+                          <span className="font-mono text-th-success">
+                            <FormatNumericValue
+                              value={leveragedAPY}
+                              decimals={2}
+                            />
+                            %
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <p className="text-th-fgd-4">
+                            {formatTokenSymbol(selectedToken)} Deposit Rate
+                          </p>
+                          <span
+                            className={`font-mono ${
+                              stakeBankDepositRate > 0.01
+                                ? 'text-th-success'
+                                : 'text-th-bkg-4'
+                            }`}
+                          >
+                            <FormatNumericValue
+                              value={stakeBankDepositRate}
+                              decimals={2}
+                            />
+                            %
+                          </span>
+                        </div>
+                        {borrowBank ? (
+                          <>
+                            <div className="flex justify-between">
+                              <p className="text-th-fgd-4">{`${borrowBank.name} Borrow Rate`}</p>
+                              <span
+                                className={`font-mono ${
+                                  borrowBankBorrowRate > 0.01
+                                    ? 'text-th-error'
+                                    : 'text-th-bkg-4'
+                                }`}
+                              >
+                                <FormatNumericValue
+                                  value={borrowBankBorrowRate}
+                                  decimals={2}
+                                />
+                                %
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <p className="text-th-fgd-4">{`${borrowBank.name} Borrowed`}</p>
+                              <span
+                                className={`font-mono ${
+                                  amountToBorrow > 0.001
+                                    ? 'text-th-fgd-1'
+                                    : 'text-th-bkg-4'
+                                }`}
+                              >
+                                <FormatNumericValue
+                                  value={amountToBorrow}
+                                  decimals={3}
+                                />
+                                <span className="font-body text-th-fgd-4">
+                                  {' '}
+                                  {borrowBank.name}
+                                </span>
+                              </span>
+                            </div>
+                          </>
+                        ) : null}
+                      </Disclosure.Panel>
+                    </>
+                  )}
+                </Disclosure>
+              </div>
             ) : null}
           </div>
           {connected ? (
@@ -395,10 +436,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                   })}
                 </div>
               ) : (
-                <div className="flex items-center">
-                  Leverage Stake {inputAmount}{' '}
-                  {formatTokenSymbol(selectedToken)}
-                </div>
+                `Boost! ${inputAmount} ${formatTokenSymbol(selectedToken)}`
               )}
             </Button>
           ) : (
