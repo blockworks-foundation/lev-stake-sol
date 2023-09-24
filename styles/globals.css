@@ -98,6 +98,7 @@ th {
   --primary-1: theme('colors.light-theme.primary-1');
   --primary-2: theme('colors.light-theme.primary-2');
   --primary-3: theme('colors.light-theme.primary-3');
+  --primary-4: theme('colors.light-theme.primary-4');
 }
 
 [data-theme='Dark'] {
@@ -124,6 +125,7 @@ th {
   --primary-1: theme('colors.dark-theme.primary-1');
   --primary-2: theme('colors.dark-theme.primary-2');
   --primary-3: theme('colors.dark-theme.primary-3');
+  --primary-4: theme('colors.dark-theme.primary-4');
 }
 
 /* Base */
@@ -158,7 +160,7 @@ h1,
 h2,
 h3,
 h4 {
-  @apply font-bold text-th-fgd-1;
+  @apply font-display text-th-fgd-1;
 }
 
 h1 {
@@ -290,7 +292,7 @@ table p {
 }
 
 #range-slider-gradient .range-slider__thumb[data-upper] {
-  @apply h-7 w-4 rounded-full border border-th-primary-3 bg-th-primary-1 shadow-[inset_0_-3px_0px_rgba(0,0,0,0.15)];
+  @apply border-th-primary-3 bg-th-primary-1 h-7 w-4 rounded-full border shadow-[inset_0_-3px_0px_rgba(0,0,0,0.15)];
 }
 
 #range-slider-gradient .range-slider__range {
@@ -382,7 +384,7 @@ table p {
 }
 
 .raised-button-primary {
-  @apply relative bg-th-primary-1 transition-none;
+  @apply bg-th-primary-1 relative transition-none;
   box-shadow: 0 4px var(--primary-3);
 }
 

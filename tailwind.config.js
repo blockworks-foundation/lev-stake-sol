@@ -44,6 +44,7 @@ module.exports = {
           'primary-1': '#99ADD9',
           'primary-2': '#889FD3',
           'primary-3': '#728DC8',
+          'primary-4': '#627DB8',
         },
         'dark-theme': {
           active: {
@@ -74,6 +75,7 @@ module.exports = {
           'primary-1': '#99ADD9',
           'primary-2': '#889FD3',
           'primary-3': '#728DC8',
+          'primary-4': '#627DB8',
         },
         'th-bkg-1': 'var(--bkg-1)',
         'th-bkg-2': 'var(--bkg-2)',
@@ -98,6 +100,7 @@ module.exports = {
         'th-primary-1': 'var(--primary-1)',
         'th-primary-2': 'var(--primary-2)',
         'th-primary-3': 'var(--primary-3)',
+        'th-primary-4': 'var(--primary-4)',
       },
       cursor: {
         help: 'help',

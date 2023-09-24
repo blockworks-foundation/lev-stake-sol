@@ -41,6 +41,7 @@ import { MangoAccount } from '@blockworks-foundation/mango-v4'
 import { AnchorProvider } from '@project-serum/anchor'
 import useBankRates from 'hooks/useBankRates'
 import { Disclosure } from '@headlessui/react'
+import SheenLoader from './shared/SheenLoader'
 
 const set = mangoStore.getState().set
 
@@ -99,6 +100,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   // const banks = useBanksWithBalances('walletBalance')
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { group } = useMangoGroup()
+  const groupLoaded = mangoStore((s) => s.groupLoaded)
   const {
     stakeBankDepositRate,
     borrowBankBorrowRate,
@@ -320,14 +322,19 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                   {({ open }) => (
                     <>
                       <Disclosure.Button
-                        className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-2 text-left focus:outline-none ${
+                        className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${
                           open ? 'rounded-b-none border-b-0' : ''
                         }`}
                       >
                         <div className="flex items-center justify-between">
                           <p className="font-medium">Est. Net APY</p>
                           <div className="flex items-center space-x-2">
-                            <span className="mt-1 font-display text-2xl text-th-success">
+                            <span className="font-mono text-lg text-th-success">
+                              {estimatedNetAPY >= 0
+                                ? '+'
+                                : estimatedNetAPY === 0
+                                ? ''
+                                : '-'}
                               <FormatNumericValue
                                 value={estimatedNetAPY}
                                 decimals={2}
@@ -342,12 +349,13 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                           </div>
                         </div>
                       </Disclosure.Button>
-                      <Disclosure.Panel className="space-y-2 rounded-xl rounded-t-none border-2 border-t-0 border-th-bkg-3 px-4 pb-4">
+                      <Disclosure.Panel className="space-y-2 rounded-xl rounded-t-none border-2 border-t-0 border-th-bkg-3 px-4 pb-3">
                         <div className="flex justify-between">
                           <p className="text-th-fgd-4">
                             {formatTokenSymbol(selectedToken)} Leveraged APY
                           </p>
                           <span className="font-mono text-th-success">
+                            {leveragedAPY > 0.01 ? '+' : ''}
                             <FormatNumericValue
                               value={leveragedAPY}
                               decimals={2}
@@ -366,6 +374,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                                 : 'text-th-bkg-4'
                             }`}
                           >
+                            {stakeBankDepositRate > 0.01 ? '+' : ''}
                             <FormatNumericValue
                               value={stakeBankDepositRate}
                               decimals={2}
@@ -384,6 +393,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                                     : 'text-th-bkg-4'
                                 }`}
                               >
+                                -
                                 <FormatNumericValue
                                   value={borrowBankBorrowRate}
                                   decimals={2}
@@ -416,6 +426,12 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                     </>
                   )}
                 </Disclosure>
+              </div>
+            ) : !groupLoaded ? (
+              <div className="pt-8">
+                <SheenLoader className="flex flex-1 rounded-xl">
+                  <div className="h-[56px] w-full bg-th-bkg-2" />
+                </SheenLoader>
               </div>
             ) : null}
           </div>

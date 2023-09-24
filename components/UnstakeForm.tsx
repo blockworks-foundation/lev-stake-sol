@@ -298,14 +298,14 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                   {({ open }) => (
                     <>
                       <Disclosure.Button
-                        className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-2 text-left focus:outline-none ${
+                        className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${
                           open ? 'rounded-b-none border-b-0' : ''
                         }`}
                       >
                         <div className="flex items-center justify-between">
                           <p className="font-medium">Staked Amount</p>
                           <div className="flex items-center space-x-2">
-                            <span className="mt-1 font-display text-2xl text-th-fgd-1">
+                            <span className="font-mono text-lg text-th-fgd-1">
                               <FormatNumericValue
                                 value={tokenMax.maxAmount}
                                 decimals={stakeBank.mintDecimals}
@@ -319,7 +319,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                           </div>
                         </div>
                       </Disclosure.Button>
-                      <Disclosure.Panel className="space-y-2 rounded-xl rounded-t-none border-2 border-t-0 border-th-bkg-3 px-4 pb-4">
+                      <Disclosure.Panel className="space-y-2 rounded-xl rounded-t-none border-2 border-t-0 border-th-bkg-3 px-4 pb-3">
                         <div className="flex justify-between">
                           <p className="text-th-fgd-4">Staked Amount</p>
                           <span className="font-mono text-th-fgd-1">

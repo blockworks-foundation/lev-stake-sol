@@ -36,21 +36,22 @@ const Positions = ({
   }, [group])
 
   const positions = useMemo(() => {
-    if (!banks.length || !stakeAccounts?.length) return []
     const positions = []
-    for (const bank of banks) {
-      if (!bank) continue
-      const acct = stakeAccounts.find((acc) => acc.getTokenBalanceUi(bank) > 0)
-      const balance = acct ? acct.getTokenBalanceUi(bank) : 0
-      positions.push({ balance, bank })
+    if (banks.length) {
+      for (const bank of banks) {
+        if (!bank) continue
+        const acct = stakeAccounts?.find(
+          (acc) => acc.getTokenBalanceUi(bank) > 0,
+        )
+        const balance = acct ? acct.getTokenBalanceUi(bank) : 0
+        positions.push({ balance, bank })
+      }
     }
     const sortedPositions = positions.sort((a, b) => b.balance - a.balance)
     return showInactivePositions
       ? sortedPositions
       : sortedPositions.filter((pos) => pos.balance > 0)
   }, [banks, showInactivePositions, stakeAccounts])
-
-  console.log('positions', positions)
 
   const numberOfPositions = useMemo(() => {
     if (!positions.length) return 0
@@ -64,11 +65,11 @@ const Positions = ({
     })
   }
 
-  return positions.length ? (
-    <div className="space-y-3">
-      <div className="mb-4 flex items-center justify-between">
-        <p>{`You have ${numberOfPositions} active position${
-          numberOfPositions > 1 ? 's' : ''
+  return (
+    <>
+      <div className="mb-2 flex items-center justify-between rounded-lg border-2 border-th-fgd-1 bg-th-bkg-1 px-6 py-3.5">
+        <p className="font-medium">{`You have ${numberOfPositions} active position${
+          numberOfPositions !== 1 ? 's' : ''
         }`}</p>
         <Switch
           checked={showInactivePositions}
@@ -77,83 +78,94 @@ const Positions = ({
           Show Inactive
         </Switch>
       </div>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        {positions.map((position, i) => {
-          const { balance, bank } = position
-          return bank ? (
-            <div
-              className="rounded-2xl border border-th-fgd-1 p-6"
-              key={i + balance}
-            >
-              <div className="mb-6 flex flex-col border-b border-th-bkg-4 pb-6 md:flex-row md:items-center md:justify-between">
-                <div className="mb-4 flex items-center space-x-3 md:mb-0">
-                  <TokenLogo bank={bank} size={40} />
-                  <div>
-                    <h3>{formatTokenSymbol(bank.name)}</h3>
-                    <span
-                      className={`text-sm ${
-                        balance ? 'text-th-fgd-1' : 'text-th-fgd-4'
-                      }`}
+      <div className="grid grid-cols-1 gap-2">
+        {positions.length ? (
+          positions.map((position, i) => {
+            const { balance, bank } = position
+            return bank ? (
+              <div
+                className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6"
+                key={i + balance}
+              >
+                <div className="mb-4 flex flex-col border-b border-th-bkg-3 pb-4 md:flex-row md:items-center md:justify-between">
+                  <div className="mb-4 flex items-center space-x-3 md:mb-0">
+                    <div
+                      className={`inner-shadow-bottom-sm flex h-14 w-14 items-center justify-center rounded-full border border-th-bkg-2 bg-gradient-to-b from-th-bkg-1 to-th-bkg-2`}
                     >
-                      {balance ? 'Opened 2 weeks ago' : 'No Position'}
+                      <TokenLogo bank={bank} size={32} />
+                    </div>
+                    <div>
+                      <h3 className="-mb-1 text-2xl">
+                        {formatTokenSymbol(bank.name)}
+                      </h3>
+                      <span
+                        className={`text-sm ${
+                          balance ? 'text-th-fgd-1' : 'text-th-fgd-4'
+                        }`}
+                      >
+                        {balance ? 'Opened 2 weeks ago' : 'No Position'}
+                      </span>
+                    </div>
+                  </div>
+                  <Button onClick={() => handleAddOrManagePosition(bank.name)}>
+                    <span className="mt-1 text-base tracking-wider">
+                      {balance ? 'Manage' : 'Add Position'}
+                    </span>
+                  </Button>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="mb-1 text-th-fgd-4">Position Size</p>
+                    <span className="text-xl font-bold">
+                      <FormatNumericValue value={balance} decimals={6} />{' '}
+                      {formatTokenSymbol(bank.name)}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="mb-1 text-th-fgd-4">Est. APY</p>
+                    <span className="text-xl font-bold">
+                      {loadingRates ? (
+                        <SheenLoader className="mt-1">
+                          <div className="h-6 w-16 bg-th-bkg-2" />
+                        </SheenLoader>
+                      ) : stakeRates?.[bank.name.toLowerCase()] ? (
+                        `${(
+                          stakeRates?.[bank.name.toLowerCase()] * 100
+                        ).toFixed(2)}%`
+                      ) : null}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="mb-1 text-th-fgd-4">Leverage</p>
+                    <span className="text-xl font-bold">
+                      {balance ? '3x' : '0x'}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="mb-1 text-th-fgd-4">Earned</p>
+                    <span className="text-xl font-bold">
+                      {balance ? '3.321 SOL' : '0 SOL'}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="mb-1 text-th-fgd-4">Liquidation Price</p>
+                    <span className="whitespace-nowrap text-xl font-bold">
+                      {balance ? '1.234' : '0'}{' '}
+                      {`${formatTokenSymbol(bank.name)}/SOL`}
                     </span>
                   </div>
                 </div>
-                <Button
-                  onClick={() => handleAddOrManagePosition(bank.name)}
-                  secondary
-                >
-                  {balance ? 'Manage' : 'Add Position'}
-                </Button>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="mb-1">Position Size</p>
-                  <span className="text-xl font-bold">
-                    <FormatNumericValue value={balance} decimals={6} />{' '}
-                    {formatTokenSymbol(bank.name)}
-                  </span>
-                </div>
-                <div>
-                  <p className="mb-1">Est. APY</p>
-                  <span className="text-xl font-bold">
-                    {loadingRates ? (
-                      <SheenLoader className="mt-1">
-                        <div className="h-6 w-16 bg-th-bkg-2" />
-                      </SheenLoader>
-                    ) : stakeRates?.[bank.name.toLowerCase()] ? (
-                      `${(stakeRates?.[bank.name.toLowerCase()] * 100).toFixed(
-                        2,
-                      )}%`
-                    ) : null}
-                  </span>
-                </div>
-                <div>
-                  <p className="mb-1">Leverage</p>
-                  <span className="text-xl font-bold">
-                    {balance ? '3x' : '0x'}
-                  </span>
-                </div>
-                <div>
-                  <p className="mb-1">Earned</p>
-                  <span className="text-xl font-bold">
-                    {balance ? '3.321 SOL' : '0 SOL'}
-                  </span>
-                </div>
-                <div>
-                  <p className="mb-1">Liquidation Price</p>
-                  <span className="whitespace-nowrap text-xl font-bold">
-                    {balance ? '1.234' : '0'}{' '}
-                    {`${formatTokenSymbol(bank.name)}/SOL`}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ) : null
-        })}
+            ) : null
+          })
+        ) : (
+          <div className="flex justify-center rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
+            <span>Nothing to see here...</span>
+          </div>
+        )}
       </div>
-    </div>
-  ) : null
+    </>
+  )
 }
 
 export default Positions

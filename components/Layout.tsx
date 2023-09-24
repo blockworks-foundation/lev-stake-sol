@@ -24,11 +24,16 @@ const Layout = ({ children }: { children: ReactNode }) => {
     <main
       className={`${themeData.fonts.body.variable} ${themeData.fonts.display.variable} ${themeData.fonts.mono.variable} font-sans bg-[#889FD3] bg-[url('/images/rays.svg')] bg-cover bg-fixed bg-center`}
     >
-      <div className={`min-h-screen`}>
-        <TopBar />
-        {children}
-        <DeployRefreshManager />
-        <TermsOfUse />
+      <div className={`relative min-h-screen`}>
+        <div className="from-th-primary-3 to-th-primary-2 border-th-primary-4 absolute bottom-0 h-44 w-full border-b-[20px] bg-gradient-to-b" />
+        <div className="relative z-10">
+          <TopBar />
+          <div className="mx-auto max-w-3xl px-6 pb-12 md:pb-20 lg:px-12">
+            {children}
+          </div>
+          <DeployRefreshManager />
+          <TermsOfUse />
+        </div>
       </div>
     </main>
   )
