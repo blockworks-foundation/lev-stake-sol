@@ -74,7 +74,7 @@ import {
   DEFAULT_PRIORITY_FEE,
   TRITON_DEDICATED_URL,
 } from '@components/settings/RpcSettings'
-import { nftThemeMeta } from 'utils/theme'
+import { themeData } from 'utils/theme'
 import maxBy from 'lodash/maxBy'
 import mapValues from 'lodash/mapValues'
 import groupBy from 'lodash/groupBy'
@@ -402,7 +402,7 @@ const mangoStore = create<MangoStore>()(
         amountOut: '',
         flipPrices: false,
       },
-      themeData: nftThemeMeta.default,
+      themeData: themeData.default,
       tokenStats: {
         initialLoad: false,
         loading: true,

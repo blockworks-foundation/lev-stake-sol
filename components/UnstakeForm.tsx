@@ -1,4 +1,8 @@
-import { ArrowPathIcon, ExclamationCircleIcon } from '@heroicons/react/20/solid'
+import {
+  ArrowPathIcon,
+  ChevronDownIcon,
+  ExclamationCircleIcon,
+} from '@heroicons/react/20/solid'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useTranslation } from 'next-i18next'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -34,6 +38,10 @@ import useMangoGroup from 'hooks/useMangoGroup'
 import FormatNumericValue from './shared/FormatNumericValue'
 import useMangoAccount from 'hooks/useMangoAccount'
 import { unstakeAndClose } from 'utils/transactions'
+import { NUMBERFORMAT_CLASSES } from './StakeForm'
+import ButtonGroup from './forms/ButtonGroup'
+import Decimal from 'decimal.js'
+import { Disclosure } from '@headlessui/react'
 
 const set = mangoStore.getState().set
 
@@ -71,6 +79,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
   // )
   const [showTokenList, setShowTokenList] = useState(false)
   const [refreshingWalletTokens, setRefreshingWalletTokens] = useState(false)
+  const [sizePercentage, setSizePercentage] = useState('')
   const { maxSolDeposit } = useSolBalance()
   // const banks = useBanksWithBalances('walletBalance')
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
@@ -107,6 +116,19 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
     const max = floorToDecimal(tokenMax.maxAmount, tokenMax.maxDecimals)
     setInputAmount(max.toFixed())
   }, [tokenMax])
+
+  const handleSizePercentage = useCallback(
+    (percentage: string) => {
+      if (!stakeBank) return
+      setSizePercentage(percentage)
+      const amount = floorToDecimal(
+        new Decimal(percentage).div(100).mul(tokenMax.maxAmount),
+        stakeBank.mintDecimals,
+      )
+      setInputAmount(amount.toFixed())
+    },
+    [tokenMax, stakeBank],
+  )
 
   // const handleSelectToken = (token: string) => {
   //   setSelectedToken(token)
@@ -225,18 +247,11 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                       onClick={handleRefreshWalletBalances}
                       hideBg
                     >
-                      <ArrowPathIcon className="h-4 w-4" />
+                      <ArrowPathIcon className="h-5 w-5" />
                     </IconButton>
                   </Tooltip>
                 </div>
               </div>
-              {/* <div className="col-span-1">
-                <TokenListButton
-                  token={selectedToken}
-                  logo={<TokenLogo bank={stakeBank} />}
-                  setShowList={setShowTokenList}
-                />
-              </div> */}
               <div className="col-span-2">
                 <div className="relative">
                   <NumberFormat
@@ -247,7 +262,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                     allowNegative={false}
                     isNumericString={true}
                     decimalScale={stakeBank?.mintDecimals || 6}
-                    className="w-full rounded-xl border border-th-input-border bg-th-input-bkg p-3 pl-12 pr-4 text-left font-mono text-xl text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:border-th-input-border-hover md:hover:focus-visible:border-th-fgd-4"
+                    className={NUMBERFORMAT_CLASSES}
                     placeholder="0.00"
                     value={inputAmount}
                     onValueChange={(e: NumberFormatValues) => {
@@ -267,27 +282,74 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                   </div>
                 </div>
               </div>
+              <div className="col-span-2 mt-2">
+                <ButtonGroup
+                  activeValue={sizePercentage}
+                  onChange={(p) => handleSizePercentage(p)}
+                  values={['10', '25', '50', '75', '100']}
+                  unit="%"
+                />
+              </div>
             </div>
             {stakeBank && solBank ? (
-              <>
-                <div className="mt-2 space-y-1.5 px-2 pt-4">
-                  <div className="flex justify-between">
-                    <p>Staked Amount</p>
-                    <BankAmountWithValue
-                      amount={tokenMax.maxAmount}
-                      bank={stakeBank}
-                    />
-                  </div>
-                  <div className="flex justify-between">
-                    <p>SOL borrowed</p>
-                    {solBank ? (
-                      <span className="text-th-fgd-1">
-                        <FormatNumericValue value={solBorrowed} decimals={3} />
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
-              </>
+              <div className="pt-8">
+                <Disclosure>
+                  {({ open }) => (
+                    <>
+                      <Disclosure.Button
+                        className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${
+                          open ? 'rounded-b-none border-b-0' : ''
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <p className="font-medium">Staked Amount</p>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-lg font-bold text-th-fgd-1">
+                              <FormatNumericValue
+                                value={tokenMax.maxAmount}
+                                decimals={stakeBank.mintDecimals}
+                              />
+                            </span>
+                            <ChevronDownIcon
+                              className={`${
+                                open ? 'rotate-180' : 'rotate-360'
+                              } h-6 w-6 flex-shrink-0 text-th-fgd-1`}
+                            />
+                          </div>
+                        </div>
+                      </Disclosure.Button>
+                      <Disclosure.Panel className="space-y-2 rounded-xl rounded-t-none border-2 border-t-0 border-th-bkg-3 px-4 pb-3">
+                        <div className="flex justify-between">
+                          <p className="text-th-fgd-4">Staked Amount</p>
+                          <span className="font-bold text-th-fgd-1">
+                            <BankAmountWithValue
+                              amount={tokenMax.maxAmount}
+                              bank={stakeBank}
+                            />
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <p className="text-th-fgd-4">SOL borrowed</p>
+                          {solBank ? (
+                            <span
+                              className={`font-bold ${
+                                solBorrowed > 0.001
+                                  ? 'text-th-fgd-1'
+                                  : 'text-th-bkg-4'
+                              }`}
+                            >
+                              <FormatNumericValue
+                                value={solBorrowed}
+                                decimals={3}
+                              />
+                            </span>
+                          ) : null}
+                        </div>
+                      </Disclosure.Panel>
+                    </>
+                  )}
+                </Disclosure>
+              </div>
             ) : null}
           </div>
           {connected ? (
@@ -307,9 +369,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                   })}
                 </div>
               ) : (
-                <div className="flex items-center">
-                  Unstake {inputAmount} {formatTokenSymbol(selectedToken)}
-                </div>
+                `Unboost ${inputAmount} ${formatTokenSymbol(selectedToken)}`
               )}
             </Button>
           ) : (

@@ -18,9 +18,9 @@ const TabUnderline = <T extends Values>({
   fillWidth = true,
 }: TabUnderlineProps<T>) => {
   return (
-    <div className={`relative mb-3 border-b border-th-bkg-3 pb-1 font-bold`}>
+    <div className={`relative mb-3 border-b border-th-bkg-4 pb-1`}>
       <div
-        className={`absolute bottom-[-1px] left-0 h-1 bg-th-active`}
+        className={`inner-shadow-bottom-sm absolute bottom-[-1px] left-0 h-1.5 bg-th-active`}
         style={{
           maxWidth: !fillWidth ? '176px' : '',
           transform: `translateX(${
@@ -37,27 +37,18 @@ const TabUnderline = <T extends Values>({
               fillWidth ? '' : 'max-w-[176px]'
             }
             cursor-pointer items-center justify-center whitespace-nowrap rounded pb-2 focus-visible:text-th-fgd-2 md:h-auto md:rounded-none md:hover:opacity-100 ${
-              small ? 'text-sm' : 'text-lg lg:text-xl'
+              small ? 'text-sm' : 'text-lg'
             }
             ${
               activeValue === value
-                ? activeValue === 'buy'
-                  ? 'text-th-up'
-                  : activeValue === 'sell'
-                  ? 'text-th-down'
-                  : 'text-th-active'
+                ? 'text-th-fgd-1'
                 : 'text-th-fgd-4 md:hover:text-th-fgd-3'
             }
           `}
             key={`${value}` + i}
           >
-            <span className="relative">
+            <span className="relative font-bold">
               {names ? names[i] : value}
-              {value === 'trade:trigger-order' ? (
-                <span className="absolute -right-5 -top-3 ml-2 rounded bg-th-active px-1 py-0.5 text-xxs font-bold uppercase leading-none text-th-bkg-1">
-                  beta
-                </span>
-              ) : null}
             </span>
           </button>
         ))}

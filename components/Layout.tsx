@@ -9,6 +9,7 @@ import useInterval from './shared/useInterval'
 import { Transition } from '@headlessui/react'
 import { useTranslation } from 'next-i18next'
 import TermsOfUseModal from './modals/TermsOfUseModal'
+import SunburstBackground from './SunburstBackground'
 
 export const sideBarAnimationDuration = 300
 const termsLastUpdated = 1679441610978
@@ -22,13 +23,19 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   return (
     <main
-      className={`${themeData.fonts.body.variable} ${themeData.fonts.display.variable} ${themeData.fonts.mono.variable} font-sans`}
+      className={`${themeData.fonts.body.variable} ${themeData.fonts.display.variable} ${themeData.fonts.mono.variable} font-sans bg-th-primary-2`}
     >
-      <div className={`min-h-screen grow text-th-fgd-2 transition-all`}>
-        <TopBar />
-        {children}
-        <DeployRefreshManager />
-        <TermsOfUse />
+      <SunburstBackground className="text-th-primary-1" />
+      <div className={`relative min-h-screen`}>
+        <div className="absolute bottom-0 h-44 w-full border-b-[20px] border-th-primary-4 bg-gradient-to-b from-th-primary-3 to-th-primary-2" />
+        <div className="relative z-10">
+          <TopBar />
+          <div className="mx-auto max-w-3xl px-6 pb-12 md:pb-20 lg:px-12">
+            {children}
+          </div>
+          <DeployRefreshManager />
+          <TermsOfUse />
+        </div>
       </div>
     </main>
   )

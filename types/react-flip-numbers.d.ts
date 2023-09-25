@@ -1,1 +1,1 @@
-declare module 'react-flip-numbers'
+declare module 'react-range-slider-input'

@@ -30,7 +30,7 @@ const Switch: FunctionComponent<SwitchProps> = ({
           checked ? 'bg-th-success' : 'bg-th-bkg-4'
         } relative inline-flex ${
           small ? 'h-4 w-8' : 'h-5 w-10'
-        } flex-shrink-0 cursor-pointer rounded-full 
+        } inner-shadow-top-sm flex-shrink-0 cursor-pointer rounded-full 
         border-2 border-transparent transition-colors duration-200 ease-in-out focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-th-fgd-4 ${
           disabled ? 'opacity-60' : ''
         }`}
@@ -50,8 +50,8 @@ const Switch: FunctionComponent<SwitchProps> = ({
               : 'translate-x-0'
           } pointer-events-none inline-block ${
             small ? 'h-3 w-3' : 'h-4 w-4'
-          } rounded-full 
-          bg-white shadow ring-0 transition duration-200 ease-in-out`}
+          } inner-shadow-bottom-sm 
+          rounded-full bg-white ring-0 transition duration-200 ease-in-out`}
         ></span>
       </button>
     </div>

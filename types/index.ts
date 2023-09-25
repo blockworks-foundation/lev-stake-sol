@@ -393,22 +393,12 @@ export interface TradeForm {
 }
 
 export interface ThemeData {
-  buttonStyle: 'flat' | 'raised'
   fonts: {
     body: any
     display: any
     mono: any
   }
   logoPath: string
-  platformName: string
-  rainAnimationImagePath: string
-  sideImagePath: string
-  sideTilePath: string
-  sideTilePathExpanded: string
-  topTilePath: string
-  tvChartTheme: 'Light' | 'Dark'
-  tvImagePath: string
-  useGradientBg: boolean
 }
 
 export interface MangoError extends Error {

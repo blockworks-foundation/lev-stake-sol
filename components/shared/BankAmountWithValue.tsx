@@ -16,7 +16,7 @@ const BankAmountWithValue = ({
   value?: number
 }) => {
   return (
-    <p className={`font-mono text-th-fgd-1 ${stacked ? 'text-right' : ''}`}>
+    <p className={`font-bold text-th-fgd-1 ${stacked ? 'text-right' : ''}`}>
       <>
         <FormatNumericValue
           value={amount}

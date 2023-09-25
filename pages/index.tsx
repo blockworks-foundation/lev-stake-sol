@@ -1,5 +1,7 @@
+import NavTabs from '@components/NavTabs'
 import Positions from '@components/Positions'
 import Stake from '@components/Stake'
+import Stats from '@components/Stats'
 import TransactionHistory from '@components/TransactionHistory'
 import mangoStore from '@store/mangoStore'
 import type { NextPage } from 'next'
@@ -18,7 +20,7 @@ export async function getStaticProps({ locale }: { locale: string }) {
 }
 
 const Index: NextPage = () => {
-  const [activeTab, setActiveTab] = useState('Stake')
+  const [activeTab, setActiveTab] = useState('Boost!')
   const selectedToken = mangoStore((s) => s.selectedToken)
 
   useEffect(() => {
@@ -40,41 +42,16 @@ const Index: NextPage = () => {
   }, [selectedToken])
 
   return (
-    <div className="mx-auto max-w-6xl px-6 pb-12 md:pb-20 lg:px-12">
-      <div className="mb-6 grid grid-cols-3 rounded-xl border border-th-fgd-1">
-        <button
-          className={`col-span-1 mx-auto w-full rounded-l-xl border-r border-th-fgd-1 py-4 font-bold ${
-            activeTab === 'Stake'
-              ? 'bg-th-bkg-2 text-th-fgd-1'
-              : 'text-th-fgd-3'
-          }`}
-          onClick={() => setActiveTab('Stake')}
-        >
-          Stake
-        </button>
-        <button
-          className={`col-span-1 mx-auto w-full border-r border-th-fgd-1 py-4 font-bold ${
-            activeTab === 'Positions'
-              ? 'bg-th-bkg-2 text-th-fgd-1'
-              : 'text-th-fgd-3'
-          }`}
-          onClick={() => setActiveTab('Positions')}
-        >
-          Positions
-        </button>
-        <button
-          className={`col-span-1 mx-auto w-full rounded-r-xl py-4 font-bold ${
-            activeTab === 'History'
-              ? 'bg-th-bkg-2 text-th-fgd-1'
-              : 'text-th-fgd-3'
-          }`}
-          onClick={() => setActiveTab('History')}
-        >
-          History
-        </button>
+    <>
+      <div className="mb-6 grid grid-cols-4">
+        <NavTabs
+          activeValue={activeTab}
+          values={['Boost!', 'Positions', 'History', 'Stats']}
+          onChange={setActiveTab}
+        />
       </div>
       <TabContent activeTab={activeTab} setActiveTab={setActiveTab} />
-    </div>
+    </>
   )
 }
 
@@ -88,12 +65,14 @@ const TabContent = ({
   setActiveTab: (tab: string) => void
 }) => {
   switch (activeTab) {
-    case 'Stake':
+    case 'Boost!':
       return <Stake />
     case 'Positions':
       return <Positions setActiveTab={setActiveTab} />
     case 'History':
       return <TransactionHistory />
+    case 'Stats':
+      return <Stats />
     default:
       return <Stake />
   }
