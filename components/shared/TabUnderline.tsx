@@ -9,20 +9,18 @@ interface TabUnderlineProps<T extends Values> {
   fillWidth?: boolean
 }
 
-const TabUnderline = <T extends Values>(
-  {
-    activeValue,
-    values,
-    names,
-    onChange,
-    small,
-    fillWidth = true,
-  }: TabUnderlineProps<T>,
-) => {
+const TabUnderline = <T extends Values>({
+  activeValue,
+  values,
+  names,
+  onChange,
+  small,
+  fillWidth = true,
+}: TabUnderlineProps<T>) => {
   return (
     <div className={`relative mb-3 border-b border-th-bkg-4 pb-1`}>
       <div
-        className={`inner-shadow-bottom-sm absolute bottom-[-1px] left-0 h-1.5 bg-th-primary-3`}
+        className={`inner-shadow-bottom-sm absolute bottom-[-1px] left-0 h-1.5 bg-th-active`}
         style={{
           maxWidth: !fillWidth ? '176px' : '',
           transform: `translateX(${

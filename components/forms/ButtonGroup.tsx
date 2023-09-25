@@ -10,23 +10,21 @@ interface ButtonGroupProps<T extends Values> {
   names?: Array<string>
 }
 
-const ButtonGroup = <T extends Values>(
-  {
-    activeValue,
-    className,
-    disabled,
-    unit,
-    values,
-    onChange,
-    names,
-  }: ButtonGroupProps<T>,
-) => {
+const ButtonGroup = <T extends Values>({
+  activeValue,
+  className,
+  disabled,
+  unit,
+  values,
+  onChange,
+  names,
+}: ButtonGroupProps<T>) => {
   return (
     <div className={`rounded-lg ${disabled ? 'opacity-50' : ''}`}>
       <div className="relative flex">
         {activeValue && values.includes(activeValue) ? (
           <div
-            className={`absolute left-0 top-0 h-full transform bg-th-primary-2 ${
+            className={`absolute left-0 top-0 h-full transform bg-th-active ${
               activeValue === values[0] ? 'rounded-l-[7px]' : ''
             } ${
               activeValue === values[values.length - 1] ? 'rounded-r-[7px]' : ''
@@ -43,13 +41,13 @@ const ButtonGroup = <T extends Values>(
           const activeIndex = values.findIndex((val) => val === activeValue)
           return (
             <button
-              className={`${className} relative h-12 w-1/2 border-y border-r px-3 text-center text-sm font-normal focus-visible:bg-th-bkg-4 focus-visible:text-th-fgd-2 disabled:cursor-not-allowed
+              className={`${className} relative h-12 w-1/2 border-y border-r px-3 text-center text-sm font-bold focus-visible:bg-th-bkg-4 focus-visible:text-th-fgd-2 disabled:cursor-not-allowed
             ${v === values[0] ? 'rounded-l-lg border-l' : ''} ${
               v === values[values.length - 1] ? 'rounded-r-lg' : ''
             }
               ${
                 v === activeValue
-                  ? `inner-shadow-top-sm border-l border-th-primary-3 text-th-active`
+                  ? `inner-shadow-top-sm border-l border-th-active-dark text-th-fgd-1`
                   : `transition-color inner-shadow-bottom-sm border-th-bkg-3 bg-th-bkg-1 text-th-fgd-2 duration-300 md:hover:bg-th-bkg-2 md:hover:text-th-fgd-1`
               }
               ${

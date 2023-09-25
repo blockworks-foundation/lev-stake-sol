@@ -17,9 +17,9 @@ const NavTabs = <T extends Values>({
     <>
       {values.map((value, i) => (
         <button
-          className={`mx-auto w-full border-y-2 border-r border-th-fgd-1 pb-2.5 pt-3.5 font-display first:rounded-l-lg first:border-l-2 last:rounded-r-lg last:border-r-2 ${
+          className={`mx-auto w-full border-y-2 border-r border-th-fgd-1 py-3.5 font-bold first:rounded-l-lg first:border-l-2 last:rounded-r-lg last:border-r-2 ${
             activeValue === value
-              ? 'text-shadow inner-shadow-top-sm bg-th-primary-2 text-th-active'
+              ? 'inner-shadow-top-sm bg-th-active text-th-fgd-1'
               : 'inner-shadow-bottom-sm default-transition bg-th-bkg-1 text-th-fgd-1 md:hover:bg-th-bkg-2'
           }`}
           key={`${value}` + i}

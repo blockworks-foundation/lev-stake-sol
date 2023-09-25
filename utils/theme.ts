@@ -1,5 +1,5 @@
 import { ThemeData } from 'types'
-import { lalezar, robotoFlex, robotoMono } from './fonts'
+import { lalezar, nunito, nunitoDisplay, robotoFlex, robotoMono } from './fonts'
 
 export const breakpoints = {
   sm: 640,
@@ -28,10 +28,10 @@ type Theme = {
 export const themeData: Theme = {
   default: {
     fonts: {
-      body: robotoFlex,
-      display: lalezar,
+      body: nunito,
+      display: nunitoDisplay,
       mono: robotoMono,
     },
-    logoPath: '/logos/boost.png',
+    logoPath: '/logos/boost.svg',
   },
 }

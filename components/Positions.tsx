@@ -95,9 +95,7 @@ const Positions = ({
                       <TokenLogo bank={bank} size={32} />
                     </div>
                     <div>
-                      <h3 className="-mb-1 text-2xl">
-                        {formatTokenSymbol(bank.name)}
-                      </h3>
+                      <h3>{formatTokenSymbol(bank.name)}</h3>
                       <span
                         className={`text-sm ${
                           balance ? 'text-th-fgd-1' : 'text-th-fgd-4'
@@ -116,14 +114,14 @@ const Positions = ({
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="mb-1 text-th-fgd-4">Position Size</p>
-                    <span className="text-xl font-bold">
+                    <span className="text-xl font-bold text-th-fgd-1">
                       <FormatNumericValue value={balance} decimals={6} />{' '}
                       {formatTokenSymbol(bank.name)}
                     </span>
                   </div>
                   <div>
                     <p className="mb-1 text-th-fgd-4">Est. APY</p>
-                    <span className="text-xl font-bold">
+                    <span className="text-xl font-bold text-th-fgd-1">
                       {loadingRates ? (
                         <SheenLoader className="mt-1">
                           <div className="h-6 w-16 bg-th-bkg-2" />
@@ -137,19 +135,19 @@ const Positions = ({
                   </div>
                   <div>
                     <p className="mb-1 text-th-fgd-4">Leverage</p>
-                    <span className="text-xl font-bold">
+                    <span className="text-xl font-bold text-th-fgd-1">
                       {balance ? '3x' : '0x'}
                     </span>
                   </div>
                   <div>
                     <p className="mb-1 text-th-fgd-4">Earned</p>
-                    <span className="text-xl font-bold">
+                    <span className="text-xl font-bold text-th-fgd-1">
                       {balance ? '3.321 SOL' : '0 SOL'}
                     </span>
                   </div>
                   <div>
                     <p className="mb-1 text-th-fgd-4">Liquidation Price</p>
-                    <span className="whitespace-nowrap text-xl font-bold">
+                    <span className="whitespace-nowrap text-xl font-bold text-th-fgd-1">
                       {balance ? '1.234' : '0'}{' '}
                       {`${formatTokenSymbol(bank.name)}/SOL`}
                     </span>

@@ -65,11 +65,11 @@ export default function ConnectWalletButton() {
               </div>
             )}
             <div className="text-left">
-              <div className=" mb-1 flex font-display text-base leading-none text-th-fgd-1">
+              <div className="text-sm font-bold text-th-fgd-1">
                 {t('connect')}
               </div>
 
-              <div className="-mt-1 text-xxs font-normal leading-none text-th-fgd-3">
+              <div className="text-xs font-normal leading-none text-th-fgd-3">
                 {lastWalletName}
               </div>
             </div>

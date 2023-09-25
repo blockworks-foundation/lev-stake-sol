@@ -22,7 +22,7 @@ const Stake = () => {
 
   return (
     <>
-      <div className="grid grid-cols-4 rounded-t-2xl border-2 border-b-0 border-th-fgd-1 bg-white">
+      <div className="grid grid-cols-4 rounded-t-2xl border-2 border-b-0 border-th-fgd-1 bg-th-bkg-1">
         {STAKEABLE_TOKENS.map((token) => (
           <TokenButton
             key={token}
@@ -33,11 +33,8 @@ const Stake = () => {
         ))}
       </div>
       <div className="grid grid-cols-12">
-        {/* <div
-          className={`order-2 col-span-12 rounded-b-2xl border border-th-fgd-1 bg-white text-th-fgd-1 md:order-2 md:col-span-7 md:rounded-br-none`}
-        > */}
         <div
-          className={`col-span-12 rounded-b-2xl border-2 border-t border-th-fgd-1 bg-white text-th-fgd-1`}
+          className={`col-span-12 rounded-b-2xl border-2 border-t border-th-fgd-1 bg-th-bkg-1 text-th-fgd-1`}
         >
           <div className={`p-8 pt-6`}>
             <div className="pb-2">
@@ -63,10 +60,10 @@ const Stake = () => {
       </div>
       {activeFormTab === 'Add' ? (
         <div className="fixed bottom-8 left-8">
-          <button className="raised-button text-shadow flex h-20 w-20 items-center justify-center rounded-full border border-th-button-hover p-3 text-center font-display text-base">
+          <button className="raised-button text-shadow flex h-20 w-20 items-center justify-center rounded-full border border-th-button-hover p-3 text-center text-base font-extrabold">
             <div>
-              <p className="text-th-active">Buy</p>
-              <p className="-mt-1.5 text-th-active">
+              <p className="text-white">Buy</p>
+              <p className="-mt-1.5 text-white">
                 {formatTokenSymbol(selectedToken)}
               </p>
             </div>

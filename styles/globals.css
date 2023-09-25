@@ -131,7 +131,7 @@ th {
 /* Base */
 
 body {
-  @apply font-body text-base font-normal leading-tight tracking-wide;
+  @apply bg-th-primary-1 font-body text-base font-normal leading-tight tracking-wide text-th-fgd-1;
   /* -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale; */
 }
@@ -160,19 +160,19 @@ h1,
 h2,
 h3,
 h4 {
-  @apply font-display text-th-fgd-1;
+  @apply font-extrabold text-th-fgd-1;
 }
 
 h1 {
-  @apply text-3xl;
-}
-
-h2 {
   @apply text-2xl;
 }
 
-h3 {
+h2 {
   @apply text-xl;
+}
+
+h3 {
+  @apply text-lg;
 }
 
 p {
@@ -292,7 +292,7 @@ table p {
 }
 
 #range-slider-gradient .range-slider__thumb[data-upper] {
-  @apply border-th-primary-3 bg-th-primary-1 h-7 w-4 rounded-full border shadow-[inset_0_-3px_0px_rgba(0,0,0,0.15)];
+  @apply h-7 w-4 rounded-full border border-th-primary-3 bg-th-primary-1 shadow-[inset_0_-3px_0px_rgba(0,0,0,0.15)];
 }
 
 #range-slider-gradient .range-slider__range {
@@ -384,7 +384,7 @@ table p {
 }
 
 .raised-button-primary {
-  @apply bg-th-primary-1 relative transition-none;
+  @apply relative bg-th-primary-1 transition-none;
   box-shadow: 0 4px var(--primary-3);
 }
 
@@ -423,4 +423,17 @@ table p {
 
 .inner-shadow-bottom-xs {
   @apply shadow-[inset_0_-1px_0px_rgba(0,0,0,0.15)];
+}
+
+@keyframes rotate-bg {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotate-bg {
+  animation: rotate-bg 720s linear infinite;
 }

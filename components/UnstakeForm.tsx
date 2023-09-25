@@ -285,7 +285,6 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
               <div className="col-span-2 mt-2">
                 <ButtonGroup
                   activeValue={sizePercentage}
-                  className="font-mono"
                   onChange={(p) => handleSizePercentage(p)}
                   values={['10', '25', '50', '75', '100']}
                   unit="%"
@@ -305,7 +304,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                         <div className="flex items-center justify-between">
                           <p className="font-medium">Staked Amount</p>
                           <div className="flex items-center space-x-2">
-                            <span className="font-mono text-lg text-th-fgd-1">
+                            <span className="text-lg font-bold text-th-fgd-1">
                               <FormatNumericValue
                                 value={tokenMax.maxAmount}
                                 decimals={stakeBank.mintDecimals}
@@ -322,7 +321,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                       <Disclosure.Panel className="space-y-2 rounded-xl rounded-t-none border-2 border-t-0 border-th-bkg-3 px-4 pb-3">
                         <div className="flex justify-between">
                           <p className="text-th-fgd-4">Staked Amount</p>
-                          <span className="font-mono text-th-fgd-1">
+                          <span className="font-bold text-th-fgd-1">
                             <BankAmountWithValue
                               amount={tokenMax.maxAmount}
                               bank={stakeBank}
@@ -333,7 +332,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                           <p className="text-th-fgd-4">SOL borrowed</p>
                           {solBank ? (
                             <span
-                              className={`font-mono ${
+                              className={`font-bold ${
                                 solBorrowed > 0.001
                                   ? 'text-th-fgd-1'
                                   : 'text-th-bkg-4'

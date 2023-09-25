@@ -66,11 +66,11 @@ const ConnectedMenu = () => {
                 </div>
               )}
               {!loadProfileDetails && isDesktop ? (
-                <div className="ml-2.5 mt-1.5 overflow-hidden text-left">
-                  <p className="text-xxs text-th-fgd-3">
+                <div className="ml-2.5 overflow-hidden text-left">
+                  <p className="text-xs text-th-fgd-3">
                     {wallet?.adapter.name}
                   </p>
-                  <p className="-mt-0.5 truncate pr-2 font-display text-base text-th-fgd-1">
+                  <p className="truncate pr-2 text-sm font-bold text-th-fgd-1">
                     {publicKey ? abbreviateAddress(publicKey) : ''}
                   </p>
                 </div>
@@ -95,7 +95,7 @@ const ConnectedMenu = () => {
                 <div className="pl-2 text-left">
                   <span>{t('disconnect')}</span>
                   {publicKey ? (
-                    <p className="font-mono text-xs text-th-fgd-4">
+                    <p className="text-xs font-medium text-th-fgd-4">
                       {abbreviateAddress(publicKey)}
                     </p>
                   ) : null}

@@ -46,7 +46,7 @@ import SheenLoader from './shared/SheenLoader'
 const set = mangoStore.getState().set
 
 export const NUMBERFORMAT_CLASSES =
-  'inner-shadow-top-sm w-full rounded-xl border border-th-bkg-3 bg-th-input-bkg p-3 pl-12 pr-4 text-left font-mono text-xl text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:border-th-input-border-hover md:hover:focus-visible:border-th-fgd-4'
+  'inner-shadow-top-sm w-full rounded-xl border border-th-bkg-3 bg-th-input-bkg p-3 pl-12 pr-4 text-left font-bold text-xl text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:border-th-bkg-4 md:hover:focus-visible:border-th-fgd-4'
 
 interface StakeFormProps {
   token: string
@@ -308,7 +308,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
             <div className="mt-4">
               <div className="flex items-center justify-between">
                 <Label text="Leverage" />
-                <p className="mb-2 font-mono text-th-fgd-1">{leverage}x</p>
+                <p className="mb-2 font-bold text-th-fgd-1">{leverage}x</p>
               </div>
               <LeverageSlider
                 leverageMax={3}
@@ -329,7 +329,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                         <div className="flex items-center justify-between">
                           <p className="font-medium">Est. Net APY</p>
                           <div className="flex items-center space-x-2">
-                            <span className="font-mono text-lg text-th-success">
+                            <span className="text-lg font-bold text-th-success">
                               {estimatedNetAPY >= 0
                                 ? '+'
                                 : estimatedNetAPY === 0
@@ -354,7 +354,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                           <p className="text-th-fgd-4">
                             {formatTokenSymbol(selectedToken)} Leveraged APY
                           </p>
-                          <span className="font-mono text-th-success">
+                          <span className="font-bold text-th-success">
                             {leveragedAPY > 0.01 ? '+' : ''}
                             <FormatNumericValue
                               value={leveragedAPY}
@@ -368,7 +368,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                             {formatTokenSymbol(selectedToken)} Deposit Rate
                           </p>
                           <span
-                            className={`font-mono ${
+                            className={`font-bold ${
                               stakeBankDepositRate > 0.01
                                 ? 'text-th-success'
                                 : 'text-th-bkg-4'
@@ -387,7 +387,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                             <div className="flex justify-between">
                               <p className="text-th-fgd-4">{`${borrowBank.name} Borrow Rate`}</p>
                               <span
-                                className={`font-mono ${
+                                className={`font-bold ${
                                   borrowBankBorrowRate > 0.01
                                     ? 'text-th-error'
                                     : 'text-th-bkg-4'
@@ -404,7 +404,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                             <div className="flex justify-between">
                               <p className="text-th-fgd-4">{`${borrowBank.name} Borrowed`}</p>
                               <span
-                                className={`font-mono ${
+                                className={`font-bold ${
                                   amountToBorrow > 0.001
                                     ? 'text-th-fgd-1'
                                     : 'text-th-bkg-4'
