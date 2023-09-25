@@ -93,7 +93,7 @@ const Positions = ({
       <div className="grid grid-cols-1 gap-2">
         {positions.length ? (
           positions.map((position, i) => {
-            const {stakeBalance, borrowBalance, bank } = position
+            const { stakeBalance, borrowBalance, bank } = position
             return bank ? (
               <div
                 className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6"
@@ -154,7 +154,9 @@ const Positions = ({
                   <div>
                     <p className="mb-1 text-th-fgd-4">Earned</p>
                     <span className="text-xl font-bold text-th-fgd-1">
-                      {balance ? `X.XX ${formatTokenSymbol(bank.name)}` : `0 ${formatTokenSymbol(bank.name)}`}
+                      {stakeBalance
+                        ? `X.XX ${formatTokenSymbol(bank.name)}`
+                        : `0 ${formatTokenSymbol(bank.name)}`}
                     </span>
                   </div>
                   <div>
