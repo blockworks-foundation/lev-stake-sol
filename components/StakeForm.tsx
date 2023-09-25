@@ -166,9 +166,6 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
 
     setSubmitting(true)
     try {
-      console.log('starting deposit')
-      console.log('amountToBorrow', amountToBorrow)
-
       const newAccountNum = getNextAccountNumber(mangoAccounts)
       const { signature: tx, slot } = await stakeAndCreate(
         client,
@@ -213,6 +210,22 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   const changeLeverage = useCallback((v: number) => {
     setLeverage(v * 1)
   }, [])
+
+  const leverageMax = useMemo(() => {
+    if (!stakeBank || !borrowBank) return 1
+    const borrowInitLiabWeight = borrowBank.scaledInitLiabWeight(
+      borrowBank.price,
+    )
+    const stakeInitAssetWeight = stakeBank.scaledInitAssetWeight(
+      stakeBank.price,
+    )
+    if (!borrowInitLiabWeight || !stakeInitAssetWeight) return 1
+
+    const x = stakeInitAssetWeight.div(borrowInitLiabWeight).toNumber()
+    const conversionRate = borrowBank.uiPrice / stakeBank.uiPrice
+    const y = 1 - conversionRate * stakeInitAssetWeight.toNumber()
+    return 1 + x / y
+  }, [stakeBank, borrowBank])
 
   useEffect(() => {
     const group = mangoStore.getState().group
@@ -311,7 +324,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                 <p className="mb-2 font-bold text-th-fgd-1">{leverage}x</p>
               </div>
               <LeverageSlider
-                leverageMax={3}
+                leverageMax={leverageMax}
                 onChange={changeLeverage}
                 step={0.1}
               />

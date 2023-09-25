@@ -14,19 +14,16 @@ const fetchRates = async () => {
     fetchAndParsePricesCsv(DATA_SOURCE.SOLBLAZE_CSV),
     fetchAndParsePricesCsv(DATA_SOURCE.LIDO_CSV),
   ])
-  console.log('jitosol', jitoPrices)
 
   // may be null if the price range cannot be calculated
   const msolRange = getPriceRangeFromPeriod(msolPrices, PERIOD.DAYS_30)
   const jitoRange = getPriceRangeFromPeriod(jitoPrices, PERIOD.DAYS_30)
   const bsolRange = getPriceRangeFromPeriod(bsolPrices, PERIOD.DAYS_30)
   const lidoRange = getPriceRangeFromPeriod(lidoPrices, PERIOD.DAYS_30)
-  console.log('msol prices', msolPrices)
 
   const rateData: Record<string, number> = {}
 
   if (msolRange) {
-    console.log('APY: ', calcYield(msolRange)?.apy) // 0.06707557862842384 => 6.71 %
     rateData.msol = calcYield(msolRange)?.apy
   }
   if (jitoRange) {

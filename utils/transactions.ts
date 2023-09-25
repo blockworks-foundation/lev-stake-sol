@@ -50,8 +50,6 @@ export const unstakeAndClose = async (
   }
   const stakeBalance = mangoAccount.getTokenBalanceUi(stakeBank)
   const borrowedSol = mangoAccount.getTokenBalance(solBank)
-  console.log('borrowedSol', borrowedSol)
-  console.log('unstake amount', amount)
 
   let swapAlts: AddressLookupTableAccount[] = []
   if (borrowedSol.toNumber()) {
@@ -100,12 +98,6 @@ export const unstakeAndClose = async (
   const nativeWithdrawAmount = toNative(
     amount,
     group.getMintDecimals(stakeBank.mint),
-  )
-  console.log(
-    'amount, stakeBalance, nativeAmount',
-    amount,
-    floorToDecimal(stakeBalance, stakeBank.mintDecimals).toNumber(),
-    nativeWithdrawAmount.toNumber(),
   )
   const withdrawMax =
     amount == floorToDecimal(stakeBalance, stakeBank.mintDecimals).toNumber()
@@ -201,7 +193,13 @@ export const stakeAndCreate = async (
   }
 
   const depositHealthRemainingAccounts: PublicKey[] = mangoAccount
-    ? client.buildHealthRemainingAccounts(group, [mangoAccount], [], [], [])
+    ? client.buildHealthRemainingAccounts(
+        group,
+        [mangoAccount],
+        [stakeBank],
+        [],
+        [],
+      )
     : [stakeBank.publicKey, stakeBank.oracle]
   const depositTokenIxs = await createDepositIx(
     client,

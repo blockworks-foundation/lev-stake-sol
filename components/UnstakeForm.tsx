@@ -158,7 +158,6 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
 
     setSubmitting(true)
     try {
-      console.log('starting deposit')
       const { signature: tx } = await unstakeAndClose(
         client,
         group,
