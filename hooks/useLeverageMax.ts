@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import useMangoGroup from './useMangoGroup'
+import { floorToDecimal } from 'utils/numbers'
 
 export default function useLeverageMax(selectedToken: string) {
   const { group } = useMangoGroup()
@@ -25,7 +26,7 @@ export default function useLeverageMax(selectedToken: string) {
     const x = stakeInitAssetWeight.div(borrowInitLiabWeight).toNumber()
     const conversionRate = borrowBank.uiPrice / stakeBank.uiPrice
     const y = 1 - conversionRate * stakeInitAssetWeight.toNumber()
-    return 1 + x / y
+    return floorToDecimal(1 + x / y, 1).toNumber()
   }, [stakeBank, borrowBank])
 
   return leverageMax
