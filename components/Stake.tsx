@@ -56,8 +56,8 @@ const Stake = () => {
         <div className="fixed bottom-8 left-8">
           <button className="raised-button text-shadow flex h-20 w-20 items-center justify-center rounded-full border border-th-button-hover p-3 text-center text-base font-extrabold">
             <div>
-              <p className="text-white">Buy</p>
-              <p className="-mt-1.5 text-white">
+              <p className="text-th-bkg-1">Buy</p>
+              <p className="-mt-1.5 text-th-bkg-1">
                 {formatTokenSymbol(selectedToken)}
               </p>
             </div>

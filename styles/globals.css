@@ -337,21 +337,6 @@ table p {
   @apply default-transition w-max border-b border-dashed border-current hover:cursor-help hover:border-transparent;
 }
 
-.text-shadow {
-  text-shadow:
-    2px 2px 0 #000,
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000;
-  -webkit-text-shadow:
-    2px 2px 0 #000,
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000;
-}
-
 /* raised buttons */
 
 .raised-button {
@@ -426,6 +411,21 @@ table p {
 
 .inner-shadow-bottom-xs {
   @apply shadow-[inset_0_-1px_0px_rgba(0,0,0,0.15)];
+}
+
+.text-shadow {
+  text-shadow:
+    2px 2px 0 var(--fgd-1),
+    -1px -1px 0 var(--fgd-1),
+    1px -1px 0 var(--fgd-1),
+    -1px 1px 0 var(--fgd-1),
+    1px 1px 0 var(--fgd-1);
+  -webkit-text-shadow:
+    2px 2px 0 var(--fgd-1),
+    -1px -1px 0 var(--fgd-1),
+    1px -1px 0 var(--fgd-1),
+    -1px 1px 0 var(--fgd-1),
+    1px 1px 0 var(--fgd-1);
 }
 
 .icon-shadow {

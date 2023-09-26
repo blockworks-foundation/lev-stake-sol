@@ -3,16 +3,14 @@ import { ExclamationTriangleIcon } from '@heroicons/react/20/solid'
 import { useWallet } from '@solana/wallet-adapter-react'
 import ConnectedMenu from './wallet/ConnectedMenu'
 import ConnectWalletButton from './wallet/ConnectWalletButton'
-// import SolanaTps from './SolanaTps'
 import useOnlineStatus from 'hooks/useOnlineStatus'
-import mangoStore from '@store/mangoStore'
 import ThemeToggle from './ThemeToggle'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import BoostLogo from './BoostLogo'
 
 const TopBar = () => {
   const { connected } = useWallet()
-  const themeData = mangoStore((s) => s.themeData)
 
   const [copied, setCopied] = useState('')
   const isOnline = useOnlineStatus()
@@ -27,12 +25,8 @@ const TopBar = () => {
     <div className="mb-8 flex h-20 items-center justify-between px-6">
       <Link href="/" shallow={true}>
         <div className="flex items-center">
-          <img
-            className="relative h-auto w-10 shrink-0 cursor-pointer"
-            src={themeData.logoPath}
-            alt="logo"
-          />
-          <span className="text-shadow ml-2 text-[27px] font-black text-white">
+          <BoostLogo className="h-auto w-10 shrink-0 cursor-pointer" />
+          <span className="text-shadow ml-2 text-[27px] font-black text-th-bkg-1">
             Boost!
           </span>
         </div>
@@ -58,15 +52,9 @@ const TopBar = () => {
 
 export default TopBar
 
-const NavLink = ({
-  active,
-  path,
-  text,
-}: {
-  active: boolean
-  path: string
-  text: string
-}) => {
+const NavLink = (
+  { active, path, text }: { active: boolean; path: string; text: string },
+) => {
   return (
     <Link href={path} shallow={true}>
       <span

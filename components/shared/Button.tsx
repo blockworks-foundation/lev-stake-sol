@@ -32,7 +32,7 @@ const Button: FunctionComponent<ButtonCombinedProps> = ({
       className={`rounded-xl ${
         secondary
           ? 'border border-th-button focus-visible:border-th-fgd-4 md:hover:border-th-button-hover'
-          : 'raised-button text-shadow text-xl text-white focus-visible:border focus-visible:border-th-fgd-4'
+          : 'raised-button text-shadow text-xl text-th-bkg-1 focus-visible:border focus-visible:border-th-fgd-4'
       } ${
         size === 'medium'
           ? 'h-10 px-4'
