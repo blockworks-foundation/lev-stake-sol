@@ -11,7 +11,7 @@ module.exports = {
     },
     extend: {
       animation: {
-        shake: 'shake 0.4s linear 4',
+        shake: 'shake 0.2s linear infinite',
         'spin-fast': 'spin 0.5s linear infinite',
       },
       colors: {

@@ -144,6 +144,7 @@ export type MangoStore = {
   estimatedMaxAPY: {
     current: number
   }
+  submittingBoost: boolean
   //end
   activityFeed: {
     feed: Array<ActivityFeed>
@@ -311,6 +312,7 @@ const mangoStore = create<MangoStore>()(
       estimatedMaxAPY: {
         current: 0,
       },
+      submittingBoost: false,
       //end
       activityFeed: {
         feed: [],

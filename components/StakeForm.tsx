@@ -8,31 +8,22 @@ import { useTranslation } from 'next-i18next'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import NumberFormat, { NumberFormatValues } from 'react-number-format'
 import mangoStore from '@store/mangoStore'
-import {
-  ACCOUNT_ACTION_MODAL_INNER_HEIGHT,
-  // INPUT_TOKEN_DEFAULT,
-} from '../utils/constants'
 import { notify } from '../utils/notifications'
 import { TokenAccount, formatTokenSymbol } from '../utils/tokens'
-// import ActionTokenList from './account/ActionTokenList'
 import Label from './forms/Label'
 import Button, { IconButton } from './shared/Button'
 import Loading from './shared/Loading'
-import { EnterBottomExitBottom, FadeInFadeOut } from './shared/Transitions'
 import MaxAmountButton from '@components/shared/MaxAmountButton'
 import Tooltip from '@components/shared/Tooltip'
 import SolBalanceWarnings from '@components/shared/SolBalanceWarnings'
 import useSolBalance from 'hooks/useSolBalance'
 import { floorToDecimal, withValueLimit } from 'utils/numbers'
-// import useBanksWithBalances from 'hooks/useBanksWithBalances'
 import { isMangoError } from 'types'
-// import TokenListButton from './shared/TokenListButton'
 import TokenLogo from './shared/TokenLogo'
 import SecondaryConnectButton from './shared/SecondaryConnectButton'
 import useMangoAccountAccounts from 'hooks/useMangoAccountAccounts'
 import InlineNotification from './shared/InlineNotification'
 import Link from 'next/link'
-import BackButton from './swap/BackButton'
 import LeverageSlider from './shared/LeverageSlider'
 import useMangoGroup from 'hooks/useMangoGroup'
 import FormatNumericValue from './shared/FormatNumericValue'
@@ -90,15 +81,10 @@ const getNextAccountNumber = (accounts: MangoAccount[]): number => {
 function StakeForm({ token: selectedToken }: StakeFormProps) {
   const { t } = useTranslation(['common', 'account'])
   const [inputAmount, setInputAmount] = useState('')
-  const [submitting, setSubmitting] = useState(false)
-  // const [selectedToken, setSelectedToken] = useState(
-  //   token || INPUT_TOKEN_DEFAULT,
-  // )
+  const submitting = mangoStore((s) => s.submittingBoost)
   const [leverage, setLeverage] = useState(1)
-  const [showTokenList, setShowTokenList] = useState(false)
   const [refreshingWalletTokens, setRefreshingWalletTokens] = useState(false)
   const { maxSolDeposit } = useSolBalance()
-  // const banks = useBanksWithBalances('walletBalance')
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { group } = useMangoGroup()
   const groupLoaded = mangoStore((s) => s.groupLoaded)
@@ -166,7 +152,9 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
 
     if (!group || !stakeBank || !publicKey) return
 
-    setSubmitting(true)
+    set((state) => {
+      state.submittingBoost = true
+    })
     try {
       const newAccountNum = getNextAccountNumber(mangoAccounts)
       const { signature: tx, slot } = await stakeAndCreate(
@@ -190,11 +178,15 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
       }
       await actions.reloadMangoAccount(slot)
       await actions.fetchWalletTokens(publicKey)
-      setSubmitting(false)
+      set((state) => {
+        state.submittingBoost = false
+      })
       setInputAmount('')
     } catch (e) {
       console.error('Error depositing:', e)
-      setSubmitting(false)
+      set((state) => {
+        state.submittingBoost = false
+      })
       if (!isMangoError(e)) return
       notify({
         title: 'Transaction failed',
@@ -222,259 +214,236 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
 
   return (
     <>
-      <EnterBottomExitBottom
-        className={`absolute bottom-0 left-0 z-20 h-[${ACCOUNT_ACTION_MODAL_INNER_HEIGHT}] w-full overflow-auto rounded-lg bg-th-bkg-1 p-6`}
-        show={showTokenList}
-      >
-        <BackButton onClick={() => setShowTokenList(false)} />
-        <h2 className="mb-4 text-center text-lg">Select token to stake</h2>
-        <div className="flex items-center px-4 pb-2">
-          <div className="w-1/2 text-left">
-            <p className="text-xs">{t('token')}</p>
+      <div className="flex flex-col justify-between">
+        <div className="pb-8">
+          <SolBalanceWarnings
+            amount={inputAmount}
+            className="mb-4"
+            setAmount={setInputAmount}
+            selectedToken={selectedToken}
+          />
+          <div className="grid grid-cols-2">
+            <div className="col-span-2 flex justify-between">
+              <Label text="Amount" />
+              <div className="mb-2 flex items-center space-x-2">
+                <MaxAmountButton
+                  decimals={tokenMax.maxDecimals}
+                  label={t('wallet-balance')}
+                  onClick={setMax}
+                  value={tokenMax.maxAmount}
+                />
+                <Tooltip content={t('account:refresh-balance')}>
+                  <IconButton
+                    className={refreshingWalletTokens ? 'animate-spin' : ''}
+                    onClick={handleRefreshWalletBalances}
+                    hideBg
+                  >
+                    <ArrowPathIcon className="h-5 w-5" />
+                  </IconButton>
+                </Tooltip>
+              </div>
+            </div>
+            <div className="col-span-2">
+              <div className="relative">
+                <NumberFormat
+                  name="amountIn"
+                  id="amountIn"
+                  inputMode="decimal"
+                  thousandSeparator=","
+                  allowNegative={false}
+                  isNumericString={true}
+                  decimalScale={6}
+                  className={NUMBERFORMAT_CLASSES}
+                  placeholder="0.00"
+                  value={inputAmount}
+                  onValueChange={(e: NumberFormatValues) => {
+                    setInputAmount(
+                      !Number.isNaN(Number(e.value)) ? e.value : '',
+                    )
+                  }}
+                  isAllowed={withValueLimit}
+                />
+                <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                  <TokenLogo bank={stakeBank} size={24} />
+                </div>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                  <span className="font-bold text-th-fgd-1">
+                    {formatTokenSymbol(selectedToken)}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="w-1/2 text-right">
-            <p className="whitespace-nowrap text-xs">{t('wallet-balance')}</p>
-          </div>
-        </div>
-        {/* <ActionTokenList
-          banks={banks}
-          onSelect={handleSelectToken}
-          showDepositRates
-          valueKey="walletBalance"
-        /> */}
-      </EnterBottomExitBottom>
-      <FadeInFadeOut show={!showTokenList}>
-        <div className="flex flex-col justify-between">
-          <div className="pb-8">
-            <SolBalanceWarnings
-              amount={inputAmount}
-              className="mb-4"
-              setAmount={setInputAmount}
-              selectedToken={selectedToken}
+          <div className="mt-4">
+            <div className="flex items-center justify-between">
+              <Label text="Leverage" />
+              <p className="mb-2 font-bold text-th-fgd-1">{leverage}x</p>
+            </div>
+            <LeverageSlider
+              leverageMax={leverageMax}
+              onChange={changeLeverage}
+              step={0.1}
             />
-            <div className="grid grid-cols-2">
-              <div className="col-span-2 flex justify-between">
-                <Label text="Amount" />
-                <div className="mb-2 flex items-center space-x-2">
-                  <MaxAmountButton
-                    decimals={tokenMax.maxDecimals}
-                    label={t('wallet-balance')}
-                    onClick={setMax}
-                    value={tokenMax.maxAmount}
-                  />
-                  <Tooltip content={t('account:refresh-balance')}>
-                    <IconButton
-                      className={refreshingWalletTokens ? 'animate-spin' : ''}
-                      onClick={handleRefreshWalletBalances}
-                      hideBg
+          </div>
+          {stakeBank && borrowBank ? (
+            <div className="pt-8">
+              <Disclosure>
+                {({ open }) => (
+                  <>
+                    <Disclosure.Button
+                      className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${
+                        open ? 'rounded-b-none border-b-0' : ''
+                      }`}
                     >
-                      <ArrowPathIcon className="h-5 w-5" />
-                    </IconButton>
-                  </Tooltip>
-                </div>
-              </div>
-              <div className="col-span-2">
-                <div className="relative">
-                  <NumberFormat
-                    name="amountIn"
-                    id="amountIn"
-                    inputMode="decimal"
-                    thousandSeparator=","
-                    allowNegative={false}
-                    isNumericString={true}
-                    decimalScale={6}
-                    className={NUMBERFORMAT_CLASSES}
-                    placeholder="0.00"
-                    value={inputAmount}
-                    onValueChange={(e: NumberFormatValues) => {
-                      setInputAmount(
-                        !Number.isNaN(Number(e.value)) ? e.value : '',
-                      )
-                    }}
-                    isAllowed={withValueLimit}
-                  />
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                    <TokenLogo bank={stakeBank} size={24} />
-                  </div>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                    <span className="font-bold text-th-fgd-1">
-                      {formatTokenSymbol(selectedToken)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-4">
-              <div className="flex items-center justify-between">
-                <Label text="Leverage" />
-                <p className="mb-2 font-bold text-th-fgd-1">{leverage}x</p>
-              </div>
-              <LeverageSlider
-                leverageMax={leverageMax}
-                onChange={changeLeverage}
-                step={0.1}
-              />
-            </div>
-            {stakeBank && borrowBank ? (
-              <div className="pt-8">
-                <Disclosure>
-                  {({ open }) => (
-                    <>
-                      <Disclosure.Button
-                        className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${
-                          open ? 'rounded-b-none border-b-0' : ''
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <p className="font-medium">Est. Net APY</p>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-lg font-bold text-th-success">
-                              {estimatedNetAPY >= 0
-                                ? '+'
-                                : estimatedNetAPY === 0
-                                ? ''
-                                : '-'}
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium">Est. Net APY</p>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-lg font-bold text-th-success">
+                            {estimatedNetAPY >= 0
+                              ? '+'
+                              : estimatedNetAPY === 0
+                              ? ''
+                              : '-'}
+                            <FormatNumericValue
+                              value={estimatedNetAPY}
+                              decimals={2}
+                            />
+                            %
+                          </span>
+                          <ChevronDownIcon
+                            className={`${
+                              open ? 'rotate-180' : 'rotate-360'
+                            } h-6 w-6 flex-shrink-0 text-th-fgd-1`}
+                          />
+                        </div>
+                      </div>
+                    </Disclosure.Button>
+                    <Disclosure.Panel className="space-y-2 rounded-xl rounded-t-none border-2 border-t-0 border-th-bkg-3 px-4 pb-3">
+                      <div className="flex justify-between">
+                        <p className="text-th-fgd-4">
+                          {formatTokenSymbol(selectedToken)} Leveraged APY
+                        </p>
+                        <span className="font-bold text-th-success">
+                          {leveragedAPY > 0.01 ? '+' : ''}
+                          <FormatNumericValue
+                            value={leveragedAPY}
+                            decimals={2}
+                          />
+                          %
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <p className="text-th-fgd-4">
+                          {formatTokenSymbol(selectedToken)} Deposit Rate
+                        </p>
+                        <span
+                          className={`font-bold ${
+                            stakeBankDepositRate > 0.01
+                              ? 'text-th-success'
+                              : 'text-th-bkg-4'
+                          }`}
+                        >
+                          {stakeBankDepositRate > 0.01 ? '+' : ''}
+                          <FormatNumericValue
+                            value={stakeBankDepositRate}
+                            decimals={2}
+                          />
+                          %
+                        </span>
+                      </div>
+                      {borrowBank ? (
+                        <>
+                          <div className="flex justify-between">
+                            <p className="text-th-fgd-4">{`${borrowBank.name} Borrow Rate`}</p>
+                            <span
+                              className={`font-bold ${
+                                borrowBankBorrowRate > 0.01
+                                  ? 'text-th-error'
+                                  : 'text-th-bkg-4'
+                              }`}
+                            >
+                              -
                               <FormatNumericValue
-                                value={estimatedNetAPY}
+                                value={borrowBankBorrowRate}
                                 decimals={2}
                               />
                               %
                             </span>
-                            <ChevronDownIcon
-                              className={`${
-                                open ? 'rotate-180' : 'rotate-360'
-                              } h-6 w-6 flex-shrink-0 text-th-fgd-1`}
-                            />
                           </div>
-                        </div>
-                      </Disclosure.Button>
-                      <Disclosure.Panel className="space-y-2 rounded-xl rounded-t-none border-2 border-t-0 border-th-bkg-3 px-4 pb-3">
-                        <div className="flex justify-between">
-                          <p className="text-th-fgd-4">
-                            {formatTokenSymbol(selectedToken)} Leveraged APY
-                          </p>
-                          <span className="font-bold text-th-success">
-                            {leveragedAPY > 0.01 ? '+' : ''}
-                            <FormatNumericValue
-                              value={leveragedAPY}
-                              decimals={2}
-                            />
-                            %
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <p className="text-th-fgd-4">
-                            {formatTokenSymbol(selectedToken)} Deposit Rate
-                          </p>
-                          <span
-                            className={`font-bold ${
-                              stakeBankDepositRate > 0.01
-                                ? 'text-th-success'
-                                : 'text-th-bkg-4'
-                            }`}
-                          >
-                            {stakeBankDepositRate > 0.01 ? '+' : ''}
-                            <FormatNumericValue
-                              value={stakeBankDepositRate}
-                              decimals={2}
-                            />
-                            %
-                          </span>
-                        </div>
-                        {borrowBank ? (
-                          <>
-                            <div className="flex justify-between">
-                              <p className="text-th-fgd-4">{`${borrowBank.name} Borrow Rate`}</p>
-                              <span
-                                className={`font-bold ${
-                                  borrowBankBorrowRate > 0.01
-                                    ? 'text-th-error'
-                                    : 'text-th-bkg-4'
-                                }`}
-                              >
-                                -
-                                <FormatNumericValue
-                                  value={borrowBankBorrowRate}
-                                  decimals={2}
-                                />
-                                %
+                          <div className="flex justify-between">
+                            <p className="text-th-fgd-4">{`${borrowBank.name} Borrowed`}</p>
+                            <span
+                              className={`font-bold ${
+                                amountToBorrow > 0.001
+                                  ? 'text-th-fgd-1'
+                                  : 'text-th-bkg-4'
+                              }`}
+                            >
+                              <FormatNumericValue
+                                value={amountToBorrow}
+                                decimals={3}
+                              />
+                              <span className="font-body text-th-fgd-4">
+                                {' '}
+                                {borrowBank.name}
                               </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <p className="text-th-fgd-4">{`${borrowBank.name} Borrowed`}</p>
-                              <span
-                                className={`font-bold ${
-                                  amountToBorrow > 0.001
-                                    ? 'text-th-fgd-1'
-                                    : 'text-th-bkg-4'
-                                }`}
-                              >
-                                <FormatNumericValue
-                                  value={amountToBorrow}
-                                  decimals={3}
-                                />
-                                <span className="font-body text-th-fgd-4">
-                                  {' '}
-                                  {borrowBank.name}
-                                </span>
-                              </span>
-                            </div>
-                          </>
-                        ) : null}
-                      </Disclosure.Panel>
-                    </>
-                  )}
-                </Disclosure>
-              </div>
-            ) : !groupLoaded ? (
-              <div className="pt-8">
-                <SheenLoader className="flex flex-1 rounded-xl">
-                  <div className="h-[56px] w-full bg-th-bkg-2" />
-                </SheenLoader>
-              </div>
-            ) : null}
-          </div>
-          {connected ? (
-            <Button
-              onClick={handleDeposit}
-              className="flex w-full items-center justify-center"
-              disabled={connected && (!inputAmount || showInsufficientBalance)}
-              size="large"
-            >
-              {submitting ? (
-                <Loading className="mr-2 h-5 w-5" />
-              ) : showInsufficientBalance ? (
-                <div className="flex items-center">
-                  <ExclamationCircleIcon className="icon-shadow mr-2 h-5 w-5 flex-shrink-0" />
-                  {t('swap:insufficient-balance', {
-                    symbol: selectedToken,
-                  })}
-                </div>
-              ) : (
-                `Boost! ${inputAmount} ${formatTokenSymbol(selectedToken)}`
-              )}
-            </Button>
-          ) : (
-            <SecondaryConnectButton
-              className="flex w-full items-center justify-center"
-              isLarge
-            />
-          )}
-          {tokenPositionsFull ? (
-            <InlineNotification
-              type="error"
-              desc={
-                <>
-                  {t('error-token-positions-full')}{' '}
-                  <Link href="/settings" shallow>
-                    {t('manage')}
-                  </Link>
-                </>
-              }
-            />
+                            </span>
+                          </div>
+                        </>
+                      ) : null}
+                    </Disclosure.Panel>
+                  </>
+                )}
+              </Disclosure>
+            </div>
+          ) : !groupLoaded ? (
+            <div className="pt-8">
+              <SheenLoader className="flex flex-1 rounded-xl">
+                <div className="h-[56px] w-full bg-th-bkg-2" />
+              </SheenLoader>
+            </div>
           ) : null}
         </div>
-      </FadeInFadeOut>
+        {connected ? (
+          <Button
+            onClick={handleDeposit}
+            className="flex w-full items-center justify-center"
+            disabled={connected && (!inputAmount || showInsufficientBalance)}
+            size="large"
+          >
+            {submitting ? (
+              <Loading className="mr-2 h-5 w-5" />
+            ) : showInsufficientBalance ? (
+              <div className="flex items-center">
+                <ExclamationCircleIcon className="icon-shadow mr-2 h-5 w-5 flex-shrink-0" />
+                {t('swap:insufficient-balance', {
+                  symbol: selectedToken,
+                })}
+              </div>
+            ) : (
+              `Boost! ${inputAmount} ${formatTokenSymbol(selectedToken)}`
+            )}
+          </Button>
+        ) : (
+          <SecondaryConnectButton
+            className="flex w-full items-center justify-center"
+            isLarge
+          />
+        )}
+        {tokenPositionsFull ? (
+          <InlineNotification
+            type="error"
+            desc={
+              <>
+                {t('error-token-positions-full')}{' '}
+                <Link href="/settings" shallow>
+                  {t('manage')}
+                </Link>
+              </>
+            }
+          />
+        ) : null}
+      </div>
     </>
   )
 }

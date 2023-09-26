@@ -295,7 +295,7 @@ table p {
 }
 
 #range-slider-gradient .range-slider__thumb[data-upper] {
-  @apply h-7 w-4 rounded-full border border-th-primary-3 bg-th-primary-1 shadow-[inset_0_-3px_0px_rgba(0,0,0,0.15)];
+  @apply border-th-primary-3 bg-th-primary-1 h-7 w-4 rounded-full border shadow-[inset_0_-3px_0px_rgba(0,0,0,0.15)];
 }
 
 #range-slider-gradient .range-slider__range {
@@ -372,7 +372,7 @@ table p {
 }
 
 .raised-button-primary {
-  @apply relative bg-th-primary-1 transition-none;
+  @apply bg-th-primary-1 relative transition-none;
   box-shadow: 0 4px var(--primary-3);
 }
 
@@ -443,6 +443,10 @@ table p {
   }
 }
 
-.rotate-bg {
+.rotate-bg-fast {
+  animation: rotate-bg 25s linear infinite;
+}
+
+.rotate-bg-slow {
   animation: rotate-bg 720s linear infinite;
 }

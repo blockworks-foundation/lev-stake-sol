@@ -1,7 +1,10 @@
+import mangoStore from '@store/mangoStore'
+
 const BoostLogo = ({ className }: { className?: string }) => {
+  const submittingBoost = mangoStore((s) => s.submittingBoost)
   return (
     <svg
-      className={`${className}`}
+      className={`${className} ${submittingBoost ? 'animate-shake' : ''}`}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 48 37"
       fill="currentColor"
