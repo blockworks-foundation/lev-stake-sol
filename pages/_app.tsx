@@ -47,9 +47,9 @@ import useLocalStorageState from 'hooks/useLocalStorageState'
 // init react-query
 export const queryClient = new QueryClient()
 
-const metaTitle = 'Mango Markets – Safer. Smarter. Faster.'
+const metaTitle = 'Boost!'
 const metaDescription =
-  'A magical new way to interact with DeFi. Groundbreaking safety features designed to keep your funds secure. The easiest way to margin trade any token pair. All powered by flashloans.'
+  'Earn boosted yield on your liquid staking tokens. Powered by Mango Markets'
 
 // Do not add hooks to this component, that will cause unnecessary rerenders
 // Top level state hydrating/updating should go in MangoProvider
@@ -102,7 +102,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Mango Markets</title>
+        <title>Boost!</title>
         <link rel="icon" href="/favicon.ico" />
         <meta property="og:title" content={metaTitle} />
         <meta name="description" content={metaDescription} />
