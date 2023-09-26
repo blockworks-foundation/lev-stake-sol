@@ -46,7 +46,7 @@ const Index: NextPage = () => {
       <div className="mb-6 grid grid-cols-4">
         <NavTabs
           activeValue={activeTab}
-          values={['Boost!', 'Positions', 'History', 'Stats']}
+          values={['Boost!', 'Positions', 'Activity', 'Stats']}
           onChange={setActiveTab}
         />
       </div>
@@ -69,7 +69,7 @@ const TabContent = ({
       return <Stake />
     case 'Positions':
       return <Positions setActiveTab={setActiveTab} />
-    case 'History':
+    case 'Activity':
       return <TransactionHistory />
     case 'Stats':
       return <Stats />

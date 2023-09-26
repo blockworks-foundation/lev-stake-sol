@@ -3,7 +3,6 @@ import { useCallback, useState } from 'react'
 import TabUnderline from './shared/TabUnderline'
 import StakeForm from '@components/StakeForm'
 import UnstakeForm from '@components/UnstakeForm'
-// import AccountStats from './AccountStats'
 import mangoStore from '@store/mangoStore'
 import { STAKEABLE_TOKENS } from 'utils/constants'
 import { formatTokenSymbol } from 'utils/tokens'
@@ -52,11 +51,6 @@ const Stake = () => {
             ) : null}
           </div>
         </div>
-        {/* <div
-          className={`order-1 col-span-12 border-x border-t border-th-fgd-1 bg-th-bkg-2 p-8 pt-6 md:order-2 md:col-span-5 md:rounded-br-2xl md:border-b md:border-l-0`}
-        >
-          <AccountStats token={selectedToken} />
-        </div> */}
       </div>
       {activeFormTab === 'Add' ? (
         <div className="fixed bottom-8 left-8">
