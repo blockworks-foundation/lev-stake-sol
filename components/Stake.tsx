@@ -22,6 +22,8 @@ const Stake = () => {
     })
   }, [])
 
+  const swapUrl = `https://app.mango.markets/swap?in=USDC&out=${selectedToken}&walletSwap=true`
+
   return (
     <>
       <div className="grid grid-cols-4 rounded-t-2xl border-2 border-b-0 border-th-fgd-1 bg-th-bkg-1">
@@ -58,7 +60,12 @@ const Stake = () => {
       {activeFormTab === 'Add' ? (
         <div className="fixed bottom-0 left-0 w-full md:bottom-8 md:left-8 md:w-auto">
           {isDesktop ? (
-            <a className="raised-button text-shadow flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border border-th-button-hover p-3 text-center text-base font-extrabold">
+            <a
+              className="raised-button text-shadow flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border border-th-button-hover p-3 text-center text-base font-extrabold"
+              href={swapUrl}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
               <div>
                 <p className="text-th-bkg-1">Buy</p>
                 <p className="-mt-1.5 text-th-bkg-1">
@@ -68,7 +75,7 @@ const Stake = () => {
             </a>
           ) : (
             <div className="flex justify-end border-t-2 border-th-fgd-1 bg-th-bkg-1 px-4 py-3">
-              <a>
+              <a href={swapUrl} rel="noopener noreferrer" target="_blank">
                 <div className="flex items-center">
                   <span className="mr-1.5 font-bold">{`Buy ${formatTokenSymbol(
                     selectedToken,
