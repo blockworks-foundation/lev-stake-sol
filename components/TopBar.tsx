@@ -52,9 +52,15 @@ const TopBar = () => {
 
 export default TopBar
 
-const NavLink = (
-  { active, path, text }: { active: boolean; path: string; text: string },
-) => {
+const NavLink = ({
+  active,
+  path,
+  text,
+}: {
+  active: boolean
+  path: string
+  text: string
+}) => {
   return (
     <Link href={path} shallow={true}>
       <span

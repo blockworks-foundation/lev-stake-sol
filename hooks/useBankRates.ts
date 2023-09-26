@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import useStakeRates from './useStakeRates'
 import useMangoGroup from './useMangoGroup'
 import mangoStore from '@store/mangoStore'
@@ -8,6 +8,7 @@ const set = mangoStore.getState().set
 export default function useBankRates(selectedToken: string, leverage: number) {
   const { data: stakeRates } = useStakeRates()
   const { group } = useMangoGroup()
+  const estimatedMaxAPY = mangoStore((s) => s.estimatedMaxAPY.current)
 
   const stakeBank = useMemo(() => {
     return group?.banksMapByName.get(selectedToken)?.[0]
@@ -39,7 +40,7 @@ export default function useBankRates(selectedToken: string, leverage: number) {
     )
   }, [borrowBankStakeRate, leverage, borrowBankBorrowRate])
 
-  const estimatedMaxAPY = useMemo(() => {
+  useEffect(() => {
     set((s) => {
       s.estimatedMaxAPY.current =
         borrowBankStakeRate * 3 - borrowBankBorrowRate * 2

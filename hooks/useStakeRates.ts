@@ -38,8 +38,6 @@ const fetchRates = async () => {
   return rateData
 }
 
-fetchRates()
-
 export default function useStakeRates() {
   const response = useQuery(['stake-rates'], () => fetchRates(), {
     cacheTime: 1000 * 60 * 5,
