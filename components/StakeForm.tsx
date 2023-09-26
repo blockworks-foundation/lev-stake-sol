@@ -445,7 +445,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                 <Loading className="mr-2 h-5 w-5" />
               ) : showInsufficientBalance ? (
                 <div className="flex items-center">
-                  <ExclamationCircleIcon className="mr-2 h-5 w-5 flex-shrink-0" />
+                  <ExclamationCircleIcon className="icon-shadow mr-2 h-5 w-5 flex-shrink-0" />
                   {t('swap:insufficient-balance', {
                     symbol: selectedToken,
                   })}

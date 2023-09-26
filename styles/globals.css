@@ -425,6 +425,12 @@ table p {
   @apply shadow-[inset_0_-1px_0px_rgba(0,0,0,0.15)];
 }
 
+.icon-shadow {
+  @apply stroke-th-fgd-1 stroke-1 drop-shadow-[1px_1px_0_rgba(0,0,0,1)];
+}
+
+/* background */
+
 @keyframes rotate-bg {
   from {
     transform: rotate(0deg);
