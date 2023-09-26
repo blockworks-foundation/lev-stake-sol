@@ -42,6 +42,7 @@ import { AnchorProvider } from '@project-serum/anchor'
 import useBankRates from 'hooks/useBankRates'
 import { Disclosure } from '@headlessui/react'
 import SheenLoader from './shared/SheenLoader'
+import useLeverageMax from 'hooks/useLeverageMax'
 
 const set = mangoStore.getState().set
 
@@ -107,6 +108,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     leveragedAPY,
     estimatedNetAPY,
   } = useBankRates(selectedToken, leverage)
+  const leverageMax = useLeverageMax(selectedToken)
 
   const stakeBank = useMemo(() => {
     return group?.banksMapByName.get(selectedToken)?.[0]
@@ -210,22 +212,6 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   const changeLeverage = useCallback((v: number) => {
     setLeverage(v * 1)
   }, [])
-
-  const leverageMax = useMemo(() => {
-    if (!stakeBank || !borrowBank) return 1
-    const borrowInitLiabWeight = borrowBank.scaledInitLiabWeight(
-      borrowBank.price,
-    )
-    const stakeInitAssetWeight = stakeBank.scaledInitAssetWeight(
-      stakeBank.price,
-    )
-    if (!borrowInitLiabWeight || !stakeInitAssetWeight) return 1
-
-    const x = stakeInitAssetWeight.div(borrowInitLiabWeight).toNumber()
-    const conversionRate = borrowBank.uiPrice / stakeBank.uiPrice
-    const y = 1 - conversionRate * stakeInitAssetWeight.toNumber()
-    return 1 + x / y
-  }, [stakeBank, borrowBank])
 
   useEffect(() => {
     const group = mangoStore.getState().group

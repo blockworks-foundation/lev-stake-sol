@@ -1,7 +1,7 @@
-import useStakeRates from 'hooks/useStakeRates'
 import Image from 'next/image'
 import { formatTokenSymbol } from 'utils/tokens'
-import SheenLoader from './shared/SheenLoader'
+import useBankRates from 'hooks/useBankRates'
+import useLeverageMax from 'hooks/useLeverageMax'
 
 const TokenButton = ({
   handleTokenSelect,
@@ -12,7 +12,8 @@ const TokenButton = ({
   selectedToken: string
   handleTokenSelect: (v: string) => void
 }) => {
-  const { data: stakeRates, isLoading } = useStakeRates()
+  const leverage = useLeverageMax(tokenName)
+  const { estimatedNetAPY } = useBankRates(tokenName, leverage)
 
   return (
     <button
@@ -46,19 +47,20 @@ const TokenButton = ({
             selectedToken === tokenName ? 'text-th-fgd-1' : 'text-th-fgd-4'
           }`}
         >
-          {isLoading ? (
-            <SheenLoader>
-              <div
-                className={`h-5 w-10 ${
-                  selectedToken === tokenName
-                    ? 'bg-th-active-dark'
-                    : 'bg-th-bkg-2'
-                }`}
-              />
-            </SheenLoader>
-          ) : stakeRates?.[tokenName.toLowerCase()] ? (
-            `${(stakeRates?.[tokenName.toLowerCase()] * 100).toFixed(2)}%`
-          ) : null}
+          {
+            // isLoading ? (
+            //   <SheenLoader>
+            //     <div
+            //       className={`h-5 w-10 ${
+            //         selectedToken === tokenName
+            //           ? 'bg-th-active-dark'
+            //           : 'bg-th-bkg-2'
+            //       }`}
+            //     />
+            //   </SheenLoader>
+            // ) :
+            `${estimatedNetAPY.toFixed(2)}%`
+          }
         </span>
       </div>
     </button>
