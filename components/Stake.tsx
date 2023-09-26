@@ -6,12 +6,15 @@ import UnstakeForm from '@components/UnstakeForm'
 import mangoStore from '@store/mangoStore'
 import { STAKEABLE_TOKENS } from 'utils/constants'
 import { formatTokenSymbol } from 'utils/tokens'
+import { useViewport } from 'hooks/useViewport'
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
 
 const set = mangoStore.getState().set
 
 const Stake = () => {
   const [activeFormTab, setActiveFormTab] = useState('Add')
   const selectedToken = mangoStore((s) => s.selectedToken)
+  const { isDesktop } = useViewport()
 
   const handleTokenSelect = useCallback((token: string) => {
     set((state) => {
@@ -53,15 +56,28 @@ const Stake = () => {
         </div>
       </div>
       {activeFormTab === 'Add' ? (
-        <div className="fixed bottom-8 left-8">
-          <button className="raised-button text-shadow flex h-20 w-20 items-center justify-center rounded-full border border-th-button-hover p-3 text-center text-base font-extrabold">
-            <div>
-              <p className="text-th-bkg-1">Buy</p>
-              <p className="-mt-1.5 text-th-bkg-1">
-                {formatTokenSymbol(selectedToken)}
-              </p>
+        <div className="fixed bottom-0 left-0 w-full md:bottom-8 md:left-8 md:w-auto">
+          {isDesktop ? (
+            <a className="raised-button text-shadow flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border border-th-button-hover p-3 text-center text-base font-extrabold">
+              <div>
+                <p className="text-th-bkg-1">Buy</p>
+                <p className="-mt-1.5 text-th-bkg-1">
+                  {formatTokenSymbol(selectedToken)}
+                </p>
+              </div>
+            </a>
+          ) : (
+            <div className="flex justify-end border-t-2 border-th-fgd-1 bg-th-bkg-1 px-4 py-3">
+              <a>
+                <div className="flex items-center">
+                  <span className="mr-1.5 font-bold">{`Buy ${formatTokenSymbol(
+                    selectedToken,
+                  )}`}</span>
+                  <ArrowTopRightOnSquareIcon className="-mt-0.5 h-5 w-5" />
+                </div>
+              </a>
             </div>
-          </button>
+          )}
         </div>
       ) : null}
     </>

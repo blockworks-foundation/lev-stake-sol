@@ -53,16 +53,19 @@ const ConnectedMenu = () => {
               isDesktop ? 'w-44' : 'w-12'
             } focus:outline-none`}
           >
-            <div className="ml-1.5 flex items-center" id="account-step-one">
+            <div
+              className="flex items-center justify-center md:ml-1.5 md:justify-start"
+              id="account-step-one"
+            >
               {!mangoAccountLoading ? (
                 <ProfileImage
-                  imageSize="40"
-                  placeholderSize="24"
+                  imageSize={!isDesktop ? '32' : '40'}
+                  placeholderSize={!isDesktop ? '20' : '24'}
                   isOwnerProfile
                 />
               ) : (
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-th-bkg-2">
-                  <Loading className="h-6 w-6" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-2 md:h-10 md:w-10">
+                  <Loading className="h-5 w-5 md:h-6 md:w-6" />
                 </div>
               )}
               {!loadProfileDetails && isDesktop ? (
