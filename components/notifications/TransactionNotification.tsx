@@ -104,7 +104,7 @@ const TransactionNotificationList = () => {
     <div className={`${getPosition(notificationPosition)} w-full sm:w-auto`}>
       {transactionNotifications.filter((n) => n.show).length > 1 ? (
         <button
-          className="pointer-events-auto my-1 flex items-center rounded bg-th-bkg-3 px-2 py-1 text-xs text-th-fgd-3 md:hover:bg-th-bkg-4"
+          className="pointer-events-auto my-1 flex items-center rounded border border-th-fgd-1 bg-th-bkg-1 px-2 py-1 text-xs text-th-fgd-1"
           onClick={clearAll}
         >
           <XMarkIcon className="mr-1 h-3.5 w-3.5" />
@@ -238,12 +238,12 @@ const TransactionNotification = ({
       }`}
     >
       <div
-        className={`pointer-events-auto w-full rounded-md border bg-th-bkg-2 shadow-lg sm:w-auto ${
+        className={`pointer-events-auto w-full rounded-lg border-2 bg-th-bkg-1 sm:w-auto ${
           type === 'success'
             ? 'border-th-success'
             : type === 'error'
             ? 'border-th-error'
-            : 'border-th-bkg-4'
+            : 'border-th-fgd-1'
         }`}
       >
         <div className={`relative flex w-full items-center p-3.5 sm:w-96`}>
@@ -252,13 +252,13 @@ const TransactionNotification = ({
               <CheckCircleIcon className={`h-6 w-6 text-th-success`} />
             ) : null}
             {type === 'info' && (
-              <InformationCircleIcon className={`h-6 w-6 text-th-fgd-3`} />
+              <InformationCircleIcon className={`h-6 w-6 text-th-fgd-1`} />
             )}
             {type === 'error' && (
               <XCircleIcon className={`h-6 w-6 text-th-error`} />
             )}
             {type === 'confirm' && (
-              <Loading className="mr-0.5 h-5 w-5 text-th-active" />
+              <Loading className="mr-0.5 h-5 w-5 text-th-fgd-4" />
             )}
           </div>
           <div className={`ml-2 flex-1`}>
@@ -273,7 +273,7 @@ const TransactionNotification = ({
             {txid ? (
               <a
                 href={preferredExplorer.url + txid + '?cluster=' + CLUSTER}
-                className="mt-1 flex items-center text-xs text-th-active underline hover:text-th-fgd-2"
+                className="mt-1 flex items-center text-xs text-th-fgd-4 underline hover:text-th-fgd-2"
                 target="_blank"
                 rel="noreferrer"
               >
@@ -289,7 +289,7 @@ const TransactionNotification = ({
           <div className={`absolute right-2 top-2 flex-shrink-0`}>
             <button
               onClick={hideNotification}
-              className={`text-th-fgd-4 focus:outline-none md:hover:text-th-fgd-3`}
+              className={`text-th-fgd-1 focus:outline-none md:hover:text-th-fgd-3`}
             >
               <span className={`sr-only`}>Close</span>
               <svg

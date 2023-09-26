@@ -295,11 +295,11 @@ table p {
 }
 
 #range-slider-gradient .range-slider__thumb[data-upper] {
-  @apply border-th-primary-3 bg-th-primary-1 h-7 w-4 rounded-full border shadow-[inset_0_-3px_0px_rgba(0,0,0,0.15)];
+  @apply h-7 w-4 rounded-full border border-th-primary-3 bg-th-primary-1 shadow-[inset_0_-3px_0px_rgba(0,0,0,0.15)];
 }
 
 #range-slider-gradient .range-slider__range {
-  @apply rounded-full bg-gradient-to-r from-th-warning to-th-error shadow-[inset_0_2px_0px_rgba(0,0,0,0.15)];
+  @apply rounded-full bg-gradient-to-r from-th-success via-th-active to-th-error shadow-[inset_0_2px_0px_rgba(0,0,0,0.15)];
   background-size: 200% 100%;
   background-position: 50% 0;
 }
@@ -372,7 +372,7 @@ table p {
 }
 
 .raised-button-primary {
-  @apply bg-th-primary-1 relative transition-none;
+  @apply relative bg-th-primary-1 transition-none;
   box-shadow: 0 4px var(--primary-3);
 }
 

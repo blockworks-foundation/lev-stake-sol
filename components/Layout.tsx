@@ -27,7 +27,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
     >
       <SunburstBackground className="text-th-primary-1" />
       <div className={`relative min-h-screen`}>
-        <div className="border-th-primary-4 from-th-primary-3 to-th-primary-2 absolute bottom-0 h-44 w-full border-b-[20px] bg-gradient-to-b" />
+        {/* <div className="border-th-primary-4 from-th-primary-3 to-th-primary-2 absolute bottom-0 h-44 w-full border-b-[20px] bg-gradient-to-b" /> */}
         <div className="relative z-10">
           <TopBar />
           <div className="mx-auto max-w-3xl px-6 pb-20 lg:px-12">

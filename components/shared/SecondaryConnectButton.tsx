@@ -7,6 +7,7 @@ import { AUTO_CONNECT_WALLET, LAST_WALLET_NAME } from 'utils/constants'
 import { notify } from 'utils/notifications'
 import mangoStore from '@store/mangoStore'
 import { useCallback } from 'react'
+import WalletIcon from '@components/icons/WalletIcon'
 
 const set = mangoStore.getState().set
 
@@ -55,7 +56,10 @@ const SecondaryConnectButton = ({
       onClick={handleConnect}
       size={isLarge ? 'large' : 'medium'}
     >
-      {t('connect')}
+      <div className="flex items-center">
+        <WalletIcon className="icon-shadow mr-1.5 h-5 w-5" />
+        <span>{t('connect')}</span>
+      </div>
     </Button>
   )
 }
