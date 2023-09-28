@@ -282,7 +282,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
             <LeverageSlider
               leverageMax={leverageMax}
               onChange={changeLeverage}
-              step={0.1}
+              step={0.01}
             />
           </div>
           {stakeBank && borrowBank ? (

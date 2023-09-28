@@ -35,7 +35,7 @@ const fetchHistory = async (
 export default function useAccountHistory() {
   const { stakeAccounts } = useStakeAccounts()
 
-  const response = useQuery<Array<ActivityFeed[]> | EmptyObject | null>(
+  const response = useQuery<Array<ActivityFeed[] | null> | EmptyObject | null>(
     ['history'],
     () =>
       stakeAccounts?.length
@@ -53,12 +53,10 @@ export default function useAccountHistory() {
     },
   )
 
-  console.log('tx his reponse', response)
-
   return {
     history:
       response?.data && Array.isArray(response.data)
-        ? response.data.flat()
+        ? response.data.flat().filter((n) => n)
         : [],
     isLoading: response.isLoading || response.isFetching,
   }

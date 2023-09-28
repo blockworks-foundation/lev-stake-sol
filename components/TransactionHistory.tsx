@@ -16,7 +16,7 @@ const TransactionHistory = () => {
             <HistoryContent
               details={activity_details}
               type={activity_type}
-              key={activity_details.signature}
+              key={activity_details.signature + activity_type}
             />
           )
         })

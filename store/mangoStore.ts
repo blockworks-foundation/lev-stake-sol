@@ -593,13 +593,10 @@ const mangoStore = create<MangoStore>()(
             const client = get().client
             const mangoAccount = get().mangoAccount.current
             if (!group) throw new Error('Group not loaded')
-            if (!mangoAccount)
-              throw new Error('No mango account exists for reload')
+            if (!mangoAccount) return
 
             const { value: reloadedMangoAccount, slot } =
               await mangoAccount.reloadWithSlot(client)
-            console.log('confirmationSlot', confirmationSlot)
-            console.log('mango account slo', slot)
 
             const lastSlot = get().mangoAccount.lastSlot
             if (

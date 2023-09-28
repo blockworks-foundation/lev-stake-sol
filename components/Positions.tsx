@@ -11,14 +11,31 @@ import useStakeRates from 'hooks/useStakeRates'
 import SheenLoader from './shared/SheenLoader'
 import useStakeAccounts from 'hooks/useStakeAccounts'
 import FormatNumericValue from './shared/FormatNumericValue'
+import {
+  Group,
+  MangoAccount,
+  toUiDecimalsForQuote,
+} from '@blockworks-foundation/mango-v4'
 
 const set = mangoStore.getState().set
 
 const BORROW_TOKEN = 'SOL'
 
-const getLeverage = (stakeBalance: number, borrowBalance: number) => {
-  if (stakeBalance === 0) return 0
-  return borrowBalance / stakeBalance
+const getLeverage = (group: Group, mangoAccount: MangoAccount): number => {
+  if (!group || !mangoAccount) return 0
+  const accountValue = toUiDecimalsForQuote(
+    mangoAccount.getEquity(group).toNumber(),
+  )
+
+  const assetsValue = toUiDecimalsForQuote(
+    mangoAccount.getAssetsValue(group).toNumber(),
+  )
+
+  if (isNaN(assetsValue / accountValue)) {
+    return 0
+  } else {
+    return Math.abs(1 - assetsValue / accountValue) + 1
+  }
 }
 
 const Positions = ({
@@ -33,7 +50,7 @@ const Positions = ({
   const { stakeAccounts } = useStakeAccounts()
 
   const borrowBank = useMemo(() => {
-    return group?.banksMapByMint.get(BORROW_TOKEN)?.[0]
+    return group?.banksMapByName.get(BORROW_TOKEN)?.[0]
   }, [group])
 
   const banks = useMemo(() => {
@@ -55,7 +72,7 @@ const Positions = ({
       const stakeBalance = acct ? acct.getTokenBalanceUi(bank) : 0
       const borrowBalance =
         acct && borrowBank ? acct.getTokenBalanceUi(borrowBank) : 0
-      positions.push({ borrowBalance, stakeBalance, bank })
+      positions.push({ borrowBalance, stakeBalance, bank, acct })
     }
     const sortedPositions = positions.sort(
       (a, b) => b.stakeBalance - a.stakeBalance,
@@ -63,7 +80,7 @@ const Positions = ({
     return showInactivePositions
       ? sortedPositions
       : sortedPositions.filter((pos) => pos.stakeBalance > 0)
-  }, [banks, showInactivePositions, stakeAccounts])
+  }, [banks, showInactivePositions, stakeAccounts, borrowBank])
 
   const numberOfPositions = useMemo(() => {
     if (!positions.length) return 0
@@ -93,7 +110,7 @@ const Positions = ({
       <div className="grid grid-cols-1 gap-2">
         {positions.length ? (
           positions.map((position, i) => {
-            const { stakeBalance, borrowBalance, bank } = position
+            const { stakeBalance, borrowBalance, bank, acct } = position
             return bank ? (
               <div
                 className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6"
@@ -141,14 +158,17 @@ const Positions = ({
                       ) : stakeRates?.[bank.name.toLowerCase()] ? (
                         `${(
                           stakeRates?.[bank.name.toLowerCase()] * 100
-                        ).toFixed(2)}%`
+                        ).toFixed(1)}%`
                       ) : null}
                     </span>
                   </div>
                   <div>
                     <p className="mb-1 text-th-fgd-4">Leverage</p>
                     <span className="text-xl font-bold text-th-fgd-1">
-                      {getLeverage(stakeBalance, borrowBalance)}x
+                      {group && acct
+                        ? getLeverage(group, acct).toFixed(2)
+                        : 0.0}
+                      x
                     </span>
                   </div>
                   <div>
@@ -162,7 +182,7 @@ const Positions = ({
                   <div>
                     <p className="mb-1 text-th-fgd-4">Liquidation Price</p>
                     <span className="whitespace-nowrap text-xl font-bold text-th-fgd-1">
-                      {stakeBalance ? 'X.XX' : '0'}{' '}
+                      {borrowBalance ? 'X.XX' : '0.00'}{' '}
                       {`${formatTokenSymbol(bank.name)}/${BORROW_TOKEN}`}
                     </span>
                   </div>

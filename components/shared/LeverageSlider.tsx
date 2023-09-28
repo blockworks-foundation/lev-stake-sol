@@ -26,8 +26,6 @@ const LeverageSlider = ({
     onChange(v[1])
   }
 
-  console.log('leverage max', leverageMax)
-
   return (
     <RangeSlider
       id="range-slider-gradient"
