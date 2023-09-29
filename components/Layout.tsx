@@ -10,6 +10,7 @@ import { Transition } from '@headlessui/react'
 import { useTranslation } from 'next-i18next'
 import TermsOfUseModal from './modals/TermsOfUseModal'
 import SunburstBackground from './SunburstBackground'
+import Footer from './Footer'
 
 export const sideBarAnimationDuration = 300
 const termsLastUpdated = 1679441610978
@@ -32,6 +33,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
           <TopBar />
           <div className="mx-auto max-w-3xl px-6 pb-20 lg:px-12">
             {children}
+            <Footer />
           </div>
           <DeployRefreshManager />
           <TermsOfUse />
