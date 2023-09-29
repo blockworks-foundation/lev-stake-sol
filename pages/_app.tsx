@@ -36,11 +36,7 @@ import MangoProvider from '@components/MangoProvider'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { notify } from 'utils/notifications'
 import { useRouter } from 'next/router'
-import useSelectedMarket from 'hooks/useSelectedMarket'
 import Head from 'next/head'
-import useMangoGroup from 'hooks/useMangoGroup'
-import { PerpMarket } from '@blockworks-foundation/mango-v4'
-import { getDecimalCount } from 'utils/numbers'
 import { AUTO_CONNECT_WALLET, THEME_KEY } from 'utils/constants'
 import useLocalStorageState from 'hooks/useLocalStorageState'
 
@@ -133,7 +129,6 @@ function MyApp({ Component, pageProps }: AppProps) {
           >
             <MangoProvider />
             <ThemeProvider defaultTheme="Light" storageKey={THEME_KEY}>
-              <PageTitle />
               <Layout>
                 <Component {...pageProps} />
               </Layout>
@@ -147,41 +142,3 @@ function MyApp({ Component, pageProps }: AppProps) {
 }
 
 export default appWithTranslation(MyApp)
-
-const PageTitle = () => {
-  const router = useRouter()
-  const { selectedMarket } = useSelectedMarket()
-  const { group } = useMangoGroup()
-
-  const [market, price] = useMemo(() => {
-    if (!selectedMarket || !group) return []
-    if (selectedMarket instanceof PerpMarket) {
-      return [selectedMarket, selectedMarket.uiPrice]
-    } else {
-      const baseBank = group.getFirstBankByTokenIndex(
-        selectedMarket.baseTokenIndex,
-      )
-      const quoteBank = group.getFirstBankByTokenIndex(
-        selectedMarket.quoteTokenIndex,
-      )
-      const market = group.getSerum3ExternalMarket(
-        selectedMarket.serumMarketExternal,
-      )
-      const price = baseBank.uiPrice / quoteBank.uiPrice
-      return [market, price]
-    }
-  }, [selectedMarket, group])
-
-  const marketTitleString =
-    market && selectedMarket && router.pathname == '/trade'
-      ? `${price?.toFixed(getDecimalCount(market.tickSize))} ${
-          selectedMarket.name
-        } - Mango`
-      : 'Mango Markets'
-
-  return (
-    <Head>
-      <title>{marketTitleString}</title>
-    </Head>
-  )
-}
