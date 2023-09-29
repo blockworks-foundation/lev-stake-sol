@@ -396,7 +396,6 @@ export interface ThemeData {
   fonts: {
     body: any
     display: any
-    mono: any
   }
   logoPath: string
 }

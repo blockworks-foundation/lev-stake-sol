@@ -23,7 +23,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   return (
     <main
-      className={`${themeData.fonts.body.variable} ${themeData.fonts.display.variable} ${themeData.fonts.mono.variable} font-sans bg-th-primary-2`}
+      className={`${themeData.fonts.body.variable} ${themeData.fonts.display.variable} font-sans bg-th-primary-2`}
     >
       <SunburstBackground className="text-th-primary-1" />
       <div className={`relative min-h-screen`}>

@@ -48,8 +48,6 @@ function Modal({
         <Dialog.Panel
           className={`${themeData.fonts.body.variable} ${
             themeData.fonts.display.variable
-          } ${
-            themeData.fonts.mono.variable
           } font-sans h-full w-full bg-th-bkg-1 font-body ${
             fullScreen
               ? ''

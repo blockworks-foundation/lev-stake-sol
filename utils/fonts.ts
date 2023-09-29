@@ -1,30 +1,15 @@
-import { Lalezar, Nunito, Roboto, Roboto_Mono } from 'next/font/google'
-
-export const lalezar = Lalezar({
-  weight: '400',
-  subsets: ['latin'],
-  variable: '--font-display',
-})
-
-export const robotoFlex = Roboto({
-  weight: ['400', '500', '700', '900'],
-  subsets: ['latin'],
-  variable: '--font-body',
-})
+import { Nunito } from 'next/font/google'
 
 export const nunitoDisplay = Nunito({
   weight: '900',
   subsets: ['latin'],
   variable: '--font-display',
+  display: 'swap',
 })
 
 export const nunito = Nunito({
   weight: ['400', '500', '700', '900'],
   subsets: ['latin'],
   variable: '--font-body',
-})
-
-export const robotoMono = Roboto_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
+  display: 'swap',
 })
