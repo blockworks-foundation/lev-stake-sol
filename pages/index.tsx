@@ -14,7 +14,7 @@ const set = mangoStore.getState().set
 export async function getStaticProps({ locale }: { locale: string }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common'])),
+      ...(await serverSideTranslations(locale, ['common', 'swap'])),
     },
   }
 }
