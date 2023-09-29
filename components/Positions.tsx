@@ -12,6 +12,7 @@ import SheenLoader from './shared/SheenLoader'
 import useStakeAccounts from 'hooks/useStakeAccounts'
 import FormatNumericValue from './shared/FormatNumericValue'
 import {
+  Bank,
   Group,
   MangoAccount,
   toUiDecimalsForQuote,
@@ -36,6 +37,18 @@ const getLeverage = (group: Group, mangoAccount: MangoAccount): number => {
   } else {
     return Math.abs(1 - assetsValue / accountValue) + 1
   }
+}
+
+const getLiquidationRatio = (
+  borrowBalance: number,
+  stakeBalance: number,
+  stakeBank: Bank,
+  borrowBank: Bank,
+) => {
+  return (
+    (Math.abs(borrowBalance) * borrowBank.maintLiabWeight.toNumber()) /
+    (stakeBalance * stakeBank.maintAssetWeight.toNumber())
+  ).toFixed(3)
 }
 
 const Positions = ({
@@ -171,18 +184,25 @@ const Positions = ({
                       x
                     </span>
                   </div>
-                  <div>
+                  {/* <div>
                     <p className="mb-1 text-th-fgd-4">Earned</p>
                     <span className="text-xl font-bold text-th-fgd-1">
                       {stakeBalance
                         ? `X.XX ${formatTokenSymbol(bank.name)}`
                         : `0 ${formatTokenSymbol(bank.name)}`}
                     </span>
-                  </div>
+                  </div> */}
                   <div>
-                    <p className="mb-1 text-th-fgd-4">Liquidation Price</p>
+                    <p className="mb-1 text-th-fgd-4">Est. Liquidation Ratio</p>
                     <span className="whitespace-nowrap text-xl font-bold text-th-fgd-1">
-                      {borrowBalance ? 'X.XX' : '0.00'}{' '}
+                      {borrowBalance && borrowBank
+                        ? getLiquidationRatio(
+                            borrowBalance,
+                            stakeBalance,
+                            bank,
+                            borrowBank,
+                          )
+                        : '0.00'}{' '}
                       {`${formatTokenSymbol(bank.name)}/${BORROW_TOKEN}`}
                     </span>
                   </div>
