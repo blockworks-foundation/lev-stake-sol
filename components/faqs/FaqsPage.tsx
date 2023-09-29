@@ -2,16 +2,24 @@ import { Disclosure } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 const FAQS = [
-  { question: 'FAQ 1', answer: 'Answer' },
-  { question: 'FAQ 2', answer: 'Answer' },
-  { question: 'FAQ 3', answer: 'Answer' },
-  { question: 'FAQ 4', answer: 'Answer' },
+  { question: 'How does Boost! work?', answer: 'Answer' },
+  { question: 'How does unboosting work?', answer: 'Answer' },
+  { question: 'What are the risks?', answer: 'Answer' },
+  { question: 'Where does the yield come from?', answer: 'Answer' },
+  {
+    question: 'Why is the max leverage different between tokens?',
+    answer: 'Answer',
+  },
+  { question: 'Will there be more tokens added?', answer: 'Answer' },
+  { question: 'Why is my Ledger not working with Boost!?', answer: 'Answer' },
+  { question: 'Is the contract audited?', answer: 'Answer' },
+  { question: 'Who made Boost!?', answer: 'Answer' },
 ]
 
 const FaqsPage = () => {
   return (
     <div className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
-      <h1>FAQs</h1>
+      <h1 className="mb-1">FAQs</h1>
       <p className="mb-4">Need more info? Reach out to us on ...</p>
       <div className="space-y-2">
         {FAQS.map((faq) => {

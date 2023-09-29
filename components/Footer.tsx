@@ -6,7 +6,7 @@ const Footer = () => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <span className="font-bold">Powered by 🥭</span>
+        <span className="font-medium">Powered by 🥭</span>
       </a>
     </div>
   )
