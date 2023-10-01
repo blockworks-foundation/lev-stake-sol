@@ -187,7 +187,7 @@ li {
 }
 
 a {
-  @apply default-transition text-th-fgd-1 md:hover:text-th-fgd-3;
+  @apply default-transition text-th-link md:hover:text-th-link-hover;
 }
 
 /* Forms */

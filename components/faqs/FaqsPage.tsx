@@ -3,28 +3,146 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 const FAQS = [
   {
+    question: 'How does Boost! work?',
+    answer: (
+      <p>
+        Boost! works by incresing your position size by borrowing SOL and
+        swapping it to your chosen staking token. This means you earn more yield
+        from the staking token becuase you have a larger position size. As long
+        as this yield exceeds the rate of the SOL borrow you earn a premium and
+        because the staking token price downside is highly correlated to SOL
+        there is a lower risk of liquidation.
+      </p>
+    ),
+  },
+  {
     question: 'How does unboosting work?',
-    answer:
-      'Unboosting your position involves selling some of your stake deposits to repay any SOL borrowings. Once SOL debts are settled, you can retrieve your staked holdings. Be mindful that potential losses might occur due to factors like price changes, slippage, and transaction fees.',
+    answer: (
+      <p>
+        Unboosting works by selling your staking token to repay your SOL borrow
+        and withdrawing to your wallet. The staking token price increases vs SOL
+        over time so the longer you hold the position the more yield you earn.
+      </p>
+    ),
+  },
+  {
+    question: 'What are the risks?',
+    answer: (
+      <>
+        <p>
+          The following risks are non-exhaustive. It&apos;s important to have a
+          good understanding of these risks and how Boost! works before
+          depositing any funds
+        </p>
+        <h4>Code</h4>
+        <p>
+          Boost! is an integration with the Mango v4 program. Although it is
+          open source and has been audited extensively, it&apos;s possible bugs
+          and exploits exist that could result in the loss of funds. It&apos;s
+          also possible for a bug in the UI to affect the ability to open and
+          close positions in a timely manner.
+        </p>
+        <h4>Price Depeg</h4>
+        <p>
+          It&apos;s possible for the staking token price to diverge
+          significantly from the SOL price. A large drop in price could result
+          in postions being liquidated. Positions with higher leverage are more
+          exposed to this risk.
+        </p>
+        <h4>Liquidity</h4>
+        <p>
+          Opening and closing positions on Boost! relies on swapping between the
+          staking tokens and SOL without significant price impact. During an
+          extreme market event there could be issues liquidating position
+          effectively. This could affect the liquidity available to open/close
+          positions.
+        </p>
+        <h4>Oracles</h4>
+        <p>
+          The price data for Boost! comes from third party oracle providers.
+          It&apos;s possible for the data to be incorrect due to a failure with
+          the oracle provider. This could result in bad liquidations and loss of
+          funds.
+        </p>
+        <h4>Yield Duration</h4>
+        <p>
+          When you borrow SOL to open a position on Boost! you&apos;ll be paying
+          interest on the borrowed amount instantaneously. The staking rewards
+          of the staking tokens is paid on a longer duration. This means you
+          could open a position and close it before earning any staking rewards
+          whilst paying interest to borrow SOL.
+        </p>
+      </>
+    ),
+  },
+  {
+    question: 'Where does the yield come from?',
+    answer: (
+      <p>
+        Every epoch the price of each staking token rises vs SOL. Boost!
+        increases the position size of your staking token by borrowing SOL. This
+        means you earn more of the staking reward every epoch. It&apos;s
+        important to account for the cost of borrowing SOL. This is displayed in
+        the UI.
+      </p>
+    ),
   },
   {
     question: 'Why is the max leverage different between tokens?',
-    answer:
-      'The max leverage changes based on the asset and liability weights of the staked token which are determined by the Mango smart contract.',
+    answer: (
+      <p>
+        The Mango v4 program has a safety mechanism that reduces the leverage
+        available to tokens depending on how much of that token is deposited.
+        When the notional value of deposits exceeds this value the leverage is
+        scaled down.
+      </p>
+    ),
+  },
+  {
+    question: 'Why is my Ledger not working with Boost!?',
+    answer: (
+      <p>
+        If your Ledger isn&apos;t working it&apos;s most likely because it
+        doesn&apos;t support versioned transactions.
+      </p>
+    ),
   },
   {
     question: 'Is the contract audited?',
-    answer:
-      'The underlying mango smart contract is audited by OtterSec https://osec.io/',
+    answer: (
+      <p>
+        The Mango v4 program is fully audited by{' '}
+        <a href="https://osec.io/" target="_blank" rel="noopener noreferrer">
+          Ottersec
+        </a>
+        . Every update to the program also undergoes an audit before release.
+      </p>
+    ),
+  },
+  {
+    question: 'Who made Boost!?',
+    answer: (
+      <p>
+        Boost! is made and maintained by long-term contributors to{' '}
+        <a
+          href="https://dao.mango.markets"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Mango Dao
+        </a>
+        .
+      </p>
+    ),
   },
 ]
 
 const FaqsPage = () => {
   return (
     <div className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
-      <h1 className="mb-1">FAQs</h1>
+      <h1 className="mb-4">FAQs</h1>
       <div className="space-y-2">
-        <Disclosure key={'How does Boost! work?'}>
+        {/* <Disclosure key={'How does Boost! work?'}>
           {({ open }) => (
             <div>
               <Disclosure.Button
@@ -144,7 +262,7 @@ const FaqsPage = () => {
               </Disclosure.Panel>
             </div>
           )}
-        </Disclosure>
+        </Disclosure> */}
         {FAQS.map((faq) => {
           const { question, answer } = faq
           return (
@@ -166,7 +284,7 @@ const FaqsPage = () => {
                     </div>
                   </Disclosure.Button>
                   <Disclosure.Panel className="space-y-2 rounded-xl rounded-t-none border-2 border-t-0 border-th-bkg-3 px-4 pb-3">
-                    <p>{answer}</p>
+                    {answer}
                   </Disclosure.Panel>
                 </div>
               )}
