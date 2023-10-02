@@ -29,21 +29,23 @@ const Button: FunctionComponent<ButtonCombinedProps> = ({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`rounded-xl ${
+      className={`flex items-center justify-center rounded-xl ${
         secondary
           ? 'border border-th-button focus-visible:border-th-fgd-4 md:hover:border-th-button-hover'
-          : 'raised-button text-shadow text-xl text-th-bkg-1 focus-visible:border focus-visible:border-th-fgd-4'
+          : 'raised-button text-shadow group text-xl text-th-bkg-1 after:rounded-xl'
       } ${
         size === 'medium'
           ? 'h-10 px-4'
           : size === 'large'
           ? 'h-14 px-8'
           : 'h-8 px-3'
-      } font-extrabold disabled:cursor-not-allowed disabled:opacity-80 ${className}`}
+      } font-extrabold focus:outline-none disabled:cursor-not-allowed disabled:opacity-80 ${className}`}
       type={type}
       {...props}
     >
-      <span className="mt-1">{children}</span>
+      <span className="mt-1 group-hover:mt-2 group-active:mt-3">
+        {children}
+      </span>
     </button>
   )
 }
@@ -74,12 +76,16 @@ export const IconButton = forwardRef<
           ? 'h-10 w-10'
           : ''
       } items-center justify-center rounded-full ${
-        hideBg ? 'md:hover:text-th-active' : 'raised-button-neutral'
+        hideBg
+          ? 'md:hover:text-th-active'
+          : 'raised-button-neutral group after:rounded-full'
       } text-th-fgd-1 focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 
       disabled:text-th-fgd-4 md:disabled:hover:text-th-fgd-4 ${className} focus-visible:text-th-active`}
       ref={ref}
     >
-      {children}
+      <span className={hideBg ? '' : 'group-hover:mt-1 group-active:mt-2'}>
+        {children}
+      </span>
     </button>
   )
 })

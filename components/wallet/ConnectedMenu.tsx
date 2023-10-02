@@ -49,14 +49,11 @@ const ConnectedMenu = () => {
       <Popover>
         <div className="relative">
           <Popover.Button
-            className={`raised-button-neutral h-12 rounded-full ${
+            className={`raised-button-neutral group flex h-12 items-center justify-center after:rounded-full md:justify-start ${
               isDesktop ? 'w-44' : 'w-12'
             } focus:outline-none`}
           >
-            <div
-              className="flex items-center justify-center md:ml-1.5 md:justify-start"
-              id="account-step-one"
-            >
+            <div className="flex items-center group-hover:mt-1 group-active:mt-2 md:ml-1.5">
               {!mangoAccountLoading ? (
                 <ProfileImage
                   imageSize={!isDesktop ? '32' : '40'}

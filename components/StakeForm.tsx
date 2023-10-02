@@ -409,7 +409,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
         {connected ? (
           <Button
             onClick={handleDeposit}
-            className="flex w-full items-center justify-center"
+            className="w-full"
             disabled={connected && (!inputAmount || showInsufficientBalance)}
             size="large"
           >
@@ -427,10 +427,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
             )}
           </Button>
         ) : (
-          <SecondaryConnectButton
-            className="flex w-full items-center justify-center"
-            isLarge
-          />
+          <SecondaryConnectButton className="w-full" isLarge />
         )}
         {tokenPositionsFull ? (
           <InlineNotification

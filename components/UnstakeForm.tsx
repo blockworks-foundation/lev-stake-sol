@@ -354,7 +354,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
           {connected ? (
             <Button
               onClick={handleWithdraw}
-              className="flex w-full items-center justify-center"
+              className="w-full"
               disabled={connected && (!inputAmount || showInsufficientBalance)}
               size="large"
             >
@@ -372,10 +372,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
               )}
             </Button>
           ) : (
-            <SecondaryConnectButton
-              className="flex w-full items-center justify-center"
-              isLarge
-            />
+            <SecondaryConnectButton className="w-full" isLarge />
           )}
           {tokenPositionsFull ? (
             <InlineNotification

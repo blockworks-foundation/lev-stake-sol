@@ -134,7 +134,7 @@ const PositionItem = ({
   const { stakeBalance, borrowBalance, bank, acct } = position
 
   const handleAddOrManagePosition = (token: string) => {
-    setActiveTab('Stake')
+    setActiveTab('Boost!')
     set((state) => {
       state.selectedToken = token
     })
@@ -192,9 +192,9 @@ const PositionItem = ({
           </div>
         </div>
         <Button onClick={() => handleAddOrManagePosition(bank.name)}>
-          <span className="mt-1 text-base tracking-wider">
+          <p className="mb-1 text-base tracking-wider text-th-bkg-1">
             {stakeBalance ? 'Manage' : 'Add Position'}
-          </span>
+          </p>
         </Button>
       </div>
       <div className="grid grid-cols-2 gap-4">

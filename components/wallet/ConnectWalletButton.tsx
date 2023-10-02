@@ -32,56 +32,52 @@ export default function ConnectWalletButton() {
 
   return (
     <div className="relative">
-      <div className="raised-button-neutral flex h-12 w-44 items-center rounded-full bg-th-bkg-3">
-        <button
-          onClick={() => {
-            if (wallet) {
-              connect()
-            } else {
-              select(lastWalletName)
-            }
-          }}
-          className="relative flex h-12 rounded-full"
-        >
-          <div className="relative z-10 flex h-full items-center justify-center space-x-2 px-4">
-            {connected && mangoAccountLoading ? (
-              <div></div>
-            ) : (
-              <div
-                className={`flex h-[28px] w-[28px] items-center justify-center rounded-full ${
-                  wallet?.adapter.name === 'Solflare' ? 'bg-black' : ''
-                }`}
-              >
-                <img
-                  src={walletIcon}
-                  className={`
+      <button
+        onClick={() => {
+          if (wallet) {
+            connect()
+          } else {
+            select(lastWalletName)
+          }
+        }}
+        className="raised-button-neutral group flex h-12 w-44 items-center after:rounded-full"
+      >
+        <div className="relative z-10 flex h-full items-center justify-center space-x-2 px-4 group-hover:mt-1 group-active:mt-2">
+          {connected && mangoAccountLoading ? (
+            <div></div>
+          ) : (
+            <div
+              className={`flex h-[28px] w-[28px] items-center justify-center rounded-full ${
+                wallet?.adapter.name === 'Solflare' ? 'bg-black' : ''
+              }`}
+            >
+              <img
+                src={walletIcon}
+                className={`
                       ${
                         wallet?.adapter.name === 'Solflare'
                           ? 'h-auto w-[20px]'
                           : 'h-auto w-[28px]'
                       }`}
-                  alt={`${wallet?.adapter.name} icon`}
-                />
-              </div>
-            )}
-            <div className="text-left">
-              <div className="text-sm font-bold text-th-fgd-1">
-                {t('connect')}
-              </div>
+                alt={`${wallet?.adapter.name} icon`}
+              />
+            </div>
+          )}
+          <div className="text-left">
+            <div className="text-sm font-bold text-th-fgd-1">
+              {t('connect')}
+            </div>
 
-              <div className="text-xs font-normal leading-none text-th-fgd-3">
-                {lastWalletName}
-              </div>
+            <div className="text-xs font-normal leading-none text-th-fgd-3">
+              {lastWalletName}
             </div>
           </div>
-        </button>
-      </div>
+        </div>
+      </button>
       <Popover>
         {({ open }) => (
           <>
-            <Popover.Button
-              className={`absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-th-bkg-2 text-th-fgd-3 focus:outline-none focus-visible:bg-th-bkg-3 md:hover:bg-th-bkg-3`}
-            >
+            <Popover.Button className="absolute right-1.5 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-th-bkg-2 text-th-fgd-3 focus:outline-none focus-visible:bg-th-bkg-3 md:hover:bg-th-bkg-3">
               <ChevronDownIcon
                 className={`h-6 w-6 flex-shrink-0 ${
                   open ? 'rotate-180' : 'rotate-360'

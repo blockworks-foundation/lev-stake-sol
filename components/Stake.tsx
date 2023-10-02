@@ -61,12 +61,12 @@ const Stake = () => {
         <div className="fixed bottom-0 left-0 w-full md:bottom-8 md:left-8 md:w-auto">
           {isDesktop ? (
             <a
-              className="raised-button text-shadow flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border border-th-button-hover p-3 text-center text-base font-extrabold"
+              className="raised-button text-shadow group flex h-20 w-20 cursor-pointer items-center justify-center p-3 text-center text-base font-extrabold after:rounded-full"
               href={swapUrl}
               rel="noopener noreferrer"
               target="_blank"
             >
-              <div>
+              <div className="group-hover:mt-1 group-active:mt-2">
                 <p className="text-th-bkg-1">Buy</p>
                 <p className="-mt-1.5 text-th-bkg-1">
                   {formatTokenSymbol(selectedToken)}

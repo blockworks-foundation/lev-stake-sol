@@ -340,50 +340,46 @@ table p {
 /* raised buttons */
 
 .raised-button {
-  @apply relative bg-th-button transition-none;
-  box-shadow: 0 4px var(--button-hover);
+  @apply relative z-10 transition-none;
 }
 
-.raised-button:hover {
+.raised-button:after {
+  @apply absolute left-0 h-full w-full bg-th-button;
+  content: '';
+  box-shadow: 0 4px var(--button-hover);
+  z-index: -1;
+}
+
+.raised-button:hover:after {
   background-color: var(--button);
   box-shadow: 0 2px var(--button-hover);
   top: 2px;
 }
 
-.raised-button:active {
+.raised-button:active:after {
   box-shadow: 0 0 var(--button-hover);
   top: 4px;
 }
 
 .raised-button-neutral {
-  @apply relative bg-th-bkg-1 transition-none;
-  box-shadow: 0 4px var(--bkg-3);
+  @apply relative z-10 transition-none;
 }
 
-.raised-button-neutral:hover {
+.raised-button-neutral:after {
+  @apply absolute left-0 top-0 h-full w-full bg-th-bkg-1;
+  content: '';
+  box-shadow: 0 4px var(--bkg-3);
+  z-index: -1;
+}
+
+.raised-button-neutral:hover:after {
   background-color: var(--bkg-1);
   box-shadow: 0 2px var(--bkg-3);
   top: 2px;
 }
 
-.raised-button-neutral:active {
+.raised-button-neutral:active:after {
   box-shadow: 0 0 var(--bkg-3);
-  top: 4px;
-}
-
-.raised-button-primary {
-  @apply relative bg-th-primary-1 transition-none;
-  box-shadow: 0 4px var(--primary-3);
-}
-
-.raised-button-primary:hover {
-  background-color: var(--primary-1);
-  box-shadow: 0 2px var(--primary-3);
-  top: 2px;
-}
-
-.raised-button-primary:active {
-  box-shadow: 0 0 var(--primary-3);
   top: 4px;
 }
 
