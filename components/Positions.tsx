@@ -176,19 +176,19 @@ const PositionItem = ({
       <div className="mb-4 flex flex-col border-b border-th-bkg-3 pb-4 md:flex-row md:items-center md:justify-between">
         <div className="mb-4 flex items-center space-x-3 md:mb-0">
           <div
-            className={`inner-shadow-bottom-sm flex h-14 w-14 items-center justify-center rounded-full border border-th-bkg-2 bg-gradient-to-b from-th-bkg-1 to-th-bkg-2`}
+            className={`inner-shadow-bottom-sm flex h-12 w-12 items-center justify-center rounded-full border border-th-bkg-2 bg-gradient-to-b from-th-bkg-1 to-th-bkg-2`}
           >
-            <TokenLogo bank={bank} size={32} />
+            <TokenLogo bank={bank} size={28} />
           </div>
           <div>
             <h3>{formatTokenSymbol(bank.name)}</h3>
-            <span
+            {/* <span
               className={`text-sm ${
                 stakeBalance ? 'text-th-fgd-1' : 'text-th-fgd-4'
               }`}
             >
               {stakeBalance ? 'Opened 2 weeks ago' : 'No Position'}
-            </span>
+            </span> */}
           </div>
         </div>
         <Button onClick={() => handleAddOrManagePosition(bank.name)}>
