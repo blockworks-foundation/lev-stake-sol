@@ -8,7 +8,7 @@ import SheenLoader from './shared/SheenLoader'
 const TransactionHistory = () => {
   const { history, isLoading } = useAccountHistory()
   return (
-    <div className="space-y-2 rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
+    <div className="flex min-h-[380px] flex-col space-y-2 rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
       {history?.length ? (
         history.map((history: ActivityFeed | any) => {
           const { activity_type, activity_details } = history
@@ -27,7 +27,9 @@ const TransactionHistory = () => {
           </SheenLoader>
         ))
       ) : (
-        <span className="text-center">No transaction history found</span>
+        <div className="flex flex-grow flex-col items-center justify-center">
+          <span className="text-center">No transaction history found</span>
+        </div>
       )}
     </div>
   )
