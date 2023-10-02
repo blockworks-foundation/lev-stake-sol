@@ -155,6 +155,20 @@ const PositionItem = ({
     }
   }, [group, acct])
 
+  const [liqRatio, liqPriceChangePercentage] = useMemo(() => {
+    if (!borrowBalance || !borrowBank) return ['0.00', '']
+    const liqRatio = getLiquidationRatio(
+      borrowBalance,
+      stakeBalance,
+      bank,
+      borrowBank,
+    )
+    const currentPriceRatio = bank.uiPrice / borrowBank.uiPrice
+    const liqPriceChangePercentage =
+      ((parseFloat(liqRatio) - currentPriceRatio) / currentPriceRatio) * 100
+    return [liqRatio, liqPriceChangePercentage.toFixed(2)]
+  }, [bank, borrowBalance, borrowBank, stakeBalance])
+
   const { estimatedNetAPY } = useBankRates(bank.name, leverage)
 
   return (
@@ -213,17 +227,16 @@ const PositionItem = ({
         </div> */}
         <div>
           <p className="mb-1 text-th-fgd-4">Est. Liquidation Ratio</p>
-          <span className="whitespace-nowrap text-xl font-bold text-th-fgd-1">
-            {borrowBalance && borrowBank
-              ? getLiquidationRatio(
-                  borrowBalance,
-                  stakeBalance,
-                  bank,
-                  borrowBank,
-                )
-              : '0.00'}{' '}
-            {`${formatTokenSymbol(bank.name)}/${BORROW_TOKEN}`}
-          </span>
+          <div className="flex flex-wrap items-end">
+            <span className="mr-2 whitespace-nowrap text-xl font-bold text-th-fgd-1">
+              {liqRatio} {`${formatTokenSymbol(bank.name)}/${BORROW_TOKEN}`}
+            </span>
+            {liqPriceChangePercentage ? (
+              <p className="mb-0.5 text-th-error">
+                {liqPriceChangePercentage}%
+              </p>
+            ) : null}
+          </div>
         </div>
       </div>
     </div>
