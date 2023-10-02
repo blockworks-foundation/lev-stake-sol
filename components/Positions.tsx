@@ -7,36 +7,23 @@ import { formatTokenSymbol } from 'utils/tokens'
 import mangoStore from '@store/mangoStore'
 import Switch from './forms/Switch'
 import useLocalStorageState from 'hooks/useLocalStorageState'
-import useStakeRates from 'hooks/useStakeRates'
-import SheenLoader from './shared/SheenLoader'
 import useStakeAccounts from 'hooks/useStakeAccounts'
 import FormatNumericValue from './shared/FormatNumericValue'
 import {
   Bank,
-  Group,
   MangoAccount,
   toUiDecimalsForQuote,
 } from '@blockworks-foundation/mango-v4'
+import useBankRates from 'hooks/useBankRates'
 
 const set = mangoStore.getState().set
-
 const BORROW_TOKEN = 'SOL'
 
-const getLeverage = (group: Group, mangoAccount: MangoAccount): number => {
-  if (!group || !mangoAccount) return 0
-  const accountValue = toUiDecimalsForQuote(
-    mangoAccount.getEquity(group).toNumber(),
-  )
-
-  const assetsValue = toUiDecimalsForQuote(
-    mangoAccount.getAssetsValue(group).toNumber(),
-  )
-
-  if (isNaN(assetsValue / accountValue)) {
-    return 0
-  } else {
-    return Math.abs(1 - assetsValue / accountValue) + 1
-  }
+type Position = {
+  borrowBalance: number
+  stakeBalance: number
+  bank: Bank
+  acct: MangoAccount | undefined
 }
 
 const getLiquidationRatio = (
@@ -57,7 +44,6 @@ const Positions = ({
   setActiveTab: (tab: string) => void
 }) => {
   const { group } = useMangoGroup()
-  const { data: stakeRates, isLoading: loadingRates } = useStakeRates()
   const [showInactivePositions, setShowInactivePositions] =
     useLocalStorageState(SHOW_INACTIVE_POSITIONS_KEY, true)
   const { stakeAccounts } = useStakeAccounts()
@@ -100,13 +86,6 @@ const Positions = ({
     return positions.filter((pos) => pos.stakeBalance > 0).length
   }, [positions])
 
-  const handleAddOrManagePosition = (token: string) => {
-    setActiveTab('Stake')
-    set((state) => {
-      state.selectedToken = token
-    })
-  }
-
   return (
     <>
       <div className="mb-2 flex items-center justify-between rounded-lg border-2 border-th-fgd-1 bg-th-bkg-1 px-6 py-3.5">
@@ -122,92 +101,14 @@ const Positions = ({
       </div>
       <div className="grid grid-cols-1 gap-2">
         {positions.length ? (
-          positions.map((position, i) => {
-            const { stakeBalance, borrowBalance, bank, acct } = position
-            return bank ? (
-              <div
-                className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6"
-                key={i + stakeBalance}
-              >
-                <div className="mb-4 flex flex-col border-b border-th-bkg-3 pb-4 md:flex-row md:items-center md:justify-between">
-                  <div className="mb-4 flex items-center space-x-3 md:mb-0">
-                    <div
-                      className={`inner-shadow-bottom-sm flex h-14 w-14 items-center justify-center rounded-full border border-th-bkg-2 bg-gradient-to-b from-th-bkg-1 to-th-bkg-2`}
-                    >
-                      <TokenLogo bank={bank} size={32} />
-                    </div>
-                    <div>
-                      <h3>{formatTokenSymbol(bank.name)}</h3>
-                      <span
-                        className={`text-sm ${
-                          stakeBalance ? 'text-th-fgd-1' : 'text-th-fgd-4'
-                        }`}
-                      >
-                        {stakeBalance ? 'Opened 2 weeks ago' : 'No Position'}
-                      </span>
-                    </div>
-                  </div>
-                  <Button onClick={() => handleAddOrManagePosition(bank.name)}>
-                    <span className="mt-1 text-base tracking-wider">
-                      {stakeBalance ? 'Manage' : 'Add Position'}
-                    </span>
-                  </Button>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="mb-1 text-th-fgd-4">Position Size</p>
-                    <span className="text-xl font-bold text-th-fgd-1">
-                      <FormatNumericValue value={stakeBalance} decimals={6} />{' '}
-                      {formatTokenSymbol(bank.name)}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="mb-1 text-th-fgd-4">Est. APY</p>
-                    <span className="text-xl font-bold text-th-fgd-1">
-                      {loadingRates ? (
-                        <SheenLoader className="mt-1">
-                          <div className="h-6 w-16 bg-th-bkg-2" />
-                        </SheenLoader>
-                      ) : stakeRates?.[bank.name.toLowerCase()] ? (
-                        `${(
-                          stakeRates?.[bank.name.toLowerCase()] * 100
-                        ).toFixed(1)}%`
-                      ) : null}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="mb-1 text-th-fgd-4">Leverage</p>
-                    <span className="text-xl font-bold text-th-fgd-1">
-                      {group && acct
-                        ? getLeverage(group, acct).toFixed(2)
-                        : 0.0}
-                      x
-                    </span>
-                  </div>
-                  {/* <div>
-                    <p className="mb-1 text-th-fgd-4">Earned</p>
-                    <span className="text-xl font-bold text-th-fgd-1">
-                      {stakeBalance
-                        ? `X.XX ${formatTokenSymbol(bank.name)}`
-                        : `0 ${formatTokenSymbol(bank.name)}`}
-                    </span>
-                  </div> */}
-                  <div>
-                    <p className="mb-1 text-th-fgd-4">Est. Liquidation Ratio</p>
-                    <span className="whitespace-nowrap text-xl font-bold text-th-fgd-1">
-                      {borrowBalance && borrowBank
-                        ? getLiquidationRatio(
-                            borrowBalance,
-                            stakeBalance,
-                            bank,
-                            borrowBank,
-                          )
-                        : '0.00'}{' '}
-                      {`${formatTokenSymbol(bank.name)}/${BORROW_TOKEN}`}
-                    </span>
-                  </div>
-                </div>
-              </div>
+          positions.map((position) => {
+            return position.bank ? (
+              <PositionItem
+                key={position.bank.name}
+                position={position}
+                setActiveTab={setActiveTab}
+                borrowBank={borrowBank}
+              />
             ) : null
           })
         ) : (
@@ -217,6 +118,115 @@ const Positions = ({
         )}
       </div>
     </>
+  )
+}
+
+const PositionItem = ({
+  position,
+  setActiveTab,
+  borrowBank,
+}: {
+  position: Position
+  setActiveTab: (v: string) => void
+  borrowBank: Bank | undefined
+}) => {
+  const { group } = useMangoGroup()
+  const { stakeBalance, borrowBalance, bank, acct } = position
+
+  const handleAddOrManagePosition = (token: string) => {
+    setActiveTab('Stake')
+    set((state) => {
+      state.selectedToken = token
+    })
+  }
+
+  const leverage = useMemo(() => {
+    if (!group || !acct) return 0
+    const accountValue = toUiDecimalsForQuote(acct.getEquity(group).toNumber())
+
+    const assetsValue = toUiDecimalsForQuote(
+      acct.getAssetsValue(group).toNumber(),
+    )
+
+    if (isNaN(assetsValue / accountValue)) {
+      return 0
+    } else {
+      return Math.abs(1 - assetsValue / accountValue) + 1
+    }
+  }, [group, acct])
+
+  const { estimatedNetAPY } = useBankRates(bank.name, leverage)
+
+  return (
+    <div className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
+      <div className="mb-4 flex flex-col border-b border-th-bkg-3 pb-4 md:flex-row md:items-center md:justify-between">
+        <div className="mb-4 flex items-center space-x-3 md:mb-0">
+          <div
+            className={`inner-shadow-bottom-sm flex h-14 w-14 items-center justify-center rounded-full border border-th-bkg-2 bg-gradient-to-b from-th-bkg-1 to-th-bkg-2`}
+          >
+            <TokenLogo bank={bank} size={32} />
+          </div>
+          <div>
+            <h3>{formatTokenSymbol(bank.name)}</h3>
+            <span
+              className={`text-sm ${
+                stakeBalance ? 'text-th-fgd-1' : 'text-th-fgd-4'
+              }`}
+            >
+              {stakeBalance ? 'Opened 2 weeks ago' : 'No Position'}
+            </span>
+          </div>
+        </div>
+        <Button onClick={() => handleAddOrManagePosition(bank.name)}>
+          <span className="mt-1 text-base tracking-wider">
+            {stakeBalance ? 'Manage' : 'Add Position'}
+          </span>
+        </Button>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <p className="mb-1 text-th-fgd-4">Position Size</p>
+          <span className="text-xl font-bold text-th-fgd-1">
+            <FormatNumericValue value={stakeBalance} decimals={6} />{' '}
+            {formatTokenSymbol(bank.name)}
+          </span>
+        </div>
+        <div>
+          <p className="mb-1 text-th-fgd-4">Est. APY</p>
+          <span className="text-xl font-bold text-th-fgd-1">
+            <FormatNumericValue value={estimatedNetAPY} decimals={2} />%
+          </span>
+        </div>
+        <div>
+          <p className="mb-1 text-th-fgd-4">Leverage</p>
+          <span className="text-xl font-bold text-th-fgd-1">
+            {leverage ? leverage.toFixed(2) : 0.0}x
+          </span>
+        </div>
+        {/* <div>
+          <p className="mb-1 text-th-fgd-4">Earned</p>
+          <span className="text-xl font-bold text-th-fgd-1">
+            {stakeBalance
+              ? `X.XX ${formatTokenSymbol(bank.name)}`
+              : `0 ${formatTokenSymbol(bank.name)}`}
+          </span>
+        </div> */}
+        <div>
+          <p className="mb-1 text-th-fgd-4">Est. Liquidation Ratio</p>
+          <span className="whitespace-nowrap text-xl font-bold text-th-fgd-1">
+            {borrowBalance && borrowBank
+              ? getLiquidationRatio(
+                  borrowBalance,
+                  stakeBalance,
+                  bank,
+                  borrowBank,
+                )
+              : '0.00'}{' '}
+            {`${formatTokenSymbol(bank.name)}/${BORROW_TOKEN}`}
+          </span>
+        </div>
+      </div>
+    </div>
   )
 }
 

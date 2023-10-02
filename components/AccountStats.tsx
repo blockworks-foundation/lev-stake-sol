@@ -11,7 +11,7 @@ const AccountStats = ({ token }: { token: string }) => {
 
   const solBank = useMemo(() => {
     return group?.banksMapByName.get('SOL')?.[0]
-  }, [group, token])
+  }, [group])
 
   const tokenBank = useMemo(() => {
     return group?.banksMapByName.get(token)?.[0]

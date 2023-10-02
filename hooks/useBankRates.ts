@@ -1,14 +1,16 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import useStakeRates from './useStakeRates'
 import useMangoGroup from './useMangoGroup'
-import mangoStore from '@store/mangoStore'
+// import mangoStore from '@store/mangoStore'
+import useLeverageMax from './useLeverageMax'
 
-const set = mangoStore.getState().set
+// const set = mangoStore.getState().set
 
 export default function useBankRates(selectedToken: string, leverage: number) {
   const { data: stakeRates } = useStakeRates()
   const { group } = useMangoGroup()
-  const estimatedMaxAPY = mangoStore((s) => s.estimatedMaxAPY.current)
+  // const estimatedMaxAPY = mangoStore((s) => s.estimatedMaxAPY.current)
+  const leverageMax = useLeverageMax(selectedToken)
 
   const stakeBank = useMemo(() => {
     return group?.banksMapByName.get(selectedToken)?.[0]
@@ -40,12 +42,20 @@ export default function useBankRates(selectedToken: string, leverage: number) {
     )
   }, [borrowBankStakeRate, leverage, borrowBankBorrowRate])
 
-  useEffect(() => {
-    set((s) => {
-      s.estimatedMaxAPY.current =
-        borrowBankStakeRate * 3 - borrowBankBorrowRate * 2
-    })
-  }, [borrowBankStakeRate, borrowBankBorrowRate])
+  // useEffect(() => {
+  //   set((s) => {
+  //     s.estimatedMaxAPY.current =
+  //       borrowBankStakeRate * leverageMax -
+  //       borrowBankBorrowRate * (leverageMax - 1)
+  //   })
+  // }, [borrowBankStakeRate, borrowBankBorrowRate, leverageMax])
+
+  const estimatedMaxAPY = useMemo(() => {
+    return (
+      borrowBankStakeRate * leverageMax -
+      borrowBankBorrowRate * (leverageMax - 1)
+    )
+  }, [borrowBankStakeRate, borrowBankBorrowRate, leverageMax])
 
   return {
     stakeBankDepositRate,
