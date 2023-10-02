@@ -1,7 +1,6 @@
 import NavTabs from '@components/NavTabs'
 import Positions from '@components/Positions'
 import Stake from '@components/Stake'
-import Stats from '@components/Stats'
 import TransactionHistory from '@components/TransactionHistory'
 import mangoStore from '@store/mangoStore'
 import type { NextPage } from 'next'
@@ -43,10 +42,10 @@ const Index: NextPage = () => {
 
   return (
     <>
-      <div className="mb-6 grid grid-cols-4">
+      <div className="mb-6 grid grid-cols-3">
         <NavTabs
           activeValue={activeTab}
-          values={['Boost!', 'Positions', 'Activity', 'Stats']}
+          values={['Boost!', 'Positions', 'Activity']}
           onChange={setActiveTab}
         />
       </div>
@@ -71,8 +70,6 @@ const TabContent = ({
       return <Positions setActiveTab={setActiveTab} />
     case 'Activity':
       return <TransactionHistory />
-    case 'Stats':
-      return <Stats />
     default:
       return <Stake />
   }
