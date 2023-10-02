@@ -28,12 +28,13 @@ import LeverageSlider from './shared/LeverageSlider'
 import useMangoGroup from 'hooks/useMangoGroup'
 import FormatNumericValue from './shared/FormatNumericValue'
 import { stakeAndCreate } from 'utils/transactions'
-import { MangoAccount } from '@blockworks-foundation/mango-v4'
+// import { MangoAccount } from '@blockworks-foundation/mango-v4'
 import { AnchorProvider } from '@project-serum/anchor'
 import useBankRates from 'hooks/useBankRates'
 import { Disclosure } from '@headlessui/react'
 import SheenLoader from './shared/SheenLoader'
 import useLeverageMax from 'hooks/useLeverageMax'
+import { STAKEABLE_TOKENS } from 'utils/constants'
 
 const set = mangoStore.getState().set
 
@@ -65,18 +66,18 @@ export const walletBalanceForToken = (
   }
 }
 
-const getNextAccountNumber = (accounts: MangoAccount[]): number => {
-  if (accounts.length > 1) {
-    return (
-      accounts
-        .map((a) => a.accountNum)
-        .reduce((a, b) => Math.max(a, b), -Infinity) + 1
-    )
-  } else if (accounts.length === 1) {
-    return accounts[0].accountNum + 1
-  }
-  return 0
-}
+// const getNextAccountNumber = (accounts: MangoAccount[]): number => {
+//   if (accounts.length > 1) {
+//     return (
+//       accounts
+//         .map((a) => a.accountNum)
+//         .reduce((a, b) => Math.max(a, b), -Infinity) + 1
+//     )
+//   } else if (accounts.length === 1) {
+//     return accounts[0].accountNum + 1
+//   }
+//   return 0
+// }
 
 function StakeForm({ token: selectedToken }: StakeFormProps) {
   const { t } = useTranslation(['common', 'account'])
@@ -147,7 +148,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     const client = mangoStore.getState().client
     const group = mangoStore.getState().group
     const actions = mangoStore.getState().actions
-    const mangoAccounts = mangoStore.getState().mangoAccounts
+    // const mangoAccounts = mangoStore.getState().mangoAccounts
     const mangoAccount = mangoStore.getState().mangoAccount.current
 
     if (!group || !stakeBank || !publicKey) return
@@ -155,8 +156,11 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     set((state) => {
       state.submittingBoost = true
     })
+    const tokenNum = STAKEABLE_TOKENS.findIndex(
+      (t) => t.toLowerCase() === stakeBank.name.toLowerCase(),
+    )
     try {
-      const newAccountNum = getNextAccountNumber(mangoAccounts)
+      // const newAccountNum = getNextAccountNumber(mangoAccounts)
       const { signature: tx, slot } = await stakeAndCreate(
         client,
         group,
@@ -164,18 +168,16 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
         amountToBorrow,
         stakeBank.mint,
         parseFloat(inputAmount),
-        newAccountNum + 300,
+        420 + tokenNum,
       )
       notify({
         title: 'Transaction confirmed',
         type: 'success',
         txid: tx,
       })
-      if (!mangoAccount) {
-        await actions.fetchMangoAccounts(
-          (client.program.provider as AnchorProvider).wallet.publicKey,
-        )
-      }
+      await actions.fetchMangoAccounts(
+        (client.program.provider as AnchorProvider).wallet.publicKey,
+      )
       await actions.reloadMangoAccount(slot)
       await actions.fetchWalletTokens(publicKey)
       set((state) => {

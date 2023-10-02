@@ -65,12 +65,12 @@ const HydrateStore = () => {
   // )
 
   // refetch trade history and activity feed when switching accounts
-  useEffect(() => {
-    const actions = mangoStore.getState().actions
-    if (mangoAccountAddress) {
-      actions.fetchActivityFeed(mangoAccountAddress)
-    }
-  }, [mangoAccountAddress])
+  // useEffect(() => {
+  //   const actions = mangoStore.getState().actions
+  //   if (mangoAccountAddress) {
+  //     actions.fetchActivityFeed(mangoAccountAddress)
+  //   }
+  // }, [mangoAccountAddress])
 
   // reload and parse market fills from the event queue
   // useInterval(

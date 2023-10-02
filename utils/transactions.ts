@@ -84,7 +84,10 @@ export const unstakeAndClose = async (
       mangoAccountPk: mangoAccount.publicKey,
       owner: payer,
       inputMintPk: stakeBank.mint,
-      amountIn: toUiDecimals(selectedRoute.inAmount, stakeBank.mintDecimals),
+      amountIn: toUiDecimals(
+        selectedRoute.inAmount + 10,
+        stakeBank.mintDecimals,
+      ),
       outputMintPk: solBank.mint,
       userDefinedInstructions: jupiterIxs,
       userDefinedAlts: jupiterAlts,

@@ -201,7 +201,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
   return (
     <>
       <EnterBottomExitBottom
-        className={`absolute bottom-0 left-0 z-20 h-[${ACCOUNT_ACTION_MODAL_INNER_HEIGHT}] w-full overflow-auto rounded-lg bg-th-bkg-1 p-6`}
+        className={`h-[${ACCOUNT_ACTION_MODAL_INNER_HEIGHT}] absolute bottom-0 left-0 z-20 w-full overflow-auto rounded-lg bg-th-bkg-1 p-6`}
         show={showTokenList}
       >
         <BackButton onClick={() => setShowTokenList(false)} />
@@ -311,8 +311,8 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                             </span>
                             <ChevronDownIcon
                               className={`${
-                                open ? 'rotate-180' : 'rotate-360'
-                              } h-6 w-6 flex-shrink-0 text-th-fgd-1`}
+                                open ? 'rotate-180' : ''
+                              } h-6 w-6 shrink-0 text-th-fgd-1`}
                             />
                           </div>
                         </div>
@@ -362,7 +362,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                 <Loading className="mr-2 h-5 w-5" />
               ) : showInsufficientBalance ? (
                 <div className="flex items-center">
-                  <ExclamationCircleIcon className="icon-shadow mr-2 h-5 w-5 flex-shrink-0" />
+                  <ExclamationCircleIcon className="icon-shadow mr-2 h-5 w-5 shrink-0" />
                   {t('swap:insufficient-balance', {
                     symbol: formatTokenSymbol(selectedToken),
                   })}
