@@ -26,13 +26,13 @@ const TopBar = () => {
       <Link href="/" shallow={true}>
         <div className="group flex items-center">
           <BoostLogo className="h-auto w-10 shrink-0 cursor-pointer group-hover:animate-shake" />
-          <span className="text-shadow ml-2 text-[27px] font-black text-th-bkg-1">
+          <span className="text-shadow ml-2 hidden text-[27px] font-black text-th-bkg-1 md:block">
             Boost!
           </span>
         </div>
       </Link>
-      <div className="flex items-center justify-end space-x-4">
-        <div className="px-4">
+      <div className="flex items-center justify-end space-x-2 md:space-x-4">
+        <div className="px-2 md:px-4">
           <NavLink active={pathname === '/faqs'} path="/faqs" text="FAQs" />
         </div>
         <ThemeToggle />
@@ -64,7 +64,7 @@ const NavLink = ({
   return (
     <Link href={path} shallow={true}>
       <span
-        className={`default-transition border-b-2 text-base font-bold md:hover:text-th-active ${
+        className={`default-transition border-b-2 text-sm font-bold md:text-base md:hover:text-th-active ${
           active
             ? 'border-th-active text-th-active'
             : 'border-th-fgd-1 text-th-fgd-1'

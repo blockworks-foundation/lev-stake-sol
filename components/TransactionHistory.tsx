@@ -89,9 +89,9 @@ const DepositHistory = ({ details }: { details: DepositWithdrawFeedItem }) => {
             <p className="mb-1 text-sm">
               {dayjs(block_datetime).format('ddd D MMM h:mma')}
             </p>
-            <h4 className="leading-none">{`Deposit ${quantity} ${symbol}`}</h4>
+            <h4 className="text-sm leading-tight md:text-base md:leading-none">{`Deposit ${quantity} ${symbol}`}</h4>
           </div>
-          <ArrowTopRightOnSquareIcon className="h-6 w-6 text-th-fgd-4" />
+          <ArrowTopRightOnSquareIcon className="ml-3 h-5 w-5 flex-shrink-0 text-th-fgd-4 md:h-6 md:w-6" />
         </div>
       </div>
     </a>
@@ -120,9 +120,9 @@ const SwapHistory = ({ details }: { details: SwapHistoryItem }) => {
             <p className="mb-1 text-sm">
               {dayjs(block_datetime).format('ddd D MMM h:mma')}
             </p>
-            <h4 className="leading-none">{`Swap ${swap_in_amount} ${swap_in_symbol} for ${swap_out_amount} ${swap_out_symbol}`}</h4>
+            <h4 className="text-sm leading-tight md:text-base md:leading-none">{`Swap ${swap_in_amount} ${swap_in_symbol} for ${swap_out_amount} ${swap_out_symbol}`}</h4>
           </div>
-          <ArrowTopRightOnSquareIcon className="h-6 w-6 text-th-fgd-4" />
+          <ArrowTopRightOnSquareIcon className="ml-3 h-5 w-5 flex-shrink-0 text-th-fgd-4 md:h-6 md:w-6" />
         </div>
       </div>
     </a>

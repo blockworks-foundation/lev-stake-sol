@@ -26,7 +26,7 @@ const Stake = () => {
 
   return (
     <>
-      <div className="grid grid-cols-4 rounded-t-2xl border-2 border-b-0 border-th-fgd-1 bg-th-bkg-1">
+      <div className="grid grid-cols-3 rounded-t-2xl border-2 border-b-0 border-th-fgd-1 bg-th-bkg-1">
         {STAKEABLE_TOKENS.map((token) => (
           <TokenButton
             key={token}
@@ -40,7 +40,7 @@ const Stake = () => {
         <div
           className={`col-span-12 rounded-b-2xl border-2 border-t border-th-fgd-1 bg-th-bkg-1 text-th-fgd-1`}
         >
-          <div className={`p-8 pt-6`}>
+          <div className={`p-6 pt-4 md:p-8 md:pt-6`}>
             <div className="pb-2">
               <TabUnderline
                 activeValue={activeFormTab}
@@ -58,7 +58,7 @@ const Stake = () => {
         </div>
       </div>
       {activeFormTab === 'Add' ? (
-        <div className="fixed bottom-0 left-0 w-full md:bottom-8 md:left-8 md:w-auto">
+        <div className="fixed bottom-0 left-0 z-20 w-full md:bottom-8 md:left-8 md:w-auto">
           {isDesktop ? (
             <a
               className="raised-button text-shadow group flex h-20 w-20 cursor-pointer items-center justify-center p-3 text-center text-base font-extrabold after:rounded-full"

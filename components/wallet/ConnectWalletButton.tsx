@@ -40,14 +40,14 @@ export default function ConnectWalletButton() {
             select(lastWalletName)
           }
         }}
-        className="raised-button-neutral group flex h-12 w-44 items-center after:rounded-full"
+        className="raised-button-neutral group flex h-12 w-32 items-center after:rounded-full md:w-44"
       >
-        <div className="relative z-10 flex h-full items-center justify-center space-x-2 px-4 group-hover:mt-1 group-active:mt-2">
+        <div className="relative z-10 flex h-full items-center justify-center space-x-2 px-2.5 group-hover:mt-1 group-active:mt-2 md:px-4">
           {connected && mangoAccountLoading ? (
             <div></div>
           ) : (
             <div
-              className={`flex h-[28px] w-[28px] items-center justify-center rounded-full ${
+              className={`hidden h-[28px] w-[28px] items-center justify-center rounded-full md:flex ${
                 wallet?.adapter.name === 'Solflare' ? 'bg-black' : ''
               }`}
             >
