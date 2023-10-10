@@ -34,9 +34,10 @@ const fetchHistory = async (
 
 export default function useAccountHistory() {
   const { stakeAccounts } = useStakeAccounts()
+  const accountPks = stakeAccounts?.map((acc) => acc.publicKey.toString()) || []
 
   const response = useQuery<Array<ActivityFeed[] | null> | EmptyObject | null>(
-    ['history'],
+    ['history', ...accountPks],
     () =>
       stakeAccounts?.length
         ? Promise.all(
