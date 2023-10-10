@@ -1,7 +1,14 @@
 import { PublicKey } from '@metaplex-foundation/js'
 
 // lev stake
-export const STAKEABLE_TOKENS = ['MSOL', 'JitoSOL', 'bSOL']
+export const STAKEABLE_TOKENS_DATA = [
+  { name: 'MSOL', id: 1, active: true },
+  { name: 'JitoSOL', id: 2, active: true },
+  { name: 'bSOL', id: 4, active: true },
+]
+export const STAKEABLE_TOKENS = STAKEABLE_TOKENS_DATA.filter(
+  (d) => d.active,
+).map((d) => d.name)
 
 export const SHOW_INACTIVE_POSITIONS_KEY = 'showInactivePositions-0.1'
 // end

@@ -3,10 +3,14 @@ import {
   Bank,
   FlashLoanType,
   Group,
+  I80F48,
   MangoAccount,
   MangoClient,
   MangoSignatureStatus,
   RouteInfo,
+  TokenIndex,
+  TokenPosition,
+  U64_MAX_BN,
   createAssociatedTokenAccountIdempotentInstruction,
   getAssociatedTokenAddress,
   toNative,
@@ -33,14 +37,15 @@ import {
 import { floorToDecimal } from './numbers'
 import { BOOST_ACCOUNT_PREFIX } from './constants'
 
-export const unstakeAndClose = async (
+export const withdrawAndClose = async (
   client: MangoClient,
   group: Group,
   mangoAccount: MangoAccount,
   stakeMintPk: PublicKey,
   amount: number,
-): Promise<MangoSignatureStatus> => {
-  const payer = (client.program.provider as AnchorProvider).wallet.publicKey
+) => {
+  console.log('withdraw and close')
+
   const solBank = group?.banksMapByName.get('SOL')?.[0]
   const stakeBank = group?.banksMapByMint.get(stakeMintPk.toString())?.[0]
   const instructions: TransactionInstruction[] = []
@@ -49,14 +54,84 @@ export const unstakeAndClose = async (
     throw Error('Unable to find SOL bank or stake bank or mango account')
   }
   const stakeBalance = mangoAccount.getTokenBalanceUi(stakeBank)
+  const withdrawHealthRemainingAccounts: PublicKey[] =
+    client.buildHealthRemainingAccounts(group, [mangoAccount], [], [], [])
+  const withdrawMax =
+    amount == floorToDecimal(stakeBalance, stakeBank.mintDecimals).toNumber()
+  console.log('withdrawMax: ', withdrawMax)
+
+  const nativeWithdrawAmount = toNative(
+    amount,
+    group.getMintDecimals(stakeBank.mint),
+  )
+
+  if (withdrawMax) {
+    for (const tp of mangoAccount.tokensActive()) {
+      const bank = group.getFirstBankByTokenIndex(tp.tokenIndex)
+      const withdrawIx = await client.tokenWithdrawNativeIx(
+        group,
+        mangoAccount,
+        bank.mint,
+        U64_MAX_BN,
+        false,
+      )
+      instructions.push(...withdrawIx)
+      tp.tokenIndex = TokenPosition.TokenIndexUnset as TokenIndex
+    }
+    const closeIx = await client.program.methods
+      .accountClose(false)
+      .accounts({
+        group: group.publicKey,
+        account: mangoAccount.publicKey,
+        owner: (client.program.provider as AnchorProvider).wallet.publicKey,
+        solDestination: mangoAccount.owner,
+      })
+      .instruction()
+    instructions.push(closeIx)
+  } else {
+    const withdrawIx = await tokenWithdrawNativeIx(
+      client,
+      group,
+      mangoAccount,
+      stakeBank.mint,
+      withdrawMax ? new BN('18446744073709551615', 10) : nativeWithdrawAmount,
+      false,
+      withdrawHealthRemainingAccounts,
+    )
+    instructions.push(...withdrawIx)
+  }
+
+  return await client.sendAndConfirmTransactionForGroup(group, instructions, {
+    alts: [...group.addressLookupTablesList],
+  })
+}
+
+export const unstakeAndSwap = async (
+  client: MangoClient,
+  group: Group,
+  mangoAccount: MangoAccount,
+  stakeMintPk: PublicKey,
+): Promise<MangoSignatureStatus> => {
+  console.log('unstake and swap')
+
+  const payer = (client.program.provider as AnchorProvider).wallet.publicKey
+  const solBank = group?.banksMapByName.get('SOL')?.[0]
+  const stakeBank = group?.banksMapByMint.get(stakeMintPk.toString())?.[0]
+  const instructions: TransactionInstruction[] = []
+
+  if (!solBank || !stakeBank || !mangoAccount) {
+    throw Error('Unable to find SOL bank or stake bank or mango account')
+  }
   const borrowedSol = mangoAccount.getTokenBalance(solBank)
 
   let swapAlts: AddressLookupTableAccount[] = []
-  if (borrowedSol.toNumber()) {
+  if (borrowedSol.toNumber() < 0) {
+    console.log('borrowedSol amount: ', borrowedSol.toNumber())
+
     const { bestRoute: selectedRoute } = await fetchJupiterRoutes(
       stakeMintPk.toString(),
       solBank.mint.toString(),
-      Math.ceil(borrowedSol.toNumber() * -1),
+      Math.ceil(borrowedSol.abs().add(I80F48.fromNumber(100)).toNumber()),
       100,
       'ExactOut',
     )
@@ -84,10 +159,7 @@ export const unstakeAndClose = async (
       mangoAccountPk: mangoAccount.publicKey,
       owner: payer,
       inputMintPk: stakeBank.mint,
-      amountIn: toUiDecimals(
-        selectedRoute.inAmount + 10,
-        stakeBank.mintDecimals,
-      ),
+      amountIn: toUiDecimals(selectedRoute.inAmount, stakeBank.mintDecimals),
       outputMintPk: solBank.mint,
       userDefinedInstructions: jupiterIxs,
       userDefinedAlts: jupiterAlts,
@@ -97,45 +169,6 @@ export const unstakeAndClose = async (
     swapAlts = alts
     instructions.push(...swapIxs)
   }
-
-  const nativeWithdrawAmount = toNative(
-    amount,
-    group.getMintDecimals(stakeBank.mint),
-  )
-  const withdrawMax =
-    amount == floorToDecimal(stakeBalance, stakeBank.mintDecimals).toNumber()
-  const healthRemainingAccounts: PublicKey[] = withdrawMax
-    ? [stakeBank.publicKey, stakeBank.oracle]
-    : client.buildHealthRemainingAccounts(
-        group,
-        [mangoAccount],
-        [stakeBank],
-        [],
-        [],
-      )
-  const withdrawIx = await tokenWithdrawNativeIx(
-    client,
-    group,
-    mangoAccount,
-    stakeBank.mint,
-    withdrawMax ? new BN('18446744073709551615', 10) : nativeWithdrawAmount,
-    false,
-    healthRemainingAccounts,
-  )
-  instructions.push(...withdrawIx)
-
-  // if (withdrawMax) {
-  //   const closeIx = await client.program.methods
-  //     .accountClose(false)
-  //     .accounts({
-  //       group: group.publicKey,
-  //       account: mangoAccount.publicKey,
-  //       owner: (client.program.provider as AnchorProvider).wallet.publicKey,
-  //       solDestination: mangoAccount.owner,
-  //     })
-  //     .instruction()
-  //   instructions.push(closeIx)
-  // }
 
   return await client.sendAndConfirmTransactionForGroup(group, instructions, {
     alts: [...group.addressLookupTablesList, ...swapAlts],

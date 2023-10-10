@@ -657,7 +657,11 @@ const mangoStore = create<MangoStore>()(
             }
 
             let newSelectedMangoAccount = selectedMangoAccount
+            console.log('hiii 00000')
+
             if (!selectedMangoAccount || !selectedAccountIsNotInAccountsList) {
+              console.log('hiiiii')
+
               try {
                 newSelectedMangoAccount = mangoAccounts.find(
                   (m) => m.name.toString() === `${BOOST_ACCOUNT_PREFIX}MSOL`,

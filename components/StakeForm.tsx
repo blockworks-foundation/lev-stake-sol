@@ -34,7 +34,7 @@ import useBankRates from 'hooks/useBankRates'
 import { Disclosure } from '@headlessui/react'
 import SheenLoader from './shared/SheenLoader'
 import useLeverageMax from 'hooks/useLeverageMax'
-import { STAKEABLE_TOKENS } from 'utils/constants'
+import { STAKEABLE_TOKENS_DATA } from 'utils/constants'
 
 const set = mangoStore.getState().set
 
@@ -156,9 +156,9 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     set((state) => {
       state.submittingBoost = true
     })
-    const tokenNum = STAKEABLE_TOKENS.findIndex(
-      (t) => t.toLowerCase() === stakeBank.name.toLowerCase(),
-    )
+    const tokenNum = STAKEABLE_TOKENS_DATA.find(
+      (t) => t.name.toLowerCase() === stakeBank.name.toLowerCase(),
+    )?.id
     try {
       // const newAccountNum = getNextAccountNumber(mangoAccounts)
       const { signature: tx, slot } = await stakeAndCreate(
@@ -168,7 +168,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
         amountToBorrow,
         stakeBank.mint,
         parseFloat(inputAmount),
-        420 + tokenNum,
+        420 + (tokenNum || 0),
       )
       notify({
         title: 'Transaction confirmed',
