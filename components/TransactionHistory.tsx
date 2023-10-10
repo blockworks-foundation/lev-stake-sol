@@ -12,11 +12,12 @@ const TransactionHistory = () => {
       {history?.length ? (
         history.map((history: ActivityFeed | any) => {
           const { activity_type, activity_details } = history
+          const symbol = activity_details.symbol || ''
           return (
             <HistoryContent
               details={activity_details}
               type={activity_type}
-              key={activity_details.signature + activity_type}
+              key={activity_details.signature + activity_type + symbol}
             />
           )
         })
@@ -27,7 +28,7 @@ const TransactionHistory = () => {
           </SheenLoader>
         ))
       ) : (
-        <div className="flex flex-grow flex-col items-center justify-center">
+        <div className="flex grow flex-col items-center justify-center">
           <span className="text-center">No transaction history found</span>
         </div>
       )}

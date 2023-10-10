@@ -152,6 +152,10 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
     setSubmitting(true)
     try {
       if (mangoAccount.getTokenBalanceUi(solBank) < 0) {
+        notify({
+          title: 'Sending transaction 1 of 2',
+          type: 'info',
+        })
         console.log('unstake and swap', mangoAccount.getTokenBalanceUi(solBank))
 
         const { signature: tx } = await unstakeAndSwap(
@@ -168,6 +172,10 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
         await actions.fetchMangoAccounts(mangoAccount.owner)
         await actions.fetchWalletTokens(publicKey)
         mangoAccount = mangoStore.getState().mangoAccount.current
+        notify({
+          title: 'Sending transaction 2 of 2',
+          type: 'info',
+        })
       }
       if (!mangoAccount) return
       const { signature: tx2 } = await withdrawAndClose(
@@ -178,7 +186,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
         Number(inputAmount),
       )
       notify({
-        title: 'Swap Transaction confirmed.',
+        title: 'Withdraw transaction confirmed.',
         type: 'success',
         txid: tx2,
       })

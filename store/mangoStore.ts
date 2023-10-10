@@ -634,6 +634,7 @@ const mangoStore = create<MangoStore>()(
             const group = get().group
             const client = get().client
             const selectedMangoAccount = get().mangoAccount.current
+            const selectedToken = get().selectedToken
             if (!group) throw new Error('Group not loaded')
             if (!client) throw new Error('Client not loaded')
 
@@ -660,11 +661,13 @@ const mangoStore = create<MangoStore>()(
             console.log('hiii 00000')
 
             if (!selectedMangoAccount || !selectedAccountIsNotInAccountsList) {
-              console.log('hiiiii')
+              console.log('hiiiii selected tkn: ', selectedToken)
 
               try {
                 newSelectedMangoAccount = mangoAccounts.find(
-                  (m) => m.name.toString() === `${BOOST_ACCOUNT_PREFIX}MSOL`,
+                  (m) =>
+                    m.name.toString() ===
+                    `${BOOST_ACCOUNT_PREFIX}${selectedToken}`,
                 )
               } catch (e) {
                 console.error('Error parsing last account', e)

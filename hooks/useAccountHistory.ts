@@ -53,10 +53,19 @@ export default function useAccountHistory() {
     },
   )
 
+  console.log('response', response)
+
   return {
     history:
       response?.data && Array.isArray(response.data)
-        ? response.data.flat().filter((n) => n)
+        ? response.data
+            .flat()
+            .filter((n) => n)
+            .sort(
+              (a, b) =>
+                new Date(b.block_datetime).getTime() -
+                new Date(a.block_datetime).getTime(),
+            )
         : [],
     isLoading: response.isLoading || response.isFetching,
   }

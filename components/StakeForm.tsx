@@ -35,6 +35,7 @@ import { Disclosure } from '@headlessui/react'
 import SheenLoader from './shared/SheenLoader'
 import useLeverageMax from 'hooks/useLeverageMax'
 import { STAKEABLE_TOKENS_DATA } from 'utils/constants'
+import { sleep } from 'utils'
 
 const set = mangoStore.getState().set
 
@@ -175,15 +176,18 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
         type: 'success',
         txid: tx,
       })
-      await actions.fetchMangoAccounts(
-        (client.program.provider as AnchorProvider).wallet.publicKey,
-      )
-      await actions.reloadMangoAccount(slot)
-      await actions.fetchWalletTokens(publicKey)
       set((state) => {
         state.submittingBoost = false
       })
       setInputAmount('')
+      await sleep(500)
+      if (!mangoAccount) {
+        await actions.fetchMangoAccounts(
+          (client.program.provider as AnchorProvider).wallet.publicKey,
+        )
+      }
+      await actions.reloadMangoAccount(slot)
+      await actions.fetchWalletTokens(publicKey)
     } catch (e) {
       console.error('Error depositing:', e)
       set((state) => {
