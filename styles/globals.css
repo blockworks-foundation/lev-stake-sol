@@ -179,7 +179,7 @@ h4 {
 }
 
 p {
-  @apply text-th-fgd-1;
+  @apply leading-snug text-th-fgd-1;
 }
 
 li {
@@ -187,7 +187,7 @@ li {
 }
 
 a {
-  @apply default-transition text-th-link md:hover:text-th-link-hover;
+  @apply default-transition text-th-link focus:outline-none md:hover:text-th-link-hover;
 }
 
 /* Forms */

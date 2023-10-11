@@ -35,7 +35,7 @@ function Modal({
       className="relative z-40 overflow-y-auto"
     >
       <div
-        className={`fixed inset-0 backdrop-brightness-[0.5] ${
+        className={`fixed inset-0 backdrop-brightness-[0.4] ${
           disableOutsideClose ? 'pointer-events-none' : ''
         }`}
         aria-hidden="true"
@@ -51,7 +51,7 @@ function Modal({
           } font-sans h-full w-full bg-th-bkg-1 font-body ${
             fullScreen
               ? ''
-              : 'p-4 pt-6 sm:h-auto sm:max-w-md sm:rounded-lg sm:border sm:border-th-bkg-3 sm:p-6'
+              : 'p-4 pt-6 sm:h-auto sm:max-w-md sm:rounded-2xl sm:border-2 sm:border-th-fgd-1 sm:p-6'
           } relative ${panelClassNames}`}
         >
           <div>{children}</div>
