@@ -29,7 +29,7 @@ const TransactionHistory = () => {
         ))
       ) : (
         <div className="flex grow flex-col items-center justify-center">
-          <span className="text-center">No transaction history found</span>
+          <span className="text-center">No activity found...</span>
         </div>
       )}
     </div>
