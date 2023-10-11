@@ -37,7 +37,7 @@ export default function ConnectWalletButton() {
           if (wallet) {
             connect()
           } else {
-            select(lastWalletName)
+            select(lastWalletName || detectedWallets[0].adapter.name)
           }
         }}
         className="raised-button-neutral group flex h-12 w-32 items-center after:rounded-full md:w-44"
