@@ -36,6 +36,7 @@ import { NUMBERFORMAT_CLASSES } from './StakeForm'
 import ButtonGroup from './forms/ButtonGroup'
 import Decimal from 'decimal.js'
 import { Disclosure } from '@headlessui/react'
+import { sleep } from 'utils'
 
 const set = mangoStore.getState().set
 
@@ -169,6 +170,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
           type: 'success',
           txid: tx,
         })
+        await sleep(300)
         await actions.fetchMangoAccounts(mangoAccount.owner)
         await actions.fetchWalletTokens(publicKey)
         mangoAccount = mangoStore.getState().mangoAccount.current
@@ -192,6 +194,9 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
       })
       setSubmitting(false)
       setInputAmount('')
+      await sleep(500)
+      await actions.fetchMangoAccounts(mangoAccount.owner)
+      await actions.fetchWalletTokens(publicKey)
     } catch (e) {
       console.error('Error depositing:', e)
       setSubmitting(false)
