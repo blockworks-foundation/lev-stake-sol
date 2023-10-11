@@ -106,7 +106,7 @@ const PositionItem = ({
   }
 
   const leverage = useMemo(() => {
-    if (!group || !acct) return 0
+    if (!group || !acct) return 1
     const accountValue = toUiDecimalsForQuote(acct.getEquity(group).toNumber())
 
     const assetsValue = toUiDecimalsForQuote(
