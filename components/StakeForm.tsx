@@ -319,7 +319,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                           <ChevronDownIcon
                             className={`${
                               open ? 'rotate-180' : 'rotate-360'
-                            } h-6 w-6 flex-shrink-0 text-th-fgd-1`}
+                            } h-6 w-6 shrink-0 text-th-fgd-1`}
                           />
                         </div>
                       </div>

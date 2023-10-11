@@ -6,7 +6,7 @@ const FAQS = [
     question: 'How does Boost! work?',
     answer: (
       <p>
-        Boost! works by incresing your position size by borrowing SOL and
+        Boost! allows you to increase your position size by borrowing SOL and
         swapping it to your chosen staking token. This means you earn more yield
         from the staking token becuase you have a larger position size. As long
         as this yield exceeds the rate of the SOL borrow you earn a premium and
