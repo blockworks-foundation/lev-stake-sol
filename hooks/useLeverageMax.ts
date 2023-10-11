@@ -14,7 +14,7 @@ export default function useLeverageMax(selectedToken: string) {
   }, [group])
 
   const leverageMax = useMemo(() => {
-    if (!stakeBank || !borrowBank) return 1
+    if (!stakeBank || !borrowBank) return 0
     const borrowInitLiabWeight = borrowBank.scaledInitLiabWeight(
       borrowBank.price,
     )
