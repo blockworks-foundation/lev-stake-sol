@@ -1,8 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
-import { MANGO_DATA_API_URL } from 'utils/constants'
+import { MANGO_DATA_API_URL, STAKEABLE_TOKENS_DATA } from 'utils/constants'
 import { ActivityFeed, EmptyObject } from 'types'
 import dayjs from 'dayjs'
 import useStakeAccounts from './useStakeAccounts'
+import { useMemo } from 'react'
+import mangoStore from '@store/mangoStore'
+import { PublicKey } from '@solana/web3.js'
+import useMangoGroup from './useMangoGroup'
+import { AnchorProvider } from '@project-serum/anchor'
 
 const fetchHistory = async (
   mangoAccountPk: string,
@@ -31,10 +36,35 @@ const fetchHistory = async (
     return activity
   } else return null
 }
+const accountNums = STAKEABLE_TOKENS_DATA.map((d) => d.id)
 
 export default function useAccountHistory() {
   const { stakeAccounts } = useStakeAccounts()
-  const accountPks = stakeAccounts?.map((acc) => acc.publicKey.toString()) || []
+  const { group } = useMangoGroup()
+
+  // const accountPks = stakeAccounts?.map((acc) => acc.publicKey.toString()) || []
+  const accountPks = useMemo(() => {
+    const client = mangoStore.getState().client
+    const payer = (client.program.provider as AnchorProvider).wallet.publicKey
+
+    if (!group) return []
+
+    const x = accountNums.map((n) => {
+      const acctNumBuffer = Buffer.alloc(4)
+      acctNumBuffer.writeUInt32LE(420 + n)
+      const [mangoAccountPda] = PublicKey.findProgramAddressSync(
+        [
+          Buffer.from('MangoAccount'),
+          group.publicKey.toBuffer(),
+          payer.toBuffer(),
+          acctNumBuffer,
+        ],
+        client.program.programId,
+      )
+      return mangoAccountPda.toString()
+    })
+    return x
+  }, [group])
 
   const response = useQuery<Array<ActivityFeed[] | null> | EmptyObject | null>(
     ['history', ...accountPks],
