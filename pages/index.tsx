@@ -3,6 +3,7 @@ import Positions from '@components/Positions'
 import Stake from '@components/Stake'
 import TransactionHistory from '@components/TransactionHistory'
 import mangoStore from '@store/mangoStore'
+import usePositions from 'hooks/usePositions'
 import type { NextPage } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useEffect, useState } from 'react'
@@ -21,6 +22,7 @@ export async function getStaticProps({ locale }: { locale: string }) {
 const Index: NextPage = () => {
   const [activeTab, setActiveTab] = useState('Boost!')
   const selectedToken = mangoStore((s) => s.selectedToken)
+  const { positions } = usePositions()
 
   useEffect(() => {
     const mangoAccounts = mangoStore.getState().mangoAccounts
@@ -45,7 +47,11 @@ const Index: NextPage = () => {
       <div className="mb-6 grid grid-cols-3">
         <NavTabs
           activeValue={activeTab}
-          values={['Boost!', 'Positions', 'Activity']}
+          values={[
+            ['Boost!', 0],
+            ['Positions', positions.length],
+            ['Activity', 0],
+          ]}
           onChange={setActiveTab}
         />
       </div>

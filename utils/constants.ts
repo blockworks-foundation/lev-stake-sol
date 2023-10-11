@@ -1,6 +1,8 @@
 import { PublicKey } from '@metaplex-foundation/js'
 
 // lev stake
+export const BORROW_TOKEN = 'SOL'
+
 export const STAKEABLE_TOKENS_DATA = [
   { name: 'MSOL', id: 1, active: true },
   { name: 'JitoSOL', id: 2, active: true },

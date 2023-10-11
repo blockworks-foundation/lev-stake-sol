@@ -1,13 +1,12 @@
 import useMangoGroup from 'hooks/useMangoGroup'
 import { useMemo } from 'react'
-import { SHOW_INACTIVE_POSITIONS_KEY, STAKEABLE_TOKENS } from 'utils/constants'
+import { BORROW_TOKEN, SHOW_INACTIVE_POSITIONS_KEY } from 'utils/constants'
 import TokenLogo from './shared/TokenLogo'
 import Button from './shared/Button'
 import { formatTokenSymbol } from 'utils/tokens'
 import mangoStore from '@store/mangoStore'
 import Switch from './forms/Switch'
 import useLocalStorageState from 'hooks/useLocalStorageState'
-import useStakeAccounts from 'hooks/useStakeAccounts'
 import FormatNumericValue from './shared/FormatNumericValue'
 import {
   Bank,
@@ -15,9 +14,9 @@ import {
   toUiDecimalsForQuote,
 } from '@blockworks-foundation/mango-v4'
 import useBankRates from 'hooks/useBankRates'
+import usePositions from 'hooks/usePositions'
 
 const set = mangoStore.getState().set
-const BORROW_TOKEN = 'SOL'
 
 type Position = {
   borrowBalance: number
@@ -43,43 +42,9 @@ const Positions = ({
 }: {
   setActiveTab: (tab: string) => void
 }) => {
-  const { group } = useMangoGroup()
   const [showInactivePositions, setShowInactivePositions] =
     useLocalStorageState(SHOW_INACTIVE_POSITIONS_KEY, true)
-  const { stakeAccounts } = useStakeAccounts()
-
-  const borrowBank = useMemo(() => {
-    return group?.banksMapByName.get(BORROW_TOKEN)?.[0]
-  }, [group])
-
-  const banks = useMemo(() => {
-    if (!group) return []
-    const positionBanks = []
-    for (const token of STAKEABLE_TOKENS) {
-      const bank = group.banksMapByName.get(token)?.[0]
-      positionBanks.push(bank)
-    }
-    return positionBanks
-  }, [group])
-
-  const positions = useMemo(() => {
-    const positions = []
-
-    for (const bank of banks) {
-      if (!bank) continue
-      const acct = stakeAccounts?.find((acc) => acc.getTokenBalanceUi(bank) > 0)
-      const stakeBalance = acct ? acct.getTokenBalanceUi(bank) : 0
-      const borrowBalance =
-        acct && borrowBank ? acct.getTokenBalanceUi(borrowBank) : 0
-      positions.push({ borrowBalance, stakeBalance, bank, acct })
-    }
-    const sortedPositions = positions.sort(
-      (a, b) => b.stakeBalance - a.stakeBalance,
-    )
-    return showInactivePositions
-      ? sortedPositions
-      : sortedPositions.filter((pos) => pos.stakeBalance > 0)
-  }, [banks, showInactivePositions, stakeAccounts, borrowBank])
+  const { borrowBank, positions } = usePositions(showInactivePositions)
 
   const numberOfPositions = useMemo(() => {
     if (!positions.length) return 0
