@@ -95,7 +95,7 @@ function DeployRefreshManager(): JSX.Element | null {
       leaveTo="opacity-0"
     >
       <button
-        className="fixed -bottom-[46px] left-1/2 z-50 flex -translate-x-1/2 items-center rounded-full border border-th-bkg-4 bg-th-bkg-3 px-4 py-3 shadow-md focus:outline-none md:hover:bg-th-bkg-4 md:hover:shadow-none"
+        className="default-transition fixed -bottom-[46px] left-1/2 z-50 flex -translate-x-1/2 items-center rounded-full border-2 border-th-fgd-1 bg-th-bkg-1 px-4 py-3 shadow-md focus:outline-none md:hover:bg-th-bkg-2 md:hover:shadow-none"
         onClick={() => window.location.reload()}
       >
         <p className="mr-2 whitespace-nowrap text-th-fgd-1">
