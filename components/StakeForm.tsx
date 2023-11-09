@@ -238,7 +238,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                   onClick={setMax}
                   value={tokenMax.maxAmount}
                 />
-                <Tooltip content={t('account:refresh-balance')}>
+                <Tooltip content="Refresh Balance">
                   <IconButton
                     className={refreshingWalletTokens ? 'animate-spin' : ''}
                     onClick={handleRefreshWalletBalances}

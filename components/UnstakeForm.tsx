@@ -241,7 +241,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                   onClick={setMax}
                   value={tokenMax.maxAmount}
                 />
-                <Tooltip content={t('account:refresh-balance')}>
+                <Tooltip content="Refresh Balance">
                   <IconButton
                     className={refreshingWalletTokens ? 'animate-spin' : ''}
                     onClick={handleRefreshWalletBalances}
