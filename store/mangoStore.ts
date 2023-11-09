@@ -29,7 +29,6 @@ import {
 import EmptyWallet from '../utils/wallet'
 import { TransactionNotification, notify } from '../utils/notifications'
 import {
-  getNFTsByOwner,
   getTokenAccountsByOwnerWithWrappedSol,
   TokenAccount,
 } from '../utils/tokens'
@@ -59,7 +58,6 @@ import {
   TotalInterestDataItem,
   TradeForm,
   TokenStatsItem,
-  NFT,
   TourSettings,
   ProfileDetails,
   MangoTokenStatsItem,
@@ -245,10 +243,6 @@ export type MangoStore = {
   tradeForm: TradeForm
   wallet: {
     tokens: TokenAccount[]
-    nfts: {
-      data: NFT[] | []
-      loading: boolean
-    }
   }
   window: {
     width: number
@@ -265,7 +259,6 @@ export type MangoStore = {
     fetchGroup: () => Promise<void>
     reloadMangoAccount: (slot?: number) => Promise<void>
     fetchMangoAccounts: (ownerPk: PublicKey) => Promise<void>
-    fetchNfts: (connection: Connection, walletPk: PublicKey) => void
     fetchProfileDetails: (walletPk: string) => void
     fetchSwapHistory: (
       mangoAccountPk: string,
@@ -418,10 +411,6 @@ const mangoStore = create<MangoStore>()(
       },
       wallet: {
         tokens: [],
-        nfts: {
-          data: [],
-          loading: false,
-        },
       },
       window: {
         width: 0,
@@ -694,24 +683,6 @@ const mangoStore = create<MangoStore>()(
           } finally {
             set((state) => {
               state.mangoAccount.initialLoad = false
-            })
-          }
-        },
-        fetchNfts: async (connection: Connection, ownerPk: PublicKey) => {
-          const set = get().set
-          set((state) => {
-            state.wallet.nfts.loading = true
-          })
-          try {
-            const nfts = await getNFTsByOwner(ownerPk, connection)
-            set((state) => {
-              state.wallet.nfts.data = nfts
-            })
-          } catch (error) {
-            console.warn('Error: unable to fetch nfts.', error)
-          } finally {
-            set((state) => {
-              state.wallet.nfts.loading = false
             })
           }
         },

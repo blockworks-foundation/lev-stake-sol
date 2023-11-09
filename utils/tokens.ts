@@ -1,18 +1,6 @@
 import { PublicKey, Connection } from '@solana/web3.js'
 import { TokenInstructions } from '@project-serum/serum'
-import {
-  getAssociatedTokenAddress,
-  toUiDecimals,
-} from '@blockworks-foundation/mango-v4'
-import {
-  Metaplex,
-  Nft,
-  Sft,
-  SftWithToken,
-  NftWithToken,
-  Metadata,
-  JsonMetadata,
-} from '@metaplex-foundation/js'
+import { toUiDecimals } from '@blockworks-foundation/mango-v4'
 
 export class TokenAccount {
   publicKey!: PublicKey
@@ -36,12 +24,6 @@ export class TokenAccount {
     this.uiAmount = 0
     Object.assign(this, decoded)
   }
-}
-
-type RawNft = Nft | Sft | SftWithToken | NftWithToken
-type NftWithATA = RawNft & {
-  owner: null | PublicKey
-  tokenAccountAddress: null | PublicKey
 }
 
 function exists<T>(item: T | null | undefined): item is T {
@@ -83,64 +65,6 @@ export async function getTokenAccountsByOwnerWithWrappedSol(
 
   // prepend SOL account to beginning of list
   return [solAccount].concat(tokenAccounts)
-}
-
-const enhanceNFT = (nft: NftWithATA) => {
-  return {
-    image: nft.json?.image || '',
-    name: nft.json?.name || '',
-    address: nft.metadataAddress.toBase58(),
-    collectionAddress: nft.collection?.address.toBase58(),
-    mint: nft.mint.address.toBase58(),
-    tokenAccount: nft.tokenAccountAddress?.toBase58() || '',
-  }
-}
-
-function loadNft(
-  nft: Metadata<JsonMetadata<string>> | Nft | Sft,
-  connection: Connection,
-) {
-  const metaplex = new Metaplex(connection)
-
-  return Promise.race([
-    metaplex
-      .nfts()
-      // @ts-ignore
-      .load({ metadata: nft })
-      .catch((e) => {
-        console.error(e)
-        return null
-      }),
-  ])
-}
-
-export async function getNFTsByOwner(owner: PublicKey, connection: Connection) {
-  const metaplex = new Metaplex(connection)
-
-  const rawNfts = await metaplex.nfts().findAllByOwner({
-    owner,
-  })
-
-  const nfts = await Promise.all(
-    rawNfts.map((nft) => loadNft(nft, connection)),
-  ).then((nfts) =>
-    Promise.all(
-      nfts.filter(exists).map(async (nft) => ({
-        ...nft,
-        owner,
-        tokenAccountAddress: await getAssociatedTokenAddress(
-          nft.mint.address,
-          owner,
-          true,
-        ).catch((e) => {
-          console.error(e)
-          return null
-        }),
-      })),
-    ),
-  )
-
-  return nfts.map(enhanceNFT)
 }
 
 export const formatTokenSymbol = (symbol: string) => {
