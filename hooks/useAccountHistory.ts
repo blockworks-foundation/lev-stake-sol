@@ -7,7 +7,7 @@ import { useMemo } from 'react'
 import mangoStore from '@store/mangoStore'
 import { PublicKey } from '@solana/web3.js'
 import useMangoGroup from './useMangoGroup'
-import { AnchorProvider } from '@project-serum/anchor'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const fetchHistory = async (
   mangoAccountPk: string,
@@ -41,13 +41,13 @@ const accountNums = STAKEABLE_TOKENS_DATA.map((d) => d.id)
 export default function useAccountHistory() {
   const { stakeAccounts } = useStakeAccounts()
   const { group } = useMangoGroup()
+  const { wallet } = useWallet()
 
   // const accountPks = stakeAccounts?.map((acc) => acc.publicKey.toString()) || []
   const accountPks = useMemo(() => {
     const client = mangoStore.getState().client
-    const payer = (client.program.provider as AnchorProvider).wallet.publicKey
-
-    if (!group) return []
+    const payer = wallet?.adapter.publicKey?.toBuffer()
+    if (!group || !payer) return []
 
     const x = accountNums.map((n) => {
       const acctNumBuffer = Buffer.alloc(4)
@@ -56,7 +56,7 @@ export default function useAccountHistory() {
         [
           Buffer.from('MangoAccount'),
           group.publicKey.toBuffer(),
-          payer.toBuffer(),
+          payer,
           acctNumBuffer,
         ],
         client.program.programId,
@@ -64,15 +64,17 @@ export default function useAccountHistory() {
       return mangoAccountPda.toString()
     })
     return x
-  }, [group])
+  }, [group, wallet])
+
+  const activeStakeAccts =
+    stakeAccounts?.map((acc) => acc.publicKey.toString()) ?? []
+  const uniqueAccts = [...new Set([...accountPks, ...activeStakeAccts])]
 
   const response = useQuery<Array<ActivityFeed[] | null> | EmptyObject | null>(
-    ['history', ...accountPks],
+    ['history', ...activeStakeAccts],
     () =>
       stakeAccounts?.length
-        ? Promise.all(
-            stakeAccounts.map((acc) => fetchHistory(acc.publicKey.toString())),
-          )
+        ? Promise.all(uniqueAccts.map((act) => fetchHistory(act)))
         : // ? fetchHistory(mangoAccount.publicKey.toString())
           null,
     {
@@ -84,9 +86,8 @@ export default function useAccountHistory() {
     },
   )
 
-  console.log('response', response)
-
   return {
+    refetch: response.refetch,
     history:
       response?.data && Array.isArray(response.data)
         ? response.data
