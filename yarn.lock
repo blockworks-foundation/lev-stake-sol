@@ -175,10 +175,10 @@
     "@solana/wallet-adapter-base" "^0.9.17"
     bs58 "^5.0.0"
 
-"@glitchful-dev/sol-apy-sdk@3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@glitchful-dev/sol-apy-sdk/-/sol-apy-sdk-3.0.1.tgz#c3a68a98f47928fda3fe38fc5120df00bb46ff46"
-  integrity sha512-FJRKw+yTbPSefYVLrIZXeSc+DMu98M7nSWd51anNuzvIPKnFo4CYN0RoS3tl6mRho8NXCwREV4R+IdiZ4YmnCg==
+"@glitchful-dev/sol-apy-sdk@3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@glitchful-dev/sol-apy-sdk/-/sol-apy-sdk-3.0.2.tgz#a509eabdd68ea33bee3ae79ec3f0d476fdde9690"
+  integrity sha512-avk8UUfPyLzFuoQvK8VeM7wAxWiudU+mFl2G/dnFYE2rbuw21Qnf00o1HoNlrPN4vhiETeq2A3m6PGzXccB0Ow==
   dependencies:
     csv-parse "^5.3.6"
     fetch-ponyfill "^7.1.0"
