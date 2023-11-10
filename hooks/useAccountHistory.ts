@@ -51,7 +51,7 @@ export default function useAccountHistory() {
 
     const x = accountNums.map((n) => {
       const acctNumBuffer = Buffer.alloc(4)
-      acctNumBuffer.writeUInt32LE(420 + n)
+      acctNumBuffer.writeUInt32LE(n)
       const [mangoAccountPda] = PublicKey.findProgramAddressSync(
         [
           Buffer.from('MangoAccount'),

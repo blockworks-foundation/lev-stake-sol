@@ -169,7 +169,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
         amountToBorrow,
         stakeBank.mint,
         parseFloat(inputAmount),
-        420 + (tokenNum || 0),
+        tokenNum || 0,
       )
       notify({
         title: 'Transaction confirmed',
