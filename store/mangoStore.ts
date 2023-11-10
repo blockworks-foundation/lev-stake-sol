@@ -136,8 +136,11 @@ export const DEFAULT_TRADE_FORM: TradeForm = {
   reduceOnly: false,
 }
 
+export type ActiveTab = 'Boost!' | 'Positions' | 'Activity'
+
 export type MangoStore = {
   // leverage stake
+  activeTab: ActiveTab
   selectedToken: string
   estimatedMaxAPY: {
     current: number
@@ -301,6 +304,7 @@ const mangoStore = create<MangoStore>()(
 
     return {
       // leverage stake
+      activeTab: 'Boost!',
       selectedToken: STAKEABLE_TOKENS[0],
       estimatedMaxAPY: {
         current: 0,

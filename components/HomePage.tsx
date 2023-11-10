@@ -3,16 +3,22 @@ import NavTabs from './NavTabs'
 import Positions from './Positions'
 import Stake from './Stake'
 import TransactionHistory from './TransactionHistory'
-import mangoStore from '@store/mangoStore'
-import { useEffect, useState } from 'react'
+import mangoStore, { ActiveTab } from '@store/mangoStore'
+import { useCallback, useEffect } from 'react'
 import { BOOST_ACCOUNT_PREFIX } from 'utils/constants'
 
 const set = mangoStore.getState().set
 
 const HomePage = () => {
-  const [activeTab, setActiveTab] = useState('Boost!')
+  const activeTab = mangoStore((s) => s.activeTab)
   const selectedToken = mangoStore((s) => s.selectedToken)
   const { positions } = usePositions()
+
+  const setActiveTab = useCallback((tab: ActiveTab) => {
+    return set((s) => {
+      s.activeTab = tab
+    })
+  }, [])
 
   useEffect(() => {
     const mangoAccounts = mangoStore.getState().mangoAccounts
@@ -56,7 +62,7 @@ const TabContent = ({
   setActiveTab,
 }: {
   activeTab: string
-  setActiveTab: (tab: string) => void
+  setActiveTab: (tab: ActiveTab) => void
 }) => {
   switch (activeTab) {
     case 'Boost!':

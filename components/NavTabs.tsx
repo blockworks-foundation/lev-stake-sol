@@ -30,9 +30,9 @@ const NavTabs = <T extends Values>({
             <div
               className={`ml-2 rounded ${
                 value === activeValue ? 'bg-th-bkg-1' : 'bg-th-bkg-3'
-              } px-1.5 py-0.5 text-sm text-th-fgd-2`}
+              } px-1.5 py-0.5 `}
             >
-              {count}
+              <span className="text-sm text-th-fgd-2">{count}</span>
             </div>
           ) : null}
         </button>

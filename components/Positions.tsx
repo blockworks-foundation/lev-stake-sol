@@ -4,7 +4,7 @@ import { BORROW_TOKEN, SHOW_INACTIVE_POSITIONS_KEY } from 'utils/constants'
 import TokenLogo from './shared/TokenLogo'
 import Button from './shared/Button'
 import { formatTokenSymbol } from 'utils/tokens'
-import mangoStore from '@store/mangoStore'
+import mangoStore, { ActiveTab } from '@store/mangoStore'
 import Switch from './forms/Switch'
 import useLocalStorageState from 'hooks/useLocalStorageState'
 import FormatNumericValue from './shared/FormatNumericValue'
@@ -40,7 +40,7 @@ const getLiquidationRatio = (
 const Positions = ({
   setActiveTab,
 }: {
-  setActiveTab: (tab: string) => void
+  setActiveTab: (tab: ActiveTab) => void
 }) => {
   const [showInactivePositions, setShowInactivePositions] =
     useLocalStorageState(SHOW_INACTIVE_POSITIONS_KEY, true)
@@ -92,7 +92,7 @@ const PositionItem = ({
   borrowBank,
 }: {
   position: Position
-  setActiveTab: (v: string) => void
+  setActiveTab: (v: ActiveTab) => void
   borrowBank: Bank | undefined
 }) => {
   const { group } = useMangoGroup()
