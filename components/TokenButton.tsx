@@ -13,7 +13,7 @@ const TokenButton = ({
   handleTokenSelect: (v: string) => void
 }) => {
   const leverage = useLeverageMax(tokenName)
-  const { estimatedMaxAPY } = useBankRates(tokenName, leverage)
+  const { borrowBankStakeRate } = useBankRates(tokenName, leverage)
 
   return (
     <button
@@ -59,7 +59,7 @@ const TokenButton = ({
             //     />
             //   </SheenLoader>
             // ) :
-            `${estimatedMaxAPY.toFixed(2)}%`
+            `${borrowBankStakeRate.toFixed(2)}%`
           }
         </span>
       </div>

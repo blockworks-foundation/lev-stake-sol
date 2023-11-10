@@ -32,6 +32,7 @@ export default function useLeverageMax(selectedToken: string) {
       conversionRate *
         floorToDecimal(stakeInitAssetWeight.toNumber(), 2).toNumber()
     const max = floorToDecimal(1 + x.toNumber() / y, 2).toNumber()
+
     return max
   }, [stakeBank, borrowBank])
 
