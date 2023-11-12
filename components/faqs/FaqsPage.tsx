@@ -8,7 +8,7 @@ const FAQS = [
       <p>
         Boost! allows you to increase your position size by borrowing SOL and
         swapping it to your chosen staking token. This means you earn more yield
-        from the staking token becuase you have a larger position size. As long
+        from the staking token because you have a larger position size. As long
         as this yield exceeds the rate of the SOL borrow you earn a premium and
         because the staking token price downside is highly correlated to SOL
         there is a lower risk of liquidation.
