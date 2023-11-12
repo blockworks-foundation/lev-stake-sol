@@ -23,16 +23,13 @@ export default function useLeverageMax(selectedToken: string) {
     )
     if (!borrowInitLiabWeight || !stakeInitAssetWeight) return 1
 
-    const x = floorToDecimal(stakeInitAssetWeight.toNumber(), 2).div(
-      floorToDecimal(borrowInitLiabWeight.toNumber(), 2),
-    )
-    const conversionRate = borrowBank.uiPrice / stakeBank.uiPrice
-    const y =
-      1 -
-      conversionRate *
-        floorToDecimal(stakeInitAssetWeight.toNumber(), 2).toNumber()
+    const x = stakeInitAssetWeight.toNumber() / borrowInitLiabWeight.toNumber()
 
-    const max = floorToDecimal(1 + x.toNumber() / y, 1).toNumber()
+    const conversionRate = borrowBank.uiPrice / stakeBank.uiPrice
+
+    const y = 1 - conversionRate * stakeInitAssetWeight.toNumber()
+
+    const max = floorToDecimal(1 + x / y, 1).toNumber()
 
     return max
   }, [stakeBank, borrowBank])
