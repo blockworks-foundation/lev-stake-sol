@@ -29,7 +29,7 @@ export default function useLeverageMax(selectedToken: string) {
 
     const y = 1 - conversionRate * stakeInitAssetWeight.toNumber()
 
-    const max = floorToDecimal(1 + x / y, 1).toNumber()
+    const max = floorToDecimal(1 + (x / y) * 0.9, 1).toNumber()
 
     return max
   }, [stakeBank, borrowBank])

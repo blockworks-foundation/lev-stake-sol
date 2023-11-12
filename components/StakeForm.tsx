@@ -162,6 +162,10 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     )?.id
     try {
       // const newAccountNum = getNextAccountNumber(mangoAccounts)
+      notify({
+        title: 'Building transaction. This may take a moment.',
+        type: 'info',
+      })
       const { signature: tx, slot } = await stakeAndCreate(
         client,
         group,
