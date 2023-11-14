@@ -5,16 +5,16 @@ import StakeForm from '@components/StakeForm'
 import UnstakeForm from '@components/UnstakeForm'
 import mangoStore from '@store/mangoStore'
 import { STAKEABLE_TOKENS } from 'utils/constants'
-// import { formatTokenSymbol } from 'utils/tokens'
-// import { useViewport } from 'hooks/useViewport'
-// import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
+import { formatTokenSymbol } from 'utils/tokens'
+import { useViewport } from 'hooks/useViewport'
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
 
 const set = mangoStore.getState().set
 
 const Stake = () => {
   const [activeFormTab, setActiveFormTab] = useState('Add')
   const selectedToken = mangoStore((s) => s.selectedToken)
-  // const { isDesktop } = useViewport()
+  const { isDesktop } = useViewport()
 
   const handleTokenSelect = useCallback((token: string) => {
     set((state) => {
@@ -22,7 +22,7 @@ const Stake = () => {
     })
   }, [])
 
-  // const swapUrl = `https://app.mango.markets/swap?in=USDC&out=${selectedToken}&walletSwap=true`
+  const swapUrl = `https://app.mango.markets/swap?in=USDC&out=${selectedToken}&walletSwap=true`
 
   return (
     <>
@@ -57,7 +57,7 @@ const Stake = () => {
           </div>
         </div>
       </div>
-      {/* {activeFormTab === 'Add' ? (
+      {activeFormTab === 'Add' ? (
         <div className="fixed bottom-0 left-0 z-20 w-full md:bottom-8 md:left-8 md:w-auto">
           {isDesktop ? (
             <a
@@ -86,7 +86,7 @@ const Stake = () => {
             </div>
           )}
         </div>
-      ) : null} */}
+      ) : null}
     </>
   )
 }
