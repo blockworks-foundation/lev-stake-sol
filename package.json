@@ -107,7 +107,6 @@
   },
   "resolutions": {
     "@coral-xyz/anchor": "^0.27.0",
-    "eslint-config-next/eslint-import-resolver-typescript/tsconfig-paths/json5": "1.0.2",
     "crypto-js": ">=4.1.1"
   },
   "lavamoat": {
@@ -130,5 +129,6 @@
       "react-tsparticles": true,
       "tsparticles>tsparticles-engine": true
     }
-  }
+  },
+  "packageManager": "yarn@1.22.19"
 }

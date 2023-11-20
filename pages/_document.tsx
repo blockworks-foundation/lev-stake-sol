@@ -10,6 +10,10 @@ class MyDocument extends Document {
             src="/datafeeds/udf/dist/bundle.js"
             strategy="beforeInteractive"
           ></Script>
+          <Script
+            src="https://terminal.jup.ag/main-v2.js"
+            strategy="afterInteractive"
+          ></Script>
         </Head>
         <body className="hide-scroll">
           <Main />

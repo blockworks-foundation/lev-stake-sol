@@ -18,6 +18,9 @@ The `allowScripts` configuration in `package.json`:
 - Review each new package to determine whether the install script needs to run or not, testing if necessary.
 - Use `npx can-i-ignore-scripts` to help assessing whether scripts are needed
 
+## Pre-requisites
+- Yarn v1 `yarn set version classic`
+
 ## Getting Started
 
 First, run the development server:
