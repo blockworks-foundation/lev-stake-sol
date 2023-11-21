@@ -15,6 +15,7 @@ import {
 } from '@blockworks-foundation/mango-v4'
 import useBankRates from 'hooks/useBankRates'
 import usePositions from 'hooks/usePositions'
+import Tooltip from './shared/Tooltip'
 
 const set = mangoStore.getState().set
 
@@ -191,15 +192,17 @@ const PositionItem = ({
           </span>
         </div> */}
         <div>
-          <p className="mb-1 text-th-fgd-4">Est. Liquidation Ratio</p>
+          <p className="mb-1 text-th-fgd-4">Est. Liquidation Price</p>
           <div className="flex flex-wrap items-end">
             <span className="mr-2 whitespace-nowrap text-xl font-bold text-th-fgd-1">
               {liqRatio} {`${formatTokenSymbol(bank.name)}/${BORROW_TOKEN}`}
             </span>
             {liqPriceChangePercentage ? (
-              <p className="mb-0.5 text-th-error">
-                {liqPriceChangePercentage}%
-              </p>
+              <Tooltip content="Estimated price change required for liquidation.">
+                <p className="tooltip-underline mb-0.5 text-th-fgd-4">
+                  {liqPriceChangePercentage}%
+                </p>
+              </Tooltip>
             ) : null}
           </div>
         </div>
