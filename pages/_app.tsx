@@ -2,16 +2,18 @@ import '../styles/globals.css'
 import 'react-range-slider-input/dist/style.css'
 
 import type { AppProps } from 'next/app'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Adapter,
   WalletAdapterNetwork,
   WalletError,
+  WalletName,
   WalletNotReadyError,
 } from '@solana/wallet-adapter-base'
 import {
   ConnectionProvider,
   WalletProvider,
+  useWallet,
 } from '@solana/wallet-adapter-react'
 import {
   PhantomWalletAdapter,
@@ -39,6 +41,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { AUTO_CONNECT_WALLET, THEME_KEY } from 'utils/constants'
 import useLocalStorageState from 'hooks/useLocalStorageState'
+import PlausibleProvider from 'next-plausible'
 
 // init react-query
 export const queryClient = new QueryClient()
@@ -129,6 +132,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           >
             <MangoProvider />
             <ThemeProvider defaultTheme="Light" storageKey={THEME_KEY}>
+              <Telemetry />
               <Layout>
                 <Component {...pageProps} />
               </Layout>
@@ -142,3 +146,43 @@ function MyApp({ Component, pageProps }: AppProps) {
 }
 
 export default appWithTranslation(MyApp)
+
+type TelemetryProps = {
+  walletProvider: string | WalletName<string>
+  walletConnected: string
+}
+
+const Telemetry = () => {
+  const { wallet } = useWallet()
+  const [telemetryProps, setTelemetryProps] = useState<
+    TelemetryProps | undefined
+  >()
+
+  useEffect(() => {
+    const props = {
+      walletProvider: wallet?.adapter.name ?? 'unknown',
+      walletConnected: (wallet?.adapter.connected ?? 'false').toString(),
+    }
+
+    // Hack to update script tag
+    const el = document.getElementById('plausible')
+    if (el) {
+      Object.entries(props).forEach(([key, value]) => {
+        el.setAttribute(`event-${key}`, value)
+      })
+    }
+    setTelemetryProps(props)
+  }, [wallet])
+
+  return (
+    <PlausibleProvider
+      domain="boost.mango.markets"
+      customDomain="https://pl.mngo.cloud"
+      trackLocalhost={true}
+      selfHosted={true}
+      scriptProps={{ id: 'plausible' }}
+      pageviewProps={telemetryProps}
+      trackOutboundLinks={true}
+    />
+  )
+}
