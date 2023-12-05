@@ -36,6 +36,8 @@ import SheenLoader from './shared/SheenLoader'
 import useLeverageMax from 'hooks/useLeverageMax'
 import { STAKEABLE_TOKENS_DATA } from 'utils/constants'
 import { sleep } from 'utils'
+import { usePlausible } from 'next-plausible'
+import { TelemetryEvents } from 'utils/telemetry'
 
 const set = mangoStore.getState().set
 
@@ -97,6 +99,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     estimatedNetAPY,
   } = useBankRates(selectedToken, leverage)
   const leverageMax = useLeverageMax(selectedToken)
+  const telemetry = usePlausible<TelemetryEvents>()
 
   const stakeBank = useMemo(() => {
     return group?.banksMapByName.get(selectedToken)?.[0]
@@ -175,6 +178,19 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
         parseFloat(inputAmount),
         tokenNum || 0,
       )
+      if (mangoAccount !== undefined) {
+        telemetry('positionCreate', {
+          props: {
+            token: selectedToken,
+          },
+        })
+      } else {
+        telemetry('positionIncrease', {
+          props: {
+            token: selectedToken,
+          },
+        })
+      }
       notify({
         title: 'Transaction confirmed',
         type: 'success',
