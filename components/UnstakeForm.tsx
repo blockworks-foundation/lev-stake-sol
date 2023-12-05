@@ -37,6 +37,8 @@ import ButtonGroup from './forms/ButtonGroup'
 import Decimal from 'decimal.js'
 import { Disclosure } from '@headlessui/react'
 import { sleep } from 'utils'
+import { usePlausible } from 'next-plausible'
+import { TelemetryEvents } from 'utils/telemetry'
 
 const set = mangoStore.getState().set
 
@@ -79,6 +81,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { group } = useMangoGroup()
   const { mangoAccount } = useMangoAccount()
+  const telemetry = usePlausible<TelemetryEvents>()
 
   const stakeBank = useMemo(() => {
     return group?.banksMapByName.get(selectedToken)?.[0]
@@ -197,6 +200,11 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
       await sleep(500)
       await actions.fetchMangoAccounts(mangoAccount.owner)
       await actions.fetchWalletTokens(publicKey)
+      telemetry('positionReduce', {
+        props: {
+          token: selectedToken,
+        },
+      })
     } catch (e) {
       console.error('Error depositing:', e)
       setSubmitting(false)
