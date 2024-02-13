@@ -132,14 +132,14 @@ export const unstakeAndSwap = async (
       stakeMintPk.toString(),
       solBank.mint.toString(),
       Math.ceil(borrowedSol.abs().add(I80F48.fromNumber(100)).toNumber()),
-      100,
+      500,
       'ExactOut',
     )
 
     if (!selectedRoute) {
       throw Error('Unable to find a swap route')
     }
-    const slippage = 100 // bips
+    const slippage = 500 // bips
 
     const [jupiterIxs, jupiterAlts] = await fetchJupiterTransaction(
       client.program.provider.connection,
@@ -575,20 +575,21 @@ export const fetchJupiterTransaction = async (
   outputMint: PublicKey,
 ): Promise<[TransactionInstruction[], AddressLookupTableAccount[]]> => {
   const transactions = await (
-    await fetch('https://quote-api.jup.ag/v4/swap', {
+    await fetch('https://quote-api.jup.ag/v6/swap', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         // route from /quote api
-        route: selectedRoute,
+        quoteResponse: selectedRoute,
         // user public key to be used for the swap
         userPublicKey,
         // feeAccount is optional. Use if you want to charge a fee.  feeBps must have been passed in /quote API.
         // This is the ATA account for the output token where the fee will be sent to. If you are swapping from SOL->USDC then this would be the USDC ATA you want to collect the fee.
         // feeAccount: 'fee_account_public_key',
         slippageBps: Math.ceil(slippage * 100),
+        prioritizationFeeLamports: 'auto',
       }),
     })
   ).json()
@@ -667,13 +668,12 @@ const fetchJupiterRoutes = async (
     }).toString()
 
     const response = await fetch(
-      `https://quote-api.jup.ag/v4/quote?${paramsString}`,
+      `https://quote-api.jup.ag/v6/quote?${paramsString}`,
     )
     const res = await response.json()
-    const data = res.data
+
     return {
-      routes: res.data as RouteInfo[],
-      bestRoute: (data.length ? data[0] : null) as RouteInfo | null,
+      bestRoute: res as RouteInfo | null,
     }
   }
 }
