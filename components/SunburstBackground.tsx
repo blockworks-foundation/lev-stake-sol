@@ -1,6 +1,6 @@
 const SunburstBackground = ({ className }: { className?: string }) => {
   return (
-    <div className="fixed inset-0 flex w-[200%] -translate-x-1/4 items-center justify-center overflow-hidden">
+    <div className="fixed inset-0 z-0 flex w-[200%] -translate-x-1/4 items-center justify-center overflow-hidden">
       <svg
         className={`${className} rotate-bg-slow`}
         height="3000"

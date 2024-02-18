@@ -33,6 +33,7 @@ export default function ConnectWalletButton() {
   return (
     <div className="relative">
       <button
+        id="connect-wallet-button"
         onClick={() => {
           if (wallet) {
             connect()

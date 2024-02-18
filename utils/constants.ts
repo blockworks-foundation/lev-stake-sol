@@ -2,9 +2,9 @@
 export const BORROW_TOKEN = 'SOL'
 
 export const STAKEABLE_TOKENS_DATA = [
-  { name: 'MSOL', id: 521, active: true },
-  { name: 'JitoSOL', id: 621, active: true },
-  { name: 'bSOL', id: 721, active: true },
+  { name: 'MSOL', id: 521, active: true, address: 'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So' },
+  { name: 'JitoSOL', id: 621, active: true, address: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn' },
+  { name: 'bSOL', id: 721, active: true, address: 'bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1' },
 ]
 export const STAKEABLE_TOKENS = STAKEABLE_TOKENS_DATA.filter(
   (d) => d.active,
