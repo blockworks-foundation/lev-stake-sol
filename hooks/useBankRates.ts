@@ -9,6 +9,7 @@ import useLeverageMax from './useLeverageMax'
 export default function useBankRates(selectedToken: string, leverage: number) {
   const { data: stakeRates } = useStakeRates()
   const { group } = useMangoGroup()
+
   // const estimatedMaxAPY = mangoStore((s) => s.estimatedMaxAPY.current)
   const leverageMax = useLeverageMax(selectedToken)
 
@@ -17,7 +18,7 @@ export default function useBankRates(selectedToken: string, leverage: number) {
   }, [selectedToken, group])
 
   const borrowBank = useMemo(() => {
-    return group?.banksMapByName.get('SOL')?.[0]
+    return group?.banksMapByName.get('USDC')?.[0]
   }, [group])
 
   const stakeBankDepositRate = useMemo(() => {

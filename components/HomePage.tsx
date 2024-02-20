@@ -6,6 +6,7 @@ import TransactionHistory from './TransactionHistory'
 import mangoStore, { ActiveTab } from '@store/mangoStore'
 import { useCallback, useEffect } from 'react'
 import { BOOST_ACCOUNT_PREFIX } from 'utils/constants'
+import useMangoAccount from 'hooks/useMangoAccount'
 
 const set = mangoStore.getState().set
 
@@ -27,16 +28,14 @@ const HomePage = () => {
         ma.name.toLowerCase() ===
         `${(BOOST_ACCOUNT_PREFIX + selectedToken).toLowerCase()}`,
     )
-    console.log(
-      'selectedMangoAccount',
-      (BOOST_ACCOUNT_PREFIX + selectedToken).toLowerCase(),
-      selectedMangoAccount,
-    )
 
     set((s) => {
       s.mangoAccount.current = selectedMangoAccount
     })
   }, [selectedToken])
+
+
+
   return (
     <>
       <div className="mb-6 grid grid-cols-3">

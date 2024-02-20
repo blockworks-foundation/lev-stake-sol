@@ -7,10 +7,9 @@ export default function useStakeAccounts(): {
   stakeAccounts: MangoAccount[] | undefined
 } {
   const mangoAccounts = mangoStore((s) => s.mangoAccounts)
-
   const stakeAccounts = useMemo(() => {
     return mangoAccounts.filter((ma) =>
-      ma.name.includes(`${BOOST_ACCOUNT_PREFIX}`),
+      ma.name.includes(`${BOOST_ACCOUNT_PREFIX.toLowerCase()}`),
     )
   }, [mangoAccounts])
 

@@ -84,8 +84,8 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
     return group?.banksMapByName.get(selectedToken)?.[0]
   }, [selectedToken, group])
 
-  const solBank = useMemo(() => {
-    return group?.banksMapByName.get('SOL')?.[0]
+  const borrowBank = useMemo(() => {
+    return group?.banksMapByName.get('USDC')?.[0]
   }, [group])
 
   const tokenPositionsFull = useMemo(() => {
@@ -137,10 +137,10 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
     setRefreshingWalletTokens(false)
   }, [publicKey])
 
-  const solBorrowed = useMemo(() => {
-    if (!solBank || !mangoAccount) return 0.0
-    return mangoAccount.getTokenBalanceUi(solBank)
-  }, [solBank, mangoAccount])
+  const borrowed = useMemo(() => {
+    if (!borrowBank || !mangoAccount) return 0.0
+    return mangoAccount.getTokenBalanceUi(borrowBank)
+  }, [borrowBank, mangoAccount])
 
   const handleWithdraw = useCallback(async () => {
     const client = mangoStore.getState().client
@@ -148,16 +148,16 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
     const actions = mangoStore.getState().actions
     let mangoAccount = mangoStore.getState().mangoAccount.current
 
-    if (!group || !stakeBank || !solBank || !publicKey || !mangoAccount) return
+    if (!group || !stakeBank || !borrowBank || !publicKey || !mangoAccount) return
 
     setSubmitting(true)
     try {
-      if (mangoAccount.getTokenBalanceUi(solBank) < 0) {
+      if (mangoAccount.getTokenBalanceUi(borrowBank) < 0) {
         notify({
           title: 'Sending transaction 1 of 2',
           type: 'info',
         })
-        console.log('unstake and swap', mangoAccount.getTokenBalanceUi(solBank))
+        console.log('unstake and swap', mangoAccount.getTokenBalanceUi(borrowBank))
 
         const { signature: tx } = await unstakeAndSwap(
           client,
@@ -291,7 +291,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
               />
             </div>
           </div>
-          {stakeBank && solBank ? (
+          {stakeBank && borrowBank ? (
             <div className="pt-8">
               <Disclosure>
                 {({ open }) => (
@@ -330,16 +330,16 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                       </div>
                       <div className="flex justify-between">
                         <p className="text-th-fgd-4">SOL borrowed</p>
-                        {solBank ? (
+                        {borrowBank ? (
                           <span
                             className={`font-bold ${
-                              solBorrowed > 0.001
+                              borrowed > 0.001
                                 ? 'text-th-fgd-1'
                                 : 'text-th-bkg-4'
                             }`}
                           >
                             <FormatNumericValue
-                              value={solBorrowed}
+                              value={borrowed}
                               decimals={3}
                             />
                           </span>
