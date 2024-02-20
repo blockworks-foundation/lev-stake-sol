@@ -9,18 +9,18 @@ const AccountStats = ({ token }: { token: string }) => {
   const { group } = useMangoGroup()
   const estimatedMaxAPY = mangoStore((s) => s.estimatedMaxAPY.current)
 
-  const solBank = useMemo(() => {
-    return group?.banksMapByName.get('SOL')?.[0]
+  const borrowBank = useMemo(() => {
+    return group?.banksMapByName.get('USDC')?.[0]
   }, [group])
 
   const tokenBank = useMemo(() => {
     return group?.banksMapByName.get(token)?.[0]
   }, [group, token])
 
-  const solDeposits = useMemo(() => {
-    if (!solBank) return null
-    return solBank.uiDeposits()
-  }, [solBank])
+  const borrowDeposits = useMemo(() => {
+    if (!borrowBank) return null
+    return borrowBank.uiDeposits()
+  }, [borrowBank])
 
   const tokenDeposits = useMemo(() => {
     if (!tokenBank) return null
@@ -28,13 +28,13 @@ const AccountStats = ({ token }: { token: string }) => {
   }, [tokenBank])
 
   const solAvailable = useMemo(() => {
-    if (!solBank || !solDeposits) return 0
+    if (!borrowBank || !borrowDeposits) return 0
     const availableVaultBalance = group
-      ? group.getTokenVaultBalanceByMintUi(solBank.mint) -
-        solDeposits * solBank.minVaultToDepositsRatio
+      ? group.getTokenVaultBalanceByMintUi(borrowBank.mint) -
+      borrowDeposits * borrowBank.minVaultToDepositsRatio
       : 0
-    return Decimal.max(0, availableVaultBalance.toFixed(solBank.mintDecimals))
-  }, [solBank, solDeposits, group])
+    return Decimal.max(0, availableVaultBalance.toFixed(borrowBank.mintDecimals))
+  }, [borrowBank, borrowDeposits, group])
 
   return (
     <>

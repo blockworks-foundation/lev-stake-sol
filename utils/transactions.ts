@@ -298,6 +298,84 @@ export const stakeAndCreate = async (
   })
 }
 
+export const depositAndCreate = async (
+  client: MangoClient,
+  group: Group,
+  mangoAccount: MangoAccount | undefined,
+  stakeMintPk: PublicKey,
+  amount: number,
+  accountNumber: number,
+  name?: string,
+): Promise<MangoSignatureStatus> => {
+  const payer = (client.program.provider as AnchorProvider).wallet.publicKey
+  const depositBank = group?.banksMapByMint.get(stakeMintPk.toString())?.[0]
+  const instructions: TransactionInstruction[] = []
+
+  if (!depositBank) {
+    throw Error('Unable to find Deposit bank')
+  }
+
+  let mangoAccountPk = mangoAccount?.publicKey
+
+  if (!mangoAccountPk) {
+    const createMangoAccountIx = await client.program.methods
+      .accountCreate(
+        accountNumber ?? 0,
+        2,
+        0, // serum
+        0, // perp
+        0, // perp OO
+        name ?? `${BOOST_ACCOUNT_PREFIX}${depositBank.name}`,
+      )
+      .accounts({
+        group: group.publicKey,
+        owner: payer,
+        payer,
+      })
+      .instruction()
+    instructions.push(createMangoAccountIx)
+
+    const acctNumBuffer = Buffer.alloc(4)
+    acctNumBuffer.writeUInt32LE(accountNumber)
+    const [mangoAccountPda] = PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('MangoAccount'),
+        group.publicKey.toBuffer(),
+        payer.toBuffer(),
+        acctNumBuffer,
+      ],
+      client.program.programId,
+    )
+    mangoAccountPk = mangoAccountPda
+  }
+
+  const depositHealthRemainingAccounts: PublicKey[] = mangoAccount
+    ? client.buildHealthRemainingAccounts(
+        group,
+        [mangoAccount],
+        [depositBank],
+        [],
+        [],
+      )
+    : [depositBank.publicKey, depositBank.oracle]
+    
+  const depositTokenIxs = await createDepositIx(
+    client,
+    group,
+    payer,
+    mangoAccountPk,
+    stakeMintPk,
+    amount,
+    false,
+    depositHealthRemainingAccounts,
+  )
+  instructions.push(...depositTokenIxs)
+
+  return await client.sendAndConfirmTransactionForGroup(group, instructions, {
+    alts: [],
+  })
+}
+
 const createDepositIx = async (
   client: MangoClient,
   group: Group,

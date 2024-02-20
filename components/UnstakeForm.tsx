@@ -212,7 +212,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
 
   const showInsufficientBalance =
     tokenMax.maxAmount < Number(inputAmount) ||
-    (selectedToken === 'SOL' && maxSolDeposit <= 0)
+    (selectedToken === 'USDC' && maxSolDeposit <= 0)
 
   useEffect(() => {
     const group = mangoStore.getState().group

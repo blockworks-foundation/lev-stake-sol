@@ -43,9 +43,9 @@ const Positions = ({
 }: {
   setActiveTab: (tab: ActiveTab) => void
 }) => {
-  const [showInactivePositions, setShowInactivePositions] =
-    useLocalStorageState(SHOW_INACTIVE_POSITIONS_KEY, true)
+  const [showInactivePositions, setShowInactivePositions] = useLocalStorageState(SHOW_INACTIVE_POSITIONS_KEY, true)
   const { borrowBank, positions } = usePositions(showInactivePositions)
+  console.log(showInactivePositions)
 
   const numberOfPositions = useMemo(() => {
     if (!positions.length) return 0
@@ -55,9 +55,8 @@ const Positions = ({
   return (
     <>
       <div className="mb-2 flex items-center justify-between rounded-lg border-2 border-th-fgd-1 bg-th-bkg-1 px-6 py-3.5">
-        <p className="font-medium">{`You have ${numberOfPositions} active position${
-          numberOfPositions !== 1 ? 's' : ''
-        }`}</p>
+        <p className="font-medium">{`You have ${numberOfPositions} active position${numberOfPositions !== 1 ? 's' : ''
+          }`}</p>
         <Switch
           checked={showInactivePositions}
           onChange={(checked) => setShowInactivePositions(checked)}
@@ -98,6 +97,7 @@ const PositionItem = ({
 }) => {
   const { group } = useMangoGroup()
   const { stakeBalance, borrowBalance, bank, acct } = position
+  console.log(position.bank, borrowBank)
 
   const handleAddOrManagePosition = (token: string) => {
     setActiveTab('Boost!')
@@ -132,10 +132,23 @@ const PositionItem = ({
     const currentPriceRatio = bank.uiPrice / borrowBank.uiPrice
     const liqPriceChangePercentage =
       ((parseFloat(liqRatio) - currentPriceRatio) / currentPriceRatio) * 100
+
+
     return [liqRatio, liqPriceChangePercentage.toFixed(2)]
   }, [bank, borrowBalance, borrowBank, stakeBalance])
 
-  const { estimatedNetAPY } = useBankRates(bank.name, leverage)
+
+  const liquidationPrice = useMemo(() => {
+    const borrowMaintLiabWeight = borrowBank?.maintLiabWeight
+    const stakeMaintAssetWeight = position.bank?.maintAssetWeight
+    const price = Number(position.bank?.uiPrice) * (Number(borrowMaintLiabWeight) / Number(stakeMaintAssetWeight)) * (1 - (1 / leverage))
+
+    return price
+  }, [position.bank, borrowBank, leverage])
+
+
+  const { estimatedNetAPY, borrowBankBorrowRate } = useBankRates(bank.name, leverage)
+  const uiRate = bank.name == 'USDC' ? borrowBankBorrowRate : estimatedNetAPY
 
   return (
     <div className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
@@ -174,16 +187,21 @@ const PositionItem = ({
         <div>
           <p className="mb-1 text-th-fgd-4">Est. APY</p>
           <span className="text-xl font-bold text-th-fgd-1">
-            <FormatNumericValue value={estimatedNetAPY} decimals={2} />%
+            <FormatNumericValue value={uiRate} decimals={2} />%
           </span>
         </div>
-        <div>
-          <p className="mb-1 text-th-fgd-4">Leverage</p>
-          <span className="text-xl font-bold text-th-fgd-1">
-            {leverage ? leverage.toFixed(2) : 0.0}x
-          </span>
-        </div>
-        {/* <div>
+        {position.bank.name == 'USDC' ?
+          <>
+          </>
+          :
+          <>
+            <div>
+              <p className="mb-1 text-th-fgd-4">Leverage</p>
+              <span className="text-xl font-bold text-th-fgd-1">
+                {leverage ? leverage.toFixed(2) : 0.0}x
+              </span>
+            </div>
+            {/* <div>
           <p className="mb-1 text-th-fgd-4">Earned</p>
           <span className="text-xl font-bold text-th-fgd-1">
             {stakeBalance
@@ -191,21 +209,24 @@ const PositionItem = ({
               : `0 ${formatTokenSymbol(bank.name)}`}
           </span>
         </div> */}
-        <div>
-          <p className="mb-1 text-th-fgd-4">Est. Liquidation Price</p>
-          <div className="flex flex-wrap items-end">
-            <span className="mr-2 whitespace-nowrap text-xl font-bold text-th-fgd-1">
-              {liqRatio} {`${formatTokenSymbol(bank.name)}/${BORROW_TOKEN}`}
-            </span>
-            {liqPriceChangePercentage ? (
-              <Tooltip content="Estimated price change required for liquidation.">
-                <p className="tooltip-underline mb-0.5 text-th-fgd-4">
-                  {liqPriceChangePercentage}%
-                </p>
-              </Tooltip>
-            ) : null}
-          </div>
-        </div>
+            <div>
+              <p className="mb-1 text-th-fgd-4">Est. Liquidation Price</p>
+              <div className="flex flex-wrap items-end">
+                <span className="mr-2 whitespace-nowrap text-xl font-bold text-th-fgd-1">
+                  {liqRatio} {`${formatTokenSymbol(bank.name)}/${BORROW_TOKEN}`}
+                </span>
+                {liqPriceChangePercentage ? (
+                  <Tooltip content="Estimated price change required for liquidation.">
+                    <p className="tooltip-underline mb-0.5 text-th-fgd-4">
+                      {liqPriceChangePercentage}%
+                    </p>
+                  </Tooltip>
+                ) : null}
+              </div>
+            </div>
+          </>
+        }
+
       </div>
     </div>
   )
