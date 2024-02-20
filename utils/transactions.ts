@@ -46,12 +46,12 @@ export const withdrawAndClose = async (
 ) => {
   console.log('withdraw and close')
 
-  const solBank = group?.banksMapByName.get('SOL')?.[0]
+  const borrowBank = group?.banksMapByName.get('USDC')?.[0]
   const stakeBank = group?.banksMapByMint.get(stakeMintPk.toString())?.[0]
   const instructions: TransactionInstruction[] = []
 
-  if (!solBank || !stakeBank || !mangoAccount) {
-    throw Error('Unable to find SOL bank or stake bank or mango account')
+  if (!borrowBank || !stakeBank || !mangoAccount) {
+    throw Error('Unable to find USDC bank or stake bank or mango account')
   }
   const stakeBalance = mangoAccount.getTokenBalanceUi(stakeBank)
   const withdrawHealthRemainingAccounts: PublicKey[] =
@@ -115,23 +115,23 @@ export const unstakeAndSwap = async (
   console.log('unstake and swap')
 
   const payer = (client.program.provider as AnchorProvider).wallet.publicKey
-  const solBank = group?.banksMapByName.get('SOL')?.[0]
+  const borrowBank = group?.banksMapByName.get('USDC')?.[0]
   const stakeBank = group?.banksMapByMint.get(stakeMintPk.toString())?.[0]
   const instructions: TransactionInstruction[] = []
 
-  if (!solBank || !stakeBank || !mangoAccount) {
-    throw Error('Unable to find SOL bank or stake bank or mango account')
+  if (!borrowBank || !stakeBank || !mangoAccount) {
+    throw Error('Unable to find borrow bank or stake bank or mango account')
   }
-  const borrowedSol = mangoAccount.getTokenBalance(solBank)
+  const borrowed = mangoAccount.getTokenBalance(borrowBank)
 
   let swapAlts: AddressLookupTableAccount[] = []
-  if (borrowedSol.toNumber() < 0) {
-    console.log('borrowedSol amount: ', borrowedSol.toNumber())
+  if (borrowed.toNumber() < 0) {
+    console.log('borrowedSol amount: ', borrowed.toNumber())
 
     const { bestRoute: selectedRoute } = await fetchJupiterRoutes(
       stakeMintPk.toString(),
-      solBank.mint.toString(),
-      Math.ceil(borrowedSol.abs().add(I80F48.fromNumber(100)).toNumber()),
+      borrowBank.mint.toString(),
+      Math.ceil(borrowed.abs().add(I80F48.fromNumber(100)).toNumber()),
       500,
       'ExactOut',
     )
@@ -146,7 +146,7 @@ export const unstakeAndSwap = async (
       selectedRoute,
       payer,
       slippage,
-      solBank.mint,
+      borrowBank.mint,
       stakeMintPk,
     )
 
@@ -160,7 +160,7 @@ export const unstakeAndSwap = async (
       owner: payer,
       inputMintPk: stakeBank.mint,
       amountIn: toUiDecimals(selectedRoute.inAmount, stakeBank.mintDecimals),
-      outputMintPk: solBank.mint,
+      outputMintPk: borrowBank.mint,
       userDefinedInstructions: jupiterIxs,
       userDefinedAlts: jupiterAlts,
       flashLoanType: FlashLoanType.swap,
@@ -186,12 +186,12 @@ export const stakeAndCreate = async (
   name?: string,
 ): Promise<MangoSignatureStatus> => {
   const payer = (client.program.provider as AnchorProvider).wallet.publicKey
-  const solBank = group?.banksMapByName.get('SOL')?.[0]
+  const borrowBank = group?.banksMapByName.get('USDC')?.[0]
   const stakeBank = group?.banksMapByMint.get(stakeMintPk.toString())?.[0]
   const instructions: TransactionInstruction[] = []
 
-  if (!solBank || !stakeBank) {
-    throw Error('Unable to find SOL bank or Stake bank')
+  if (!borrowBank || !stakeBank) {
+    throw Error('Unable to find Borrow bank or Stake bank')
   }
 
   let mangoAccountPk = mangoAccount?.publicKey
@@ -252,12 +252,12 @@ export const stakeAndCreate = async (
   let swapAlts: AddressLookupTableAccount[] = []
   const nativeBorrowAmount = toNative(
     borrowAmount,
-    solBank.mintDecimals,
+    borrowBank.mintDecimals,
   ).toNumber()
 
   if (nativeBorrowAmount) {
     const { bestRoute: selectedRoute } = await fetchJupiterRoutes(
-      solBank.mint.toString(),
+      borrowBank.mint.toString(),
       stakeMintPk.toString(),
       nativeBorrowAmount,
     )
@@ -272,7 +272,7 @@ export const stakeAndCreate = async (
       selectedRoute,
       payer,
       slippage,
-      solBank.mint,
+      borrowBank.mint,
       stakeMintPk,
     )
 
@@ -281,7 +281,7 @@ export const stakeAndCreate = async (
       group: group,
       mangoAccountPk,
       owner: payer,
-      inputMintPk: solBank.mint,
+      inputMintPk: borrowBank.mint,
       amountIn: borrowAmount,
       outputMintPk: stakeBank.mint,
       userDefinedInstructions: jupiterIxs,
@@ -295,6 +295,84 @@ export const stakeAndCreate = async (
 
   return await client.sendAndConfirmTransactionForGroup(group, instructions, {
     alts: [...group.addressLookupTablesList, ...swapAlts],
+  })
+}
+
+export const depositAndCreate = async (
+  client: MangoClient,
+  group: Group,
+  mangoAccount: MangoAccount | undefined,
+  stakeMintPk: PublicKey,
+  amount: number,
+  accountNumber: number,
+  name?: string,
+): Promise<MangoSignatureStatus> => {
+  const payer = (client.program.provider as AnchorProvider).wallet.publicKey
+  const depositBank = group?.banksMapByMint.get(stakeMintPk.toString())?.[0]
+  const instructions: TransactionInstruction[] = []
+
+  if (!depositBank) {
+    throw Error('Unable to find Deposit bank')
+  }
+
+  let mangoAccountPk = mangoAccount?.publicKey
+
+  if (!mangoAccountPk) {
+    const createMangoAccountIx = await client.program.methods
+      .accountCreate(
+        accountNumber ?? 0,
+        2,
+        0, // serum
+        0, // perp
+        0, // perp OO
+        name ?? `${BOOST_ACCOUNT_PREFIX}${depositBank.name}`,
+      )
+      .accounts({
+        group: group.publicKey,
+        owner: payer,
+        payer,
+      })
+      .instruction()
+    instructions.push(createMangoAccountIx)
+
+    const acctNumBuffer = Buffer.alloc(4)
+    acctNumBuffer.writeUInt32LE(accountNumber)
+    const [mangoAccountPda] = PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('MangoAccount'),
+        group.publicKey.toBuffer(),
+        payer.toBuffer(),
+        acctNumBuffer,
+      ],
+      client.program.programId,
+    )
+    mangoAccountPk = mangoAccountPda
+  }
+
+  const depositHealthRemainingAccounts: PublicKey[] = mangoAccount
+    ? client.buildHealthRemainingAccounts(
+        group,
+        [mangoAccount],
+        [depositBank],
+        [],
+        [],
+      )
+    : [depositBank.publicKey, depositBank.oracle]
+    
+  const depositTokenIxs = await createDepositIx(
+    client,
+    group,
+    payer,
+    mangoAccountPk,
+    stakeMintPk,
+    amount,
+    false,
+    depositHealthRemainingAccounts,
+  )
+  instructions.push(...depositTokenIxs)
+
+  return await client.sendAndConfirmTransactionForGroup(group, instructions, {
+    alts: [],
   })
 }
 

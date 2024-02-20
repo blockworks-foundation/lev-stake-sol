@@ -84,8 +84,8 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
     return group?.banksMapByName.get(selectedToken)?.[0]
   }, [selectedToken, group])
 
-  const solBank = useMemo(() => {
-    return group?.banksMapByName.get('SOL')?.[0]
+  const borrowBank = useMemo(() => {
+    return group?.banksMapByName.get('USDC')?.[0]
   }, [group])
 
   const tokenPositionsFull = useMemo(() => {
@@ -137,10 +137,10 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
     setRefreshingWalletTokens(false)
   }, [publicKey])
 
-  const solBorrowed = useMemo(() => {
-    if (!solBank || !mangoAccount) return 0.0
-    return mangoAccount.getTokenBalanceUi(solBank)
-  }, [solBank, mangoAccount])
+  const borrowed = useMemo(() => {
+    if (!borrowBank || !mangoAccount) return 0.0
+    return mangoAccount.getTokenBalanceUi(borrowBank)
+  }, [borrowBank, mangoAccount])
 
   const handleWithdraw = useCallback(async () => {
     const client = mangoStore.getState().client
@@ -148,16 +148,16 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
     const actions = mangoStore.getState().actions
     let mangoAccount = mangoStore.getState().mangoAccount.current
 
-    if (!group || !stakeBank || !solBank || !publicKey || !mangoAccount) return
+    if (!group || !stakeBank || !borrowBank || !publicKey || !mangoAccount) return
 
     setSubmitting(true)
     try {
-      if (mangoAccount.getTokenBalanceUi(solBank) < 0) {
+      if (mangoAccount.getTokenBalanceUi(borrowBank) < 0) {
         notify({
           title: 'Sending transaction 1 of 2',
           type: 'info',
         })
-        console.log('unstake and swap', mangoAccount.getTokenBalanceUi(solBank))
+        console.log('unstake and swap', mangoAccount.getTokenBalanceUi(borrowBank))
 
         const { signature: tx } = await unstakeAndSwap(
           client,
@@ -212,7 +212,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
 
   const showInsufficientBalance =
     tokenMax.maxAmount < Number(inputAmount) ||
-    (selectedToken === 'SOL' && maxSolDeposit <= 0)
+    (selectedToken === 'USDC' && maxSolDeposit <= 0)
 
   useEffect(() => {
     const group = mangoStore.getState().group
@@ -291,61 +291,62 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
               />
             </div>
           </div>
-          {stakeBank && solBank ? (
-            <div className="pt-8">
+          {stakeBank && borrowBank ? (
+            <div className={`${stakeBank.name == 'USDC' ? '' : 'pt-8'}`}>
               <Disclosure>
                 {({ open }) => (
                   <>
-                    <Disclosure.Button
-                      className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${
-                        open ? 'rounded-b-none border-b-0' : ''
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <p className="font-medium">Staked Amount</p>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-lg font-bold text-th-fgd-1">
-                            <FormatNumericValue
-                              value={tokenMax.maxAmount}
-                              decimals={stakeBank.mintDecimals}
+                    {stakeBank.name == 'USDC'
+                      ?
+                      <></>
+                      :
+                      <>                    
+                      <Disclosure.Button className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${open ? 'rounded-b-none border-b-0' : '' }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <p className="font-medium">Staked Amount</p>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-lg font-bold text-th-fgd-1">
+                              <FormatNumericValue
+                                value={tokenMax.maxAmount}
+                                decimals={stakeBank.mintDecimals}
+                              />
+                            </span>
+                            <ChevronDownIcon
+                              className={`${open ? 'rotate-180' : ''
+                                } h-6 w-6 shrink-0 text-th-fgd-1`}
                             />
-                          </span>
-                          <ChevronDownIcon
-                            className={`${
-                              open ? 'rotate-180' : ''
-                            } h-6 w-6 shrink-0 text-th-fgd-1`}
-                          />
+                          </div>
                         </div>
-                      </div>
-                    </Disclosure.Button>
-                    <Disclosure.Panel className="space-y-2 rounded-xl rounded-t-none border-2 border-t-0 border-th-bkg-3 px-4 pb-3">
-                      <div className="flex justify-between">
-                        <p className="text-th-fgd-4">Staked Amount</p>
-                        <span className="font-bold text-th-fgd-1">
-                          <BankAmountWithValue
-                            amount={tokenMax.maxAmount}
-                            bank={stakeBank}
-                          />
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <p className="text-th-fgd-4">SOL borrowed</p>
-                        {solBank ? (
-                          <span
-                            className={`font-bold ${
-                              solBorrowed > 0.001
-                                ? 'text-th-fgd-1'
-                                : 'text-th-bkg-4'
-                            }`}
-                          >
-                            <FormatNumericValue
-                              value={solBorrowed}
-                              decimals={3}
-                            />
-                          </span>
-                        ) : null}
-                      </div>
-                    </Disclosure.Panel>
+                      </Disclosure.Button>
+                        <Disclosure.Panel className="space-y-2 rounded-xl rounded-t-none border-2 border-t-0 border-th-bkg-3 px-4 pb-3">
+                          <div className="flex justify-between">
+                            <p className="text-th-fgd-4">Staked Amount</p>
+                            <span className="font-bold text-th-fgd-1">
+                              <BankAmountWithValue
+                                amount={tokenMax.maxAmount}
+                                bank={stakeBank}
+                              />
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <p className="text-th-fgd-4">SOL borrowed</p>
+                            {borrowBank ? (
+                              <span
+                                className={`font-bold ${borrowed > 0.001
+                                  ? 'text-th-fgd-1'
+                                  : 'text-th-bkg-4'
+                                  }`}
+                              >
+                                <FormatNumericValue
+                                  value={borrowed}
+                                  decimals={3}
+                                />
+                              </span>
+                            ) : null}
+                          </div>
+                        </Disclosure.Panel></>
+                    }
                   </>
                 )}
               </Disclosure>

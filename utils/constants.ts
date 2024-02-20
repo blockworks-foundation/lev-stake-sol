@@ -1,10 +1,9 @@
 // lev stake
-export const BORROW_TOKEN = 'SOL'
+export const BORROW_TOKEN = 'USDC'
 
 export const STAKEABLE_TOKENS_DATA = [
-  { name: 'MSOL', id: 521, active: true },
-  { name: 'JitoSOL', id: 621, active: true },
-  { name: 'bSOL', id: 721, active: true },
+  { name: 'JLP', id: 1, active: true },
+  { name: 'USDC', id: 0, active: true },
 ]
 export const STAKEABLE_TOKENS = STAKEABLE_TOKENS_DATA.filter(
   (d) => d.active,
@@ -17,14 +16,17 @@ export const LAST_ACCOUNT_KEY = 'mangoAccount-0.4'
 
 export const BOOST_ACCOUNT_PREFIX = 'Leverage Stake '
 
+export const BOOST_DEPOSIT_PREFIX = 'Deposit Leverage Stake '
+
+
 export const CLIENT_TX_TIMEOUT = 90000
 
 export const SECONDS = 1000
 
-export const INPUT_TOKEN_DEFAULT = 'SOL'
+export const INPUT_TOKEN_DEFAULT = 'USDC'
 export const MANGO_MINT = 'MangoCzJ36AjZyKwVj3VnYU4GTonjfVEnJmvvWaxLac'
 export const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
-export const OUTPUT_TOKEN_DEFAULT = 'MSOL'
+export const OUTPUT_TOKEN_DEFAULT = 'JLP'
 
 export const JUPITER_V4_PROGRAM_ID =
   'JUP4Fb2cqiRUcaTHdrPC8h2gNsA2ETXiPDD33WcGuJB'

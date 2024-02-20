@@ -80,7 +80,8 @@ import sampleSize from 'lodash/sampleSize'
 import { Token } from 'types/jupiter'
 import { sleep } from 'utils'
 
-const GROUP = new PublicKey('78b8f4cGCwmZ9ysPFMWLaLTkkaYnUjwMJYStWe5RTSSX')
+const MANGO_BOOST_ID = new PublicKey('zF2vSz6V9g1YHGmfrzsY497NJzbRr84QUrPry4bLQ25')
+const GROUP = new PublicKey('AKeMSYiJekyKfwCc3CUfVNDVAiqk9FfbQVMY3G7RUZUf')
 
 const ENDPOINTS = [
   {
@@ -110,9 +111,9 @@ const initMangoClient = (
   provider: AnchorProvider,
   opts = { prioritizationFee: DEFAULT_PRIORITY_FEE },
 ): MangoClient => {
-  return MangoClient.connect(provider, CLUSTER, MANGO_V4_ID[CLUSTER], {
+  return MangoClient.connect(provider, CLUSTER, MANGO_BOOST_ID, {
     prioritizationFee: opts.prioritizationFee,
-    idsSource: 'api',
+    idsSource: 'get-program-accounts',
     postSendTxCallback: ({ txid }: { txid: string }) => {
       notify({
         title: 'Transaction sent',

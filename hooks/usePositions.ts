@@ -28,8 +28,7 @@ export default function usePositions(showInactive = false) {
       if (!bank) continue
       const acct = stakeAccounts?.find((acc) => acc.getTokenBalanceUi(bank) > 0)
       const stakeBalance = acct ? acct.getTokenBalanceUi(bank) : 0
-      const borrowBalance =
-        acct && borrowBank ? acct.getTokenBalanceUi(borrowBank) : 0
+      const borrowBalance = acct && borrowBank ? acct.getTokenBalanceUi(borrowBank) : 0
       positions.push({ borrowBalance, stakeBalance, bank, acct })
     }
     const sortedPositions = positions.sort(
