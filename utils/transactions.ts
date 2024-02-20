@@ -726,8 +726,8 @@ const deserializeJupiterIxAndAlt = async (
 }
 
 const fetchJupiterRoutes = async (
-  inputMint = 'So11111111111111111111111111111111111111112',
-  outputMint = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+  inputMint: string,
+  outputMint: string,
   amount = 0,
   slippage = 50,
   swapMode = 'ExactIn',

@@ -329,7 +329,7 @@ import {
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <p className="text-th-fgd-4">SOL borrowed</p>
+                          <p className="text-th-fgd-4">USDC borrowed</p>
                           {borrowBank ? (
                             <span
                               className={`font-bold ${

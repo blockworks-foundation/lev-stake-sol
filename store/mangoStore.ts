@@ -80,6 +80,7 @@ import sampleSize from 'lodash/sampleSize'
 import { Token } from 'types/jupiter'
 import { sleep } from 'utils'
 
+// Hardcoded ID and Group
 const MANGO_BOOST_ID = new PublicKey('zF2vSz6V9g1YHGmfrzsY497NJzbRr84QUrPry4bLQ25')
 const GROUP = new PublicKey('AKeMSYiJekyKfwCc3CUfVNDVAiqk9FfbQVMY3G7RUZUf')
 
