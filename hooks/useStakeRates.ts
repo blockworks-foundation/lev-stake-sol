@@ -23,7 +23,6 @@ const fetchRates = async () => {
   const jitoRange = getPriceRangeFromPeriod(jitoPrices, PERIOD.DAYS_30)
   const bsolRange = getPriceRangeFromPeriod(bsolPrices, PERIOD.DAYS_30)
   const lidoRange = getPriceRangeFromPeriod(lidoPrices, PERIOD.DAYS_30)
-  const jlpRange = getPriceRangeFromPeriod(lidoPrices, PERIOD.DAYS_30)
 
   const rateData: Record<string, number> = {}
   rateData.jlp = 12 * (jlpPricesPrice[jlpPricesPrice.length - 1] - jlpPricesPrice[0]) / jlpPricesPrice[0]
