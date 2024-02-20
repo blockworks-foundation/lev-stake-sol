@@ -9,7 +9,6 @@ import { formatTokenSymbol } from 'utils/tokens'
 import { useViewport } from 'hooks/useViewport'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
 import DespositForm from './DepositForm'
-import WithdrawForm from './WithdrawForm'
 
 const set = mangoStore.getState().set
 
@@ -50,24 +49,23 @@ const Stake = () => {
                 onChange={(v) => setActiveFormTab(v)}
               />
             </div>
-            {selectedToken == 'USDC' ?
+            {selectedToken == 'USDC' ? (
               <>
-                {activeFormTab === 'Add' ? (
-                  <DespositForm token='USDC' />
-                ) : null}
+                {activeFormTab === 'Add' ? <DespositForm token="USDC" /> : null}
                 {activeFormTab === 'Remove' ? (
-                  <UnstakeForm token='USDC' />
+                  <UnstakeForm token="USDC" />
                 ) : null}
               </>
-              :
+            ) : (
               <>
                 {activeFormTab === 'Add' ? (
                   <StakeForm token={selectedToken} />
                 ) : null}
                 {activeFormTab === 'Remove' ? (
                   <UnstakeForm token={selectedToken} />
-                ) : null}</>
-            }
+                ) : null}
+              </>
+            )}
           </div>
         </div>
       </div>

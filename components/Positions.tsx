@@ -43,7 +43,8 @@ const Positions = ({
 }: {
   setActiveTab: (tab: ActiveTab) => void
 }) => {
-  const [showInactivePositions, setShowInactivePositions] = useLocalStorageState(SHOW_INACTIVE_POSITIONS_KEY, true)
+  const [showInactivePositions, setShowInactivePositions] =
+    useLocalStorageState(SHOW_INACTIVE_POSITIONS_KEY, true)
   const { borrowBank, positions } = usePositions(showInactivePositions)
   console.log(showInactivePositions)
 
@@ -55,8 +56,9 @@ const Positions = ({
   return (
     <>
       <div className="mb-2 flex items-center justify-between rounded-lg border-2 border-th-fgd-1 bg-th-bkg-1 px-6 py-3.5">
-        <p className="font-medium">{`You have ${numberOfPositions} active position${numberOfPositions !== 1 ? 's' : ''
-          }`}</p>
+        <p className="font-medium">{`You have ${numberOfPositions} active position${
+          numberOfPositions !== 1 ? 's' : ''
+        }`}</p>
         <Switch
           checked={showInactivePositions}
           onChange={(checked) => setShowInactivePositions(checked)}
@@ -133,21 +135,13 @@ const PositionItem = ({
     const liqPriceChangePercentage =
       ((parseFloat(liqRatio) - currentPriceRatio) / currentPriceRatio) * 100
 
-
     return [liqRatio, liqPriceChangePercentage.toFixed(2)]
   }, [bank, borrowBalance, borrowBank, stakeBalance])
 
-
-  const liquidationPrice = useMemo(() => {
-    const borrowMaintLiabWeight = borrowBank?.maintLiabWeight
-    const stakeMaintAssetWeight = position.bank?.maintAssetWeight
-    const price = Number(position.bank?.uiPrice) * (Number(borrowMaintLiabWeight) / Number(stakeMaintAssetWeight)) * (1 - (1 / leverage))
-
-    return price
-  }, [position.bank, borrowBank, leverage])
-
-
-  const { estimatedNetAPY, borrowBankBorrowRate } = useBankRates(bank.name, leverage)
+  const { estimatedNetAPY, borrowBankBorrowRate } = useBankRates(
+    bank.name,
+    leverage,
+  )
   const uiRate = bank.name == 'USDC' ? borrowBankBorrowRate : estimatedNetAPY
 
   return (
@@ -190,10 +184,9 @@ const PositionItem = ({
             <FormatNumericValue value={uiRate} decimals={2} />%
           </span>
         </div>
-        {position.bank.name == 'USDC' ?
-          <>
-          </>
-          :
+        {position.bank.name == 'USDC' ? (
+          <></>
+        ) : (
           <>
             <div>
               <p className="mb-1 text-th-fgd-4">Leverage</p>
@@ -225,8 +218,7 @@ const PositionItem = ({
               </div>
             </div>
           </>
-        }
-
+        )}
       </div>
     </div>
   )
