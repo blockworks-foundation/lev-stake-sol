@@ -18,7 +18,6 @@ import {
   Group,
   MangoAccount,
   Serum3Market,
-  MANGO_V4_ID,
   Bank,
   PerpOrder,
   PerpPosition,
@@ -80,7 +79,9 @@ import sampleSize from 'lodash/sampleSize'
 import { Token } from 'types/jupiter'
 import { sleep } from 'utils'
 
-const MANGO_BOOST_ID = new PublicKey('zF2vSz6V9g1YHGmfrzsY497NJzbRr84QUrPry4bLQ25')
+const MANGO_BOOST_ID = new PublicKey(
+  'zF2vSz6V9g1YHGmfrzsY497NJzbRr84QUrPry4bLQ25',
+)
 const GROUP = new PublicKey('AKeMSYiJekyKfwCc3CUfVNDVAiqk9FfbQVMY3G7RUZUf')
 
 const ENDPOINTS = [
@@ -834,12 +835,12 @@ const mangoStore = create<MangoStore>()(
           const group = mangoStore.getState().group
           const client = mangoStore.getState().client
 
-          const mangoAccount = get().mangoAccount.current
-          if (!mangoAccount || !group || !client) return
+          if (!group || !client) return
 
           const altResponse = await connection.getAddressLookupTable(
-            group.addressLookupTables[0],
+            new PublicKey('AgCBUZ6UMWqPLftTxeAqpQxtrfiCyL2HgRfmmM6QTfCj'),
           )
+
           const altKeys = altResponse.value?.state.addresses
           if (!altKeys) return
 
@@ -873,6 +874,7 @@ const mangoStore = create<MangoStore>()(
 
           const provider = client.program.provider as AnchorProvider
           provider.opts.skipPreflight = true
+
           const newClient = initMangoClient(provider, {
             prioritizationFee: feeEstimate,
           })

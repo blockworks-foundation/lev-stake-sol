@@ -32,7 +32,13 @@ const TopBar = () => {
         </div>
       </Link>
       <div className="flex items-center justify-end space-x-2 md:space-x-4">
-        <div className="px-2 md:px-4">
+        <div className="space-x-2 px-2 md:px-4">
+          <NavLink
+            active={false}
+            target="_blank"
+            path="https://lev-stake-sol-msol.vercel.app/"
+            text="Old boost ui"
+          />
           <NavLink active={pathname === '/faqs'} path="/faqs" text="FAQs" />
         </div>
         <ThemeToggle />
@@ -56,13 +62,15 @@ const NavLink = ({
   active,
   path,
   text,
+  target,
 }: {
   active: boolean
   path: string
   text: string
+  target?: string
 }) => {
   return (
-    <Link href={path} shallow={true}>
+    <Link target={target ? target : undefined} href={path} shallow={true}>
       <span
         className={`default-transition border-b-2 text-sm font-bold md:text-base md:hover:text-th-active ${
           active

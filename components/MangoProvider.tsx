@@ -13,7 +13,7 @@ const set = mangoStore.getState().set
 const actions = mangoStore.getState().actions
 
 const HydrateStore = () => {
-  const { mangoAccountPk, mangoAccountAddress } = useMangoAccount()
+  const { mangoAccountPk } = useMangoAccount()
   const connection = mangoStore((s) => s.connection)
   const slowNetwork = useNetworkSpeed()
   const { wallet } = useWallet()
@@ -84,7 +84,7 @@ const HydrateStore = () => {
   // estimate the priority fee every 30 seconds
   useInterval(
     async () => {
-      if (mangoAccountAddress) {
+      if (wallet?.adapter.publicKey) {
         const priorityFeeMultiplier = Number(
           localStorage.getItem(PRIORITY_FEE_KEY) ??
             DEFAULT_PRIORITY_FEE_LEVEL.value,
