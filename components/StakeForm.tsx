@@ -91,7 +91,6 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   const { group } = useMangoGroup()
   const groupLoaded = mangoStore((s) => s.groupLoaded)
   const {
-    stakeBankDepositRate,
     borrowBankBorrowRate,
     leveragedAPY,
     estimatedNetAPY,
@@ -116,6 +115,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
 
     return price
   }, [stakeBank, borrowBank, leverage])
+
 
   const tokenPositionsFull = useMemo(() => {
     if (!stakeBank || !usedTokens.length || !totalTokens.length) return false
@@ -145,6 +145,16 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
       stakeBank?.uiPrice * Number(inputAmount) * (leverage - 1)
     return borrowAmount
   }, [leverage, borrowBank, stakeBank, inputAmount])
+
+  const collateralFeeAPY = useMemo(() => {
+    if (!stakeBank) return 0
+    const collateralFee = stakeBank?.collateralFeePerDay * 365 * 100
+    const valueOfPosition = leverage * Number(inputAmount) * stakeBank?.uiPrice
+    const weightedValueOfPosition = valueOfPosition * Number(stakeBank?.maintAssetWeight)
+    const assetsCovered = amountToBorrow / weightedValueOfPosition
+    const collateralFeeUI = collateralFee * assetsCovered
+    return collateralFeeUI
+  }, [stakeBank, amountToBorrow, inputAmount, leverage])
 
   const handleRefreshWalletBalances = useCallback(async () => {
     if (!publicKey) return
@@ -353,18 +363,18 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                       </div>
                       <div className="flex justify-between">
                         <p className="text-th-fgd-4">
-                          {formatTokenSymbol(selectedToken)} Deposit Rate
+                          {formatTokenSymbol(selectedToken)} Collateral Fee APY
                         </p>
                         <span
                           className={`font-bold ${
-                            stakeBankDepositRate > 0.01
-                              ? 'text-th-success'
+                            collateralFeeAPY > 0.01
+                              ? 'text-th-error'
                               : 'text-th-bkg-4'
                           }`}
                         >
-                          {stakeBankDepositRate > 0.01 ? '+' : ''}
+                          {collateralFeeAPY > 0.01 ? '-' : ''}
                           <FormatNumericValue
-                            value={stakeBankDepositRate}
+                            value={collateralFeeAPY?.toString()}
                             decimals={2}
                           />
                           %
@@ -373,7 +383,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                       {borrowBank ? (
                         <>
                           <div className="flex justify-between">
-                            <p className="text-th-fgd-4">{`${borrowBank.name} Borrow Rate`}</p>
+                            <p className="text-th-fgd-4">{`${borrowBank} Borrow Rate`}</p>
                             <span
                               className={`font-bold ${
                                 borrowBankBorrowRate > 0.01
