@@ -9,8 +9,8 @@ export const useViewport = () => {
   const [isMobile, isTablet, isDesktop] = useMemo(() => {
     if (!width) return [false, false, false]
     const mobile = width < breakpoints.sm
-    const tablet = width >= breakpoints.sm && width < breakpoints.md
-    const desktop = width >= breakpoints.md
+    const tablet = width >= breakpoints.sm && width < breakpoints.lg
+    const desktop = width >= breakpoints.lg
     return [mobile, tablet, desktop]
   }, [width])
 

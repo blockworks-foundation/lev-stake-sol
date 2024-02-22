@@ -70,7 +70,7 @@ const Stake = () => {
         </div>
       </div>
       {activeFormTab === 'Add' ? (
-        <div className="fixed bottom-0 left-0 z-20 w-full md:bottom-8 md:left-8 md:w-auto">
+        <div className="fixed bottom-0 left-0 z-20 w-full lg:bottom-8 lg:left-8 lg:w-auto">
           {isDesktop ? (
             <a
               className="raised-button text-shadow group flex h-20 w-20 cursor-pointer items-center justify-center p-3 text-center text-base font-extrabold after:rounded-full"

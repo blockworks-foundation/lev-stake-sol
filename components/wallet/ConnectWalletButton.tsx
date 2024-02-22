@@ -40,14 +40,14 @@ export default function ConnectWalletButton() {
             select(lastWalletName || detectedWallets[0].adapter.name)
           }
         }}
-        className="raised-button-neutral group flex h-12 w-32 items-center after:rounded-full md:w-44"
+        className="raised-button-neutral group flex h-12 w-32 items-center after:rounded-full lg:w-44"
       >
         <div className="relative z-10 flex h-full items-center justify-center space-x-2 px-2.5 group-hover:mt-1 group-active:mt-2 md:px-4">
           {connected && mangoAccountLoading ? (
             <div></div>
           ) : (
             <div
-              className={`hidden h-[28px] w-[28px] items-center justify-center rounded-full md:flex ${
+              className={`hidden h-[28px] w-[28px] items-center justify-center rounded-full lg:flex ${
                 wallet?.adapter.name === 'Solflare' ? 'bg-black' : ''
               }`}
             >
@@ -79,7 +79,7 @@ export default function ConnectWalletButton() {
           <>
             <Popover.Button className="absolute right-1.5 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-th-bkg-2 text-th-fgd-3 focus:outline-none focus-visible:bg-th-bkg-3 md:hover:bg-th-bkg-3">
               <ChevronDownIcon
-                className={`h-6 w-6 flex-shrink-0 ${
+                className={`h-6 w-6 shrink-0 ${
                   open ? 'rotate-180' : 'rotate-360'
                 }`}
               />
