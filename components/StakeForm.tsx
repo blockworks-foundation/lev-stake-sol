@@ -160,7 +160,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     const client = mangoStore.getState().client
     const group = mangoStore.getState().group
     const actions = mangoStore.getState().actions
-    // const mangoAccounts = mangoStore.getState().mangoAccounts
+    const mangoAccountsLength = (mangoStore.getState().mangoAccounts).length
     const mangoAccount = mangoStore.getState().mangoAccount.current
 
     if (!group || !stakeBank || !publicKey) return
@@ -168,9 +168,6 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     set((state) => {
       state.submittingBoost = true
     })
-    const tokenNum = STAKEABLE_TOKENS_DATA.find(
-      (t) => t.name.toLowerCase() === stakeBank.name.toLowerCase(),
-    )?.id
     try {
       // const newAccountNum = getNextAccountNumber(mangoAccounts)
       notify({
@@ -184,7 +181,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
         amountToBorrow,
         stakeBank.mint,
         parseFloat(inputAmount),
-        tokenNum || 0,
+        mangoAccountsLength + 1 || 0,
       )
       notify({
         title: 'Transaction confirmed',

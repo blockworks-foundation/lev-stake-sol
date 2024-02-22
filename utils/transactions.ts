@@ -200,7 +200,7 @@ export const stakeAndCreate = async (
     const createMangoAccountIx = await client.program.methods
       .accountCreate(
         accountNumber ?? 0,
-        2,
+        4,
         0, // serum
         0, // perp
         0, // perp OO
