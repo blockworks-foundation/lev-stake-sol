@@ -94,6 +94,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     borrowBankBorrowRate,
     leveragedAPY,
     estimatedNetAPY,
+    collateralFeeAPY
   } = useBankRates(selectedToken, leverage)
   const leverageMax = useLeverageMax(selectedToken) * 0.95 // Multiplied by 0.975 becuase you cant actually get to the end of the inifinite geometric series?
 
@@ -146,15 +147,6 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     return borrowAmount
   }, [leverage, borrowBank, stakeBank, inputAmount])
 
-  const collateralFeeAPY = useMemo(() => {
-    if (!stakeBank) return 0
-    const collateralFee = stakeBank?.collateralFeePerDay * 365 * 100
-    const valueOfPosition = leverage * Number(inputAmount) * stakeBank?.uiPrice
-    const weightedValueOfPosition = valueOfPosition * Number(stakeBank?.maintAssetWeight)
-    const assetsCovered = amountToBorrow / weightedValueOfPosition
-    const collateralFeeUI = collateralFee * assetsCovered
-    return collateralFeeUI
-  }, [stakeBank, amountToBorrow, inputAmount, leverage])
 
   const handleRefreshWalletBalances = useCallback(async () => {
     if (!publicKey) return
@@ -383,7 +375,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                       {borrowBank ? (
                         <>
                           <div className="flex justify-between">
-                            <p className="text-th-fgd-4">{`${borrowBank} Borrow Rate`}</p>
+                            <p className="text-th-fgd-4">{`${borrowBank?.name} Borrow Rate`}</p>
                             <span
                               className={`font-bold ${
                                 borrowBankBorrowRate > 0.01
