@@ -13,12 +13,12 @@ const TokenButton = ({
   handleTokenSelect: (v: string) => void
 }) => {
   const leverage = useLeverageMax(tokenName)
-  const { borrowBankBorrowRate, borrowBankStakeRate } = useBankRates(
+  const { borrowBankStakeRate, stakeBankDepositRate } = useBankRates(
     tokenName,
     leverage,
   )
-  const UiRate =
-    tokenName == 'USDC' ? borrowBankBorrowRate : borrowBankStakeRate
+
+  const UiRate = tokenName == 'USDC' ? stakeBankDepositRate : borrowBankStakeRate
 
   return (
     <button

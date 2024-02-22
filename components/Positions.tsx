@@ -46,7 +46,6 @@ const Positions = ({
   const [showInactivePositions, setShowInactivePositions] =
     useLocalStorageState(SHOW_INACTIVE_POSITIONS_KEY, true)
   const { borrowBank, positions } = usePositions(showInactivePositions)
-  console.log(showInactivePositions)
 
   const numberOfPositions = useMemo(() => {
     if (!positions.length) return 0
@@ -138,11 +137,11 @@ const PositionItem = ({
     return [liqRatio, liqPriceChangePercentage.toFixed(2)]
   }, [bank, borrowBalance, borrowBank, stakeBalance])
 
-  const { estimatedNetAPY, borrowBankBorrowRate } = useBankRates(
+  const { estimatedNetAPY, stakeBankDepositRate } = useBankRates(
     bank.name,
     leverage,
   )
-  const uiRate = bank.name == 'USDC' ? borrowBankBorrowRate : estimatedNetAPY
+  const uiRate = bank.name == 'USDC' ? stakeBankDepositRate : estimatedNetAPY
 
   return (
     <div className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">

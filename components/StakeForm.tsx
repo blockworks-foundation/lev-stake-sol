@@ -96,7 +96,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     estimatedNetAPY,
     collateralFeeAPY
   } = useBankRates(selectedToken, leverage)
-  const leverageMax = useLeverageMax(selectedToken) * 0.95 // Multiplied by 0.975 becuase you cant actually get to the end of the inifinite geometric series?
+  const leverageMax = useLeverageMax(selectedToken) * 0.9 // Multiplied by 0.975 becuase you cant actually get to the end of the inifinite geometric series?
 
   const stakeBank = useMemo(() => {
     return group?.banksMapByName.get(selectedToken)?.[0]
