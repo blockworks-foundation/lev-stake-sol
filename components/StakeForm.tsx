@@ -34,7 +34,6 @@ import useBankRates from 'hooks/useBankRates'
 import { Disclosure } from '@headlessui/react'
 import SheenLoader from './shared/SheenLoader'
 import useLeverageMax from 'hooks/useLeverageMax'
-import { STAKEABLE_TOKENS_DATA } from 'utils/constants'
 import { sleep } from 'utils'
 
 const set = mangoStore.getState().set
