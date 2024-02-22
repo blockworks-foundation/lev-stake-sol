@@ -39,7 +39,7 @@ const Button: FunctionComponent<ButtonCombinedProps> = ({
           : size === 'large'
           ? 'h-14 px-8'
           : 'h-8 px-3'
-      } font-extrabold focus:outline-none disabled:cursor-not-allowed disabled:opacity-80 ${className}`}
+      } font-extrabold focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
       type={type}
       {...props}
     >
