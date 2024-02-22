@@ -37,11 +37,23 @@ export default function useBankRates(selectedToken: string, leverage: number) {
     return borrowBankStakeRate ? borrowBankStakeRate * leverage : 0
   }, [borrowBankStakeRate, leverage])
 
+  const estimatedMaxCollateralFee = useMemo(() => {
+    if(!stakeBank) return 0
+    return (stakeBank?.collateralFeePerDay * 365 * 100)
+  }, [stakeBank])
+
+  const collateralFeeAPY = useMemo(() => {
+    if (!stakeBank) return 0
+    const assetsCovered = ( (leverage - 1)) / leverage * Number(stakeBank?.maintAssetWeight)
+    const collateralFeeUI = estimatedMaxCollateralFee * assetsCovered * leverage
+    return collateralFeeUI
+  }, [stakeBank, leverage, estimatedMaxCollateralFee])
+
   const estimatedNetAPY = useMemo(() => {
     return (
-      borrowBankStakeRate * leverage - borrowBankBorrowRate * (leverage - 1)
+      borrowBankStakeRate * leverage - borrowBankBorrowRate * (leverage - 1) - collateralFeeAPY
     )
-  }, [borrowBankStakeRate, leverage, borrowBankBorrowRate])
+  }, [borrowBankStakeRate, leverage, borrowBankBorrowRate, collateralFeeAPY])
 
   // useEffect(() => {
   //   set((s) => {
@@ -53,8 +65,7 @@ export default function useBankRates(selectedToken: string, leverage: number) {
 
   const estimatedMaxAPY = useMemo(() => {
     return (
-      borrowBankStakeRate * leverageMax -
-      borrowBankBorrowRate * (leverageMax - 1)
+      borrowBankStakeRate * leverageMax - borrowBankBorrowRate * (leverageMax - 1)
     )
   }, [borrowBankStakeRate, borrowBankBorrowRate, leverageMax])
 
@@ -65,5 +76,6 @@ export default function useBankRates(selectedToken: string, leverage: number) {
     leveragedAPY,
     estimatedNetAPY,
     estimatedMaxAPY,
+    collateralFeeAPY
   }
 }
