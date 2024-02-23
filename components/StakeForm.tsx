@@ -175,9 +175,9 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     const actions = mangoStore.getState().actions
     const mangoAccount = mangoStore.getState().mangoAccount.current
     const mangoAccounts = mangoStore.getState().mangoAccounts;
-    const nextAccNumber = mangoAccounts.reduce((prev, current) => {
+    const nextAccNumber = (mangoAccounts.reduce((prev, current) => {
         return (prev.accountNum > current.accountNum) ? prev : current;
-    }, mangoAccounts[0]).accountNum + 1; 
+    }, mangoAccounts[0])?.accountNum + 1); 
 
     if (!group || !stakeBank || !publicKey) return
     console.log(mangoAccounts)
@@ -185,7 +185,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
       state.submittingBoost = true
     })
     try {
-      // const newAccountNum = getNextAccountNumber(mangoAccounts)
+      // const newAccountfNum = getNextAccountNumber(mangoAccounts)
       notify({
         title: 'Building transaction. This may take a moment.',
         type: 'info',
@@ -197,7 +197,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
         amountToBorrow,
         stakeBank.mint,
         parseFloat(inputAmount),
-        nextAccNumber || 0,
+        mangoAccounts ? nextAccNumber : 0,
       )
       notify({
         title: 'Transaction confirmed',
