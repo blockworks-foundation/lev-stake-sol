@@ -214,9 +214,22 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
     }
   }, [borrowBank, stakeBank, publicKey, inputAmount])
 
+  const [availableVaultBalance] = useMemo(() => {
+    if (!stakeBank || !group) return [0, 0]
+    const vaultBalance = group.getTokenVaultBalanceByMintUi(stakeBank.mint)
+    const vaultDeposits = stakeBank.uiDeposits()
+    const available =
+      vaultBalance - vaultDeposits * stakeBank.minVaultToDepositsRatio
+    return [available, vaultBalance]
+  }, [stakeBank, group])
+
   const showInsufficientBalance =
     tokenMax.maxAmount < Number(inputAmount) ||
     (selectedToken === 'USDC' && maxSolDeposit <= 0)
+
+  const lowVaultBalance =
+    tokenMax.maxAmount >= Number(inputAmount) &&
+    Number(inputAmount) > availableVaultBalance
 
   useEffect(() => {
     const group = mangoStore.getState().group
@@ -366,7 +379,10 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
           <Button
             onClick={handleWithdraw}
             className="w-full"
-            disabled={connected && (!inputAmount || showInsufficientBalance)}
+            disabled={
+              connected &&
+              (!inputAmount || showInsufficientBalance || lowVaultBalance)
+            }
             size="large"
           >
             {submitting ? (
@@ -397,6 +413,9 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
               </>
             }
           />
+        ) : null}
+        {lowVaultBalance ? (
+          <InlineNotification type="error" desc={<>Vault balance to low</>} />
         ) : null}
       </div>
     </>
