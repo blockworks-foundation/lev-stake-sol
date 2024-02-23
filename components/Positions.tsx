@@ -173,16 +173,16 @@ const PositionItem = ({
         <div>
           <p className="mb-1 text-th-fgd-4">Position Size</p>
           <span className="text-xl font-bold text-th-fgd-1">
-            <FormatNumericValue value={stakeBalance * bank?.uiPrice} decimals={3} />{' '}
+            <FormatNumericValue value={stakeBalance * bank?.uiPrice} decimals={2} />{' '}
             {'USDC'}
             {'    '}
             <span className='text-s' style={{ color: pnl >= 0 ? 'lightgreen' : 'red' }}>
-              (<FormatNumericValue value={pnl} decimals={3} />)
+              (<FormatNumericValue roundUp={true} value={pnl} decimals={2} />)
             </span>
           </span>
           {bank.name != 'USDC' ?
             <div className="text-m font-bold text-th-fgd-1">
-              <FormatNumericValue value={stakeBalance} decimals={3} />{' '}
+              <FormatNumericValue roundUp={true} value={stakeBalance} decimals={3} />{' '}
               {formatTokenSymbol(bank.name)}
             </div>
             :
