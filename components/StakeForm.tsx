@@ -35,6 +35,8 @@ import { Disclosure } from '@headlessui/react'
 import SheenLoader from './shared/SheenLoader'
 import useLeverageMax from 'hooks/useLeverageMax'
 import { sleep } from 'utils'
+import ButtonGroup from './forms/ButtonGroup'
+import Decimal from 'decimal.js'
 
 const set = mangoStore.getState().set
 
@@ -82,6 +84,7 @@ export const walletBalanceForToken = (
 function StakeForm({ token: selectedToken }: StakeFormProps) {
   const { t } = useTranslation(['common', 'account'])
   const [inputAmount, setInputAmount] = useState('')
+  const [sizePercentage, setSizePercentage] = useState('')
   const submitting = mangoStore((s) => s.submittingBoost)
   const [leverage, setLeverage] = useState(1)
   const [refreshingWalletTokens, setRefreshingWalletTokens] = useState(false)
@@ -93,7 +96,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     borrowBankBorrowRate,
     leveragedAPY,
     estimatedNetAPY,
-    collateralFeeAPY
+    collateralFeeAPY,
   } = useBankRates(selectedToken, leverage)
   const leverageMax = useLeverageMax(selectedToken) * 0.9 // Multiplied by 0.975 becuase you cant actually get to the end of the inifinite geometric series?
 
@@ -116,7 +119,6 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     return price
   }, [stakeBank, borrowBank, leverage])
 
-
   const tokenPositionsFull = useMemo(() => {
     if (!stakeBank || !usedTokens.length || !totalTokens.length) return false
     const hasTokenPosition = usedTokens.find(
@@ -137,6 +139,19 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     setInputAmount(max.toFixed())
   }, [tokenMax])
 
+  const handleSizePercentage = useCallback(
+    (percentage: string) => {
+      if (!stakeBank) return
+      setSizePercentage(percentage)
+      const amount = floorToDecimal(
+        new Decimal(percentage).div(100).mul(tokenMax.maxAmount),
+        stakeBank.mintDecimals,
+      )
+      setInputAmount(amount.toFixed())
+    },
+    [tokenMax, stakeBank],
+  )
+
   const amountToBorrow = useMemo(() => {
     const borrowPrice = borrowBank?.uiPrice
     const stakePrice = stakeBank?.uiPrice
@@ -145,7 +160,6 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
       stakeBank?.uiPrice * Number(inputAmount) * (leverage - 1)
     return borrowAmount
   }, [leverage, borrowBank, stakeBank, inputAmount])
-
 
   const handleRefreshWalletBalances = useCallback(async () => {
     if (!publicKey) return
@@ -159,7 +173,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     const client = mangoStore.getState().client
     const group = mangoStore.getState().group
     const actions = mangoStore.getState().actions
-    const mangoAccountsLength = (mangoStore.getState().mangoAccounts).length
+    const mangoAccountsLength = mangoStore.getState().mangoAccounts.length
     const mangoAccount = mangoStore.getState().mangoAccount.current
 
     if (!group || !stakeBank || !publicKey) return
@@ -289,6 +303,14 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                   </span>
                 </div>
               </div>
+            </div>
+            <div className="col-span-2 mt-2">
+              <ButtonGroup
+                activeValue={sizePercentage}
+                onChange={(p) => handleSizePercentage(p)}
+                values={['10', '25', '50', '75', '100']}
+                unit="%"
+              />
             </div>
           </div>
           <div className="mt-4">

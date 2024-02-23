@@ -148,7 +148,8 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
     const actions = mangoStore.getState().actions
     let mangoAccount = mangoStore.getState().mangoAccount.current
 
-    if (!group || !stakeBank || !borrowBank || !publicKey || !mangoAccount) return
+    if (!group || !stakeBank || !borrowBank || !publicKey || !mangoAccount)
+      return
 
     setSubmitting(true)
     try {
@@ -157,7 +158,10 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
           title: 'Sending transaction 1 of 2',
           type: 'info',
         })
-        console.log('unstake and swap', mangoAccount.getTokenBalanceUi(borrowBank))
+        console.log(
+          'unstake and swap',
+          mangoAccount.getTokenBalanceUi(borrowBank),
+        )
 
         const { signature: tx } = await unstakeAndSwap(
           client,
@@ -208,7 +212,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
         type: 'error',
       })
     }
-  }, [stakeBank, publicKey, inputAmount])
+  }, [borrowBank, stakeBank, publicKey, inputAmount])
 
   const showInsufficientBalance =
     tokenMax.maxAmount < Number(inputAmount) ||
@@ -296,29 +300,32 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
               <Disclosure>
                 {({ open }) => (
                   <>
-                    {stakeBank.name == 'USDC'
-                      ?
+                    {stakeBank.name == 'USDC' ? (
                       <></>
-                      :
-                      <>                    
-                      <Disclosure.Button className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${open ? 'rounded-b-none border-b-0' : '' }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <p className="font-medium">Staked Amount</p>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-lg font-bold text-th-fgd-1">
-                              <FormatNumericValue
-                                value={tokenMax.maxAmount}
-                                decimals={stakeBank.mintDecimals}
-                              />
-                            </span>
-                            <ChevronDownIcon
-                              className={`${open ? 'rotate-180' : ''
+                    ) : (
+                      <>
+                        <Disclosure.Button
+                          className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${
+                            open ? 'rounded-b-none border-b-0' : ''
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <p className="font-medium">Staked Amount</p>
+                            <div className="flex items-center space-x-2">
+                              <span className="text-lg font-bold text-th-fgd-1">
+                                <FormatNumericValue
+                                  value={tokenMax.maxAmount}
+                                  decimals={stakeBank.mintDecimals}
+                                />
+                              </span>
+                              <ChevronDownIcon
+                                className={`${
+                                  open ? 'rotate-180' : ''
                                 } h-6 w-6 shrink-0 text-th-fgd-1`}
-                            />
+                              />
+                            </div>
                           </div>
-                        </div>
-                      </Disclosure.Button>
+                        </Disclosure.Button>
                         <Disclosure.Panel className="space-y-2 rounded-xl rounded-t-none border-2 border-t-0 border-th-bkg-3 px-4 pb-3">
                           <div className="flex justify-between">
                             <p className="text-th-fgd-4">Staked Amount</p>
@@ -333,10 +340,11 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                             <p className="text-th-fgd-4">USDC borrowed</p>
                             {borrowBank ? (
                               <span
-                                className={`font-bold ${borrowed > 0.001
-                                  ? 'text-th-fgd-1'
-                                  : 'text-th-bkg-4'
-                                  }`}
+                                className={`font-bold ${
+                                  borrowed > 0.001
+                                    ? 'text-th-fgd-1'
+                                    : 'text-th-bkg-4'
+                                }`}
                               >
                                 <FormatNumericValue
                                   value={borrowed}
@@ -345,8 +353,9 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                               </span>
                             ) : null}
                           </div>
-                        </Disclosure.Panel></>
-                    }
+                        </Disclosure.Panel>
+                      </>
+                    )}
                   </>
                 )}
               </Disclosure>
