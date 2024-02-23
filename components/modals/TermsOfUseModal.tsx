@@ -19,7 +19,7 @@ const TermsOfUseModal = ({ isOpen, onClose }: ModalProps) => {
         testDiv.scrollTop = 0
       }
     }, 0)
-  })
+  }, [])
   return (
     <Modal
       isOpen={isOpen}
