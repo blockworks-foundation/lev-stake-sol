@@ -30,7 +30,7 @@ const TopBar = () => {
         <a
           className="flex items-center rounded bg-th-bkg-1 px-1.5 py-1 text-th-fgd-1"
           target="_blank"
-          href="https://lev-stake-sol-msol.vercel.app/"
+          href="https://boost-v1.mango.markets/"
           rel="noopener noreferrer"
         >
           <span className="mr-1.5 block font-bold leading-none">Boost! v1</span>
