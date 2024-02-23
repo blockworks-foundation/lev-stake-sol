@@ -56,8 +56,9 @@ const Positions = ({
   return (
     <>
       <div className="mb-2 flex items-center justify-between rounded-lg border-2 border-th-fgd-1 bg-th-bkg-1 px-6 py-3.5">
-        <p className="font-medium">{`You have ${numberOfPositions} active position${numberOfPositions !== 1 ? 's' : ''
-          }`}</p>
+        <p className="font-medium">{`You have ${numberOfPositions} active position${
+          numberOfPositions !== 1 ? 's' : ''
+        }`}</p>
         <Switch
           checked={showInactivePositions}
           onChange={(checked) => setShowInactivePositions(checked)}
@@ -98,7 +99,6 @@ const PositionItem = ({
 }) => {
   const { group } = useMangoGroup()
   const { stakeBalance, borrowBalance, bank, pnl, acct } = position
-  console.log(position.bank, borrowBank)
 
   const handleAddOrManagePosition = (token: string) => {
     setActiveTab('Boost!')
@@ -173,22 +173,31 @@ const PositionItem = ({
         <div>
           <p className="mb-1 text-th-fgd-4">Position Size</p>
           <span className="text-xl font-bold text-th-fgd-1">
-            <FormatNumericValue value={stakeBalance * bank?.uiPrice} decimals={2} />{' '}
+            <FormatNumericValue
+              value={stakeBalance * bank?.uiPrice}
+              decimals={2}
+            />{' '}
             {'USDC'}
             {'    '}
-            <span className='text-s' style={{ color: pnl >= 0 ? 'lightgreen' : 'red' }}>
+            <span
+              className="text-s"
+              style={{ color: pnl >= 0 ? 'lightgreen' : 'red' }}
+            >
               (<FormatNumericValue roundUp={true} value={pnl} decimals={2} />)
             </span>
           </span>
-          {bank.name != 'USDC' ?
+          {bank.name != 'USDC' ? (
             <div className="text-m font-bold text-th-fgd-1">
-              <FormatNumericValue roundUp={true} value={stakeBalance} decimals={3} />{' '}
+              <FormatNumericValue
+                roundUp={true}
+                value={stakeBalance}
+                decimals={3}
+              />{' '}
               {formatTokenSymbol(bank.name)}
             </div>
-            :
-            <div className="text-m font-bold text-th-fgd-1">
-            </div>
-          }
+          ) : (
+            <div className="text-m font-bold text-th-fgd-1"></div>
+          )}
         </div>
         <div>
           <p className="mb-1 text-th-fgd-4">Est. APY</p>

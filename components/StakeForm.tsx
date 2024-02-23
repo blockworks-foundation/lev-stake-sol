@@ -161,6 +161,15 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     return borrowAmount
   }, [leverage, borrowBank, stakeBank, inputAmount])
 
+  const [availableVaultBalance] = useMemo(() => {
+    if (!borrowBank || !group) return [0, 0]
+    const vaultBalance = group.getTokenVaultBalanceByMintUi(borrowBank.mint)
+    const vaultDeposits = borrowBank.uiDeposits()
+    const available =
+      vaultBalance - vaultDeposits * borrowBank.minVaultToDepositsRatio
+    return [available, vaultBalance]
+  }, [borrowBank, group])
+
   const handleRefreshWalletBalances = useCallback(async () => {
     if (!publicKey) return
     const actions = mangoStore.getState().actions
@@ -174,10 +183,11 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     const group = mangoStore.getState().group
     const actions = mangoStore.getState().actions
     const mangoAccount = mangoStore.getState().mangoAccount.current
-    const mangoAccounts = mangoStore.getState().mangoAccounts;
-    const nextAccNumber = (mangoAccounts.reduce((prev, current) => {
-        return (prev.accountNum > current.accountNum) ? prev : current;
-    }, mangoAccounts[0])?.accountNum + 1); 
+    const mangoAccounts = mangoStore.getState().mangoAccounts
+    const nextAccNumber =
+      mangoAccounts.reduce((prev, current) => {
+        return prev.accountNum > current.accountNum ? prev : current
+      }, mangoAccounts[0])?.accountNum + 1
 
     if (!group || !stakeBank || !publicKey) return
     console.log(mangoAccounts)
@@ -256,6 +266,19 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
             setAmount={setInputAmount}
             selectedToken={selectedToken}
           />
+          {availableVaultBalance < amountToBorrow && borrowBank && (
+            <div className="mb-4">
+              <InlineNotification
+                type="warning"
+                desc={
+                  <div>
+                    The available {borrowBank?.name} vault balance is low and
+                    impacting the maximum amount you can <span>borrow</span>
+                  </div>
+                }
+              />
+            </div>
+          )}
           <div className="grid grid-cols-2">
             <div className="col-span-2 flex justify-between">
               <Label text="Amount" />
@@ -501,7 +524,13 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
           <Button
             onClick={handleDeposit}
             className="w-full"
-            disabled={connected && (!inputAmount || Number(inputAmount) == 0 || showInsufficientBalance)}
+            disabled={
+              connected &&
+              (!inputAmount ||
+                Number(inputAmount) == 0 ||
+                showInsufficientBalance ||
+                (borrowBank && availableVaultBalance < amountToBorrow))
+            }
             size="large"
           >
             {submitting ? (
