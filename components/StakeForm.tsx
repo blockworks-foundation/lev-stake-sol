@@ -498,7 +498,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
           <Button
             onClick={handleDeposit}
             className="w-full"
-            disabled={connected && (!inputAmount || showInsufficientBalance)}
+            disabled={connected && (!inputAmount || Number(inputAmount) == 0 || showInsufficientBalance)}
             size="large"
           >
             {submitting ? (
