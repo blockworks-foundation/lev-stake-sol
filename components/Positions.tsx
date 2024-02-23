@@ -22,7 +22,7 @@ const set = mangoStore.getState().set
 type Position = {
   borrowBalance: number
   stakeBalance: number
-  pnlPerc: number
+  pnl: number
   bank: Bank
   acct: MangoAccount | undefined
 }
@@ -97,7 +97,7 @@ const PositionItem = ({
   borrowBank: Bank | undefined
 }) => {
   const { group } = useMangoGroup()
-  const { stakeBalance, borrowBalance, bank, pnlPerc, acct } = position
+  const { stakeBalance, borrowBalance, bank, pnl, acct } = position
   console.log(position.bank, borrowBank)
 
   const handleAddOrManagePosition = (token: string) => {
@@ -176,8 +176,8 @@ const PositionItem = ({
             <FormatNumericValue value={stakeBalance * bank?.uiPrice} decimals={3} />{' '}
             {'USDC'}
             {'    '}
-            <span className='text-s' style={{ color: pnlPerc >= 0 ? 'lightgreen' : 'red' }}>
-              (<FormatNumericValue value={pnlPerc} decimals={2} />%)
+            <span className='text-s' style={{ color: pnl >= 0 ? 'lightgreen' : 'red' }}>
+              (<FormatNumericValue value={pnl} decimals={3} />)
             </span>
           </span>
           {bank.name != 'USDC' ?

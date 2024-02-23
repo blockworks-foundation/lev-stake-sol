@@ -30,12 +30,10 @@ export default function usePositions(showInactive = false) {
     for (const bank of banks) {
       if (!bank || !group) continue
       const acct = stakeAccounts?.find((acc) => acc.getTokenBalanceUi(bank) > 0)
-      const price = acct ? bank.uiPrice : 0
       const stakeBalance = acct ? acct.getTokenBalanceUi(bank) : 0
       const pnl = acct ? toUiDecimalsForQuote(acct.getPnl(group).toNumber()) : 0
-      const pnlPerc = stakeBalance > 0 ? (100 * pnl)/(price * stakeBalance - pnl) : 0
       const borrowBalance = acct && borrowBank ? acct.getTokenBalanceUi(borrowBank) : 0
-      positions.push({ borrowBalance, stakeBalance, bank, pnl, pnlPerc, acct })
+      positions.push({ borrowBalance, stakeBalance, bank, pnl, acct })
     }
     const sortedPositions = positions.sort(
       (a, b) => b.stakeBalance - a.stakeBalance,
