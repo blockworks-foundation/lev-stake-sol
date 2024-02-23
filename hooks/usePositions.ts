@@ -2,6 +2,9 @@ import { useMemo } from 'react'
 import { BORROW_TOKEN, STAKEABLE_TOKENS } from 'utils/constants'
 import useStakeAccounts from './useStakeAccounts'
 import useMangoGroup from './useMangoGroup'
+import {
+  toUiDecimalsForQuote,
+} from '@blockworks-foundation/mango-v4'
 
 export default function usePositions(showInactive = false) {
   const { stakeAccounts } = useStakeAccounts()
@@ -25,11 +28,14 @@ export default function usePositions(showInactive = false) {
     const positions = []
 
     for (const bank of banks) {
-      if (!bank) continue
+      if (!bank || !group) continue
       const acct = stakeAccounts?.find((acc) => acc.getTokenBalanceUi(bank) > 0)
+      const price = acct ? bank.uiPrice : 0
       const stakeBalance = acct ? acct.getTokenBalanceUi(bank) : 0
+      const pnl = acct ? toUiDecimalsForQuote(acct.getPnl(group).toNumber()) : 0
+      const pnlPerc = stakeBalance > 0 ? (100 * pnl)/(price * stakeBalance - pnl) : 0
       const borrowBalance = acct && borrowBank ? acct.getTokenBalanceUi(borrowBank) : 0
-      positions.push({ borrowBalance, stakeBalance, bank, acct })
+      positions.push({ borrowBalance, stakeBalance, bank, pnl, pnlPerc, acct })
     }
     const sortedPositions = positions.sort(
       (a, b) => b.stakeBalance - a.stakeBalance,
@@ -37,7 +43,7 @@ export default function usePositions(showInactive = false) {
     return showInactive
       ? sortedPositions
       : sortedPositions.filter((pos) => pos.stakeBalance > 0)
-  }, [banks, showInactive, stakeAccounts, borrowBank])
+  }, [banks, showInactive, stakeAccounts, group, borrowBank])
 
   return { borrowBank, positions }
 }

@@ -55,9 +55,8 @@ const Positions = ({
   return (
     <>
       <div className="mb-2 flex items-center justify-between rounded-lg border-2 border-th-fgd-1 bg-th-bkg-1 px-6 py-3.5">
-        <p className="font-medium">{`You have ${numberOfPositions} active position${
-          numberOfPositions !== 1 ? 's' : ''
-        }`}</p>
+        <p className="font-medium">{`You have ${numberOfPositions} active position${numberOfPositions !== 1 ? 's' : ''
+          }`}</p>
         <Switch
           checked={showInactivePositions}
           onChange={(checked) => setShowInactivePositions(checked)}
@@ -97,7 +96,7 @@ const PositionItem = ({
   borrowBank: Bank | undefined
 }) => {
   const { group } = useMangoGroup()
-  const { stakeBalance, borrowBalance, bank, acct } = position
+  const { stakeBalance, borrowBalance, bank, pnlPerc, acct } = position
   console.log(position.bank, borrowBank)
 
   const handleAddOrManagePosition = (token: string) => {
@@ -173,9 +172,22 @@ const PositionItem = ({
         <div>
           <p className="mb-1 text-th-fgd-4">Position Size</p>
           <span className="text-xl font-bold text-th-fgd-1">
-            <FormatNumericValue value={stakeBalance} decimals={6} />{' '}
-            {formatTokenSymbol(bank.name)}
+            <FormatNumericValue value={stakeBalance * bank?.uiPrice} decimals={3} />{' '}
+            {'USDC'}
+            {'    '}
+            <span className='text-s' style={{ color: pnlPerc >= 0 ? 'lightgreen' : 'red' }}>
+              (<FormatNumericValue value={pnlPerc} decimals={2} />%)
+            </span>
           </span>
+          {bank.name != 'USDC' ?
+            <div className="text-m font-bold text-th-fgd-1">
+              <FormatNumericValue value={stakeBalance} decimals={3} />{' '}
+              {formatTokenSymbol(bank.name)}
+            </div>
+            :
+            <div className="text-m font-bold text-th-fgd-1">
+            </div>
+          }
         </div>
         <div>
           <p className="mb-1 text-th-fgd-4">Est. APY</p>
