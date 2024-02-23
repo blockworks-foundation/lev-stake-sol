@@ -37,6 +37,7 @@ import useLeverageMax from 'hooks/useLeverageMax'
 import { sleep } from 'utils'
 import ButtonGroup from './forms/ButtonGroup'
 import Decimal from 'decimal.js'
+import { toUiDecimals } from '@blockworks-foundation/mango-v4'
 
 const set = mangoStore.getState().set
 
@@ -89,6 +90,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   const [leverage, setLeverage] = useState(1)
   const [refreshingWalletTokens, setRefreshingWalletTokens] = useState(false)
   const { maxSolDeposit } = useSolBalance()
+
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { group } = useMangoGroup()
   const groupLoaded = mangoStore((s) => s.groupLoaded)
@@ -245,6 +247,17 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     tokenMax.maxAmount < Number(inputAmount) ||
     (selectedToken === 'USDC' && maxSolDeposit <= 0)
 
+  const tokenDepositLimitLeft = stakeBank?.getRemainingDepositLimit()
+  const tokenDepositLimitLeftUi =
+    stakeBank && tokenDepositLimitLeft
+      ? toUiDecimals(tokenDepositLimitLeft, stakeBank?.mintDecimals)
+      : null
+
+  const depositLimitExceeded =
+    tokenDepositLimitLeftUi !== null
+      ? Number(inputAmount) > tokenDepositLimitLeftUi
+      : false
+
   const changeLeverage = useCallback((v: number) => {
     setLeverage(v * 1)
   }, [])
@@ -274,6 +287,19 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                   <div>
                     The available {borrowBank?.name} vault balance is low and
                     impacting the maximum amount you can <span>borrow</span>
+                  </div>
+                }
+              />
+            </div>
+          )}
+          {depositLimitExceeded && (
+            <div className="mb-4">
+              <InlineNotification
+                type="warning"
+                desc={
+                  <div>
+                    Deposit limit exceeded limit left {tokenDepositLimitLeftUi}{' '}
+                    {stakeBank?.name}
                   </div>
                 }
               />
@@ -529,7 +555,8 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
               (!inputAmount ||
                 Number(inputAmount) == 0 ||
                 showInsufficientBalance ||
-                (borrowBank && availableVaultBalance < amountToBorrow))
+                (borrowBank && availableVaultBalance < amountToBorrow) ||
+                depositLimitExceeded)
             }
             size="large"
           >
