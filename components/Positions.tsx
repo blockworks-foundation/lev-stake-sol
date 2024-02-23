@@ -22,6 +22,7 @@ const set = mangoStore.getState().set
 type Position = {
   borrowBalance: number
   stakeBalance: number
+  pnlPerc: number
   bank: Bank
   acct: MangoAccount | undefined
 }
