@@ -11,6 +11,10 @@ import { useTranslation } from 'next-i18next'
 import TermsOfUseModal from './modals/TermsOfUseModal'
 import SunburstBackground from './SunburstBackground'
 import Footer from './Footer'
+import useIpAddress from 'hooks/useIpAddress'
+import RestrictedCountryModal from './shared/RestrictedCountryModal'
+
+export const NON_RESTRICTED_JURISDICTION_KEY = 'non-restricted-jurisdiction-0.1'
 
 export const sideBarAnimationDuration = 300
 const termsLastUpdated = 1679441610978
@@ -21,6 +25,25 @@ const Layout = ({ children }: { children: ReactNode }) => {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
   if (!mounted) return null
+
+  // this will only show if the ip api doesn't return the country
+  const RestrictedCountryCheck = () => {
+    const { ipCountry, loadingIpCountry } = useIpAddress()
+    const [confirmedCountry, setConfirmedCountry] = useLocalStorageState(
+      NON_RESTRICTED_JURISDICTION_KEY,
+      false,
+    )
+    const showModal = useMemo(() => {
+      return !confirmedCountry && !ipCountry && !loadingIpCountry
+    }, [confirmedCountry, ipCountry, loadingIpCountry])
+
+    return showModal ? (
+      <RestrictedCountryModal
+        isOpen={showModal}
+        onClose={() => setConfirmedCountry(true)}
+      />
+    ) : null
+  }
 
   return (
     <main
@@ -37,6 +60,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
           </div>
           <DeployRefreshManager />
           <TermsOfUse />
+          <RestrictedCountryCheck />
         </div>
       </div>
     </main>

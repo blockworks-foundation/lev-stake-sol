@@ -28,6 +28,7 @@ import SheenLoader from './shared/SheenLoader'
 import { sleep } from 'utils'
 import ButtonGroup from './forms/ButtonGroup'
 import Decimal from 'decimal.js'
+import useIpAddress from 'hooks/useIpAddress'
 
 const set = mangoStore.getState().set
 
@@ -84,6 +85,7 @@ function DespositForm({ token: selectedToken }: StakeFormProps) {
   const { connected, publicKey } = useWallet()
   const walletTokens = mangoStore((s) => s.wallet.tokens)
   const [sizePercentage, setSizePercentage] = useState('')
+  const { ipAllowed } = useIpAddress()
 
   const depositBank = useMemo(() => {
     return group?.banksMapByName.get(selectedToken)?.[0]
@@ -115,6 +117,9 @@ function DespositForm({ token: selectedToken }: StakeFormProps) {
   }, [depositBank, usedTokens, totalTokens])
 
   const handleDeposit = useCallback(async () => {
+    if (!ipAllowed) {
+      return
+    }
     const client = mangoStore.getState().client
     const group = mangoStore.getState().group
     const actions = mangoStore.getState().actions
@@ -272,7 +277,10 @@ function DespositForm({ token: selectedToken }: StakeFormProps) {
           <Button
             onClick={handleDeposit}
             className="w-full"
-            disabled={connected && (!inputAmount || showInsufficientBalance)}
+            disabled={
+              connected &&
+              (!inputAmount || showInsufficientBalance || !ipAllowed)
+            }
             size="large"
           >
             {submitting ? (
@@ -284,8 +292,10 @@ function DespositForm({ token: selectedToken }: StakeFormProps) {
                   symbol: selectedToken,
                 })}
               </div>
-            ) : (
+            ) : ipAllowed ? (
               `Boost! ${inputAmount} ${formatTokenSymbol(selectedToken)}`
+            ) : (
+              'Country not allowed'
             )}
           </Button>
         ) : (

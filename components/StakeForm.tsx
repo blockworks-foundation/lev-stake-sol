@@ -38,6 +38,7 @@ import { sleep } from 'utils'
 import ButtonGroup from './forms/ButtonGroup'
 import Decimal from 'decimal.js'
 import { toUiDecimals } from '@blockworks-foundation/mango-v4'
+import useIpAddress from 'hooks/useIpAddress'
 
 const set = mangoStore.getState().set
 
@@ -90,6 +91,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   const [leverage, setLeverage] = useState(1)
   const [refreshingWalletTokens, setRefreshingWalletTokens] = useState(false)
   const { maxSolDeposit } = useSolBalance()
+  const { ipAllowed } = useIpAddress()
 
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { group } = useMangoGroup()
@@ -181,6 +183,9 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   }, [publicKey])
 
   const handleDeposit = useCallback(async () => {
+    if (!ipAllowed) {
+      return
+    }
     const client = mangoStore.getState().client
     const group = mangoStore.getState().group
     const actions = mangoStore.getState().actions
@@ -241,7 +246,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
         type: 'error',
       })
     }
-  }, [stakeBank, publicKey, inputAmount, amountToBorrow])
+  }, [ipAllowed, stakeBank, publicKey, amountToBorrow, inputAmount])
 
   const showInsufficientBalance =
     tokenMax.maxAmount < Number(inputAmount) ||
@@ -556,7 +561,8 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                 Number(inputAmount) == 0 ||
                 showInsufficientBalance ||
                 (borrowBank && availableVaultBalance < amountToBorrow) ||
-                depositLimitExceeded)
+                depositLimitExceeded ||
+                !ipAllowed)
             }
             size="large"
           >
@@ -569,8 +575,10 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                   symbol: selectedToken,
                 })}
               </div>
-            ) : (
+            ) : ipAllowed ? (
               `Boost! ${inputAmount} ${formatTokenSymbol(selectedToken)}`
+            ) : (
+              'Country not allowed'
             )}
           </Button>
         ) : (

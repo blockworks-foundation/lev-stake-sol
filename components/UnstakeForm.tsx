@@ -37,6 +37,7 @@ import ButtonGroup from './forms/ButtonGroup'
 import Decimal from 'decimal.js'
 import { Disclosure } from '@headlessui/react'
 import { sleep } from 'utils'
+import useIpAddress from 'hooks/useIpAddress'
 
 const set = mangoStore.getState().set
 
@@ -79,6 +80,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { group } = useMangoGroup()
   const { mangoAccount } = useMangoAccount()
+  const { ipAllowed } = useIpAddress()
 
   const stakeBank = useMemo(() => {
     return group?.banksMapByName.get(selectedToken)?.[0]
@@ -143,6 +145,9 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
   }, [borrowBank, mangoAccount])
 
   const handleWithdraw = useCallback(async () => {
+    if (!ipAllowed) {
+      return
+    }
     const client = mangoStore.getState().client
     const group = mangoStore.getState().group
     const actions = mangoStore.getState().actions
@@ -394,8 +399,10 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                   symbol: formatTokenSymbol(selectedToken),
                 })}
               </div>
-            ) : (
+            ) : ipAllowed ? (
               `Unboost ${inputAmount} ${formatTokenSymbol(selectedToken)}`
+            ) : (
+              'Country not allowed'
             )}
           </Button>
         ) : (

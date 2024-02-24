@@ -37,6 +37,7 @@ import ButtonGroup from './forms/ButtonGroup'
 import Decimal from 'decimal.js'
 import { Disclosure } from '@headlessui/react'
 import { sleep } from 'utils'
+import useIpAddress from 'hooks/useIpAddress'
 
 const set = mangoStore.getState().set
 
@@ -69,6 +70,7 @@ function WithdrawForm({ token: selectedToken }: UnstakeFormProps) {
   const { t } = useTranslation(['common', 'account'])
   const [inputAmount, setInputAmount] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const { ipAllowed } = useIpAddress()
   // const [selectedToken, setSelectedToken] = useState(
   //   token || INPUT_TOKEN_DEFAULT,
   // )
@@ -143,6 +145,9 @@ function WithdrawForm({ token: selectedToken }: UnstakeFormProps) {
   }, [borrowBank, mangoAccount])
 
   const handleWithdraw = useCallback(async () => {
+    if (!ipAllowed) {
+      return
+    }
     const client = mangoStore.getState().client
     const group = mangoStore.getState().group
     const actions = mangoStore.getState().actions
@@ -357,7 +362,10 @@ function WithdrawForm({ token: selectedToken }: UnstakeFormProps) {
           <Button
             onClick={handleWithdraw}
             className="w-full"
-            disabled={connected && (!inputAmount || showInsufficientBalance)}
+            disabled={
+              connected &&
+              (!inputAmount || showInsufficientBalance || !ipAllowed)
+            }
             size="large"
           >
             {submitting ? (
@@ -369,8 +377,10 @@ function WithdrawForm({ token: selectedToken }: UnstakeFormProps) {
                   symbol: formatTokenSymbol(selectedToken),
                 })}
               </div>
+            ) : ipAllowed ? (
+              `Boost! ${inputAmount} ${formatTokenSymbol(selectedToken)}`
             ) : (
-              `Unboost ${inputAmount} ${formatTokenSymbol(selectedToken)}`
+              'Country not allowed'
             )}
           </Button>
         ) : (
