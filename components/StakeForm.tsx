@@ -93,7 +93,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   const { maxSolDeposit } = useSolBalance()
   const { ipAllowed } = useIpAddress()
 
-  const storedLeverage = mangoStore((s) => s.leverage);
+  const storedLeverage = mangoStore((s) => s.leverage)
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { group } = useMangoGroup()
   const groupLoaded = mangoStore((s) => s.groupLoaded)
@@ -167,13 +167,15 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   }, [leverage, borrowBank, stakeBank, inputAmount])
 
   const availableVaultBalance = useMemo(() => {
-    if (!borrowBank || !group) return 0;
-    const maxUtilization = 1 - borrowBank.minVaultToDepositsRatio;
-    const vaultBorrows = borrowBank.uiBorrows();
-    const vaultDeposits = borrowBank.uiDeposits();
-    const loanOriginationFeeFactor = 1 - borrowBank.loanOriginationFeeRate.toNumber() - 1e-6;
-    const available = (maxUtilization * vaultDeposits - vaultBorrows) * loanOriginationFeeFactor;
-    return available;
+    if (!borrowBank || !group) return 0
+    const maxUtilization = 1 - borrowBank.minVaultToDepositsRatio
+    const vaultBorrows = borrowBank.uiBorrows()
+    const vaultDeposits = borrowBank.uiDeposits()
+    const loanOriginationFeeFactor =
+      1 - borrowBank.loanOriginationFeeRate.toNumber() - 1e-6
+    const available =
+      (maxUtilization * vaultDeposits - vaultBorrows) * loanOriginationFeeFactor
+    return available
   }, [borrowBank, group])
 
   const handleRefreshWalletBalances = useCallback(async () => {
@@ -271,9 +273,9 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     if (Math.round(v) != storedLeverage) {
       set((state) => {
         state.leverage = Math.round(v)
-      });
+      })
     }
-  };
+  }
 
   useEffect(() => {
     const group = mangoStore.getState().group
