@@ -219,14 +219,10 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
     }
   }, [borrowBank, stakeBank, publicKey, inputAmount])
 
-  const [availableVaultBalance] = useMemo(() => {
-    if (!stakeBank || !group) return [0, 0]
-    const vaultBalance = group.getTokenVaultBalanceByMintUi(stakeBank.mint)
-    const vaultDeposits = stakeBank.uiDeposits()
-    const available =
-      vaultBalance - vaultDeposits * stakeBank.minVaultToDepositsRatio
-    return [available, vaultBalance]
-  }, [stakeBank, group])
+  const maxWithdraw =
+    group && mangoAccount && stakeBank
+      ? mangoAccount.getMaxWithdrawWithBorrowForTokenUi(group, stakeBank.mint)
+      : 0
 
   const showInsufficientBalance =
     tokenMax.maxAmount < Number(inputAmount) ||
@@ -234,7 +230,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
 
   const lowVaultBalance =
     tokenMax.maxAmount >= Number(inputAmount) &&
-    Number(inputAmount) > availableVaultBalance
+    Number(inputAmount) > maxWithdraw
 
   useEffect(() => {
     const group = mangoStore.getState().group
