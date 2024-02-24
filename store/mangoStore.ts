@@ -160,6 +160,7 @@ export type MangoStore = {
   groupLoaded: boolean
   client: MangoClient
   showUserSetup: boolean
+  leverage: number
   mangoAccount: {
     current: MangoAccount | undefined
     initialLoad: boolean
@@ -324,6 +325,7 @@ const mangoStore = create<MangoStore>()(
       groupLoaded: false,
       client,
       showUserSetup: false,
+      leverage: 1,
       mangoAccount: {
         current: undefined,
         initialLoad: true,

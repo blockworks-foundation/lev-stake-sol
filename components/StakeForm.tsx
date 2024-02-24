@@ -93,6 +93,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   const { maxSolDeposit } = useSolBalance()
   const { ipAllowed } = useIpAddress()
 
+  const storedLeverage = mangoStore((s) => s.leverage);
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { group } = useMangoGroup()
   const groupLoaded = mangoStore((s) => s.groupLoaded)
@@ -263,9 +264,15 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
       ? Number(inputAmount) > tokenDepositLimitLeftUi
       : false
 
-  const changeLeverage = useCallback((v: number) => {
+  const changeLeverage = (v: number) => {
     setLeverage(v * 1)
-  }, [])
+
+    if (Math.round(v) != storedLeverage) {
+      set((state) => {
+        state.leverage = Math.round(v)
+      });
+    }
+  };
 
   useEffect(() => {
     const group = mangoStore.getState().group

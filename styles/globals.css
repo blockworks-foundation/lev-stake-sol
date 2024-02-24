@@ -439,10 +439,22 @@ table p {
   }
 }
 
-.rotate-bg-fast {
-  animation: rotate-bg 25s linear infinite;
+.rotate-bg-1x {
+  animation: rotate-bg 720s linear infinite;
 }
 
-.rotate-bg-slow {
-  animation: rotate-bg 720s linear infinite;
+.rotate-bg-2x {
+  animation: rotate-bg 40s linear infinite;
+}
+
+.rotate-bg-3x {
+  animation: rotate-bg 20s linear infinite;
+}
+
+.rotate-bg-4x {
+  animation: rotate-bg 7s linear infinite;
+}
+
+.rotate-bg-5x {
+  animation: rotate-bg 3s linear infinite;
 }

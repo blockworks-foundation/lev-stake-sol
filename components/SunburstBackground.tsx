@@ -1,8 +1,13 @@
+import mangoStore from "@store/mangoStore";
+
 const SunburstBackground = ({ className }: { className?: string }) => {
+
+  const storedLeverage = mangoStore((s) => s.leverage);
+
   return (
     <div className="fixed inset-0 flex w-[200%] -translate-x-1/4 items-center justify-center overflow-hidden">
       <svg
-        className={`${className} rotate-bg-slow`}
+        className={`${className} rotate-bg-${storedLeverage}x`}
         height="3000"
         width="3000"
         xmlns="http://www.w3.org/2000/svg"
