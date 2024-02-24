@@ -25,7 +25,7 @@ const fetchRates = async () => {
   const lidoRange = getPriceRangeFromPeriod(lidoPrices, PERIOD.DAYS_30)
 
   const rateData: Record<string, number> = {}
-  rateData.jlp = 12 * (jlpPricesPrice[jlpPricesPrice.length - 2] - jlpPricesPrice[0]) / jlpPricesPrice[0]
+  rateData.jlp = 12 * (jlpPricesPrice[jlpPricesPrice.length - 2] - jlpPricesPrice[1]) / jlpPricesPrice[1]
 
   if (msolRange) {
     rateData.msol = calcYield(msolRange)?.apy
