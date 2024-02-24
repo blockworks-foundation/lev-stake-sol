@@ -6,12 +6,10 @@ const FAQS = [
     question: 'How does Boost! work?',
     answer: (
       <p>
-        Boost! allows you to increase your position size by borrowing SOL and
-        swapping it to your chosen staking token. This means you earn more yield
-        from the staking token because you have a larger position size. As long
-        as this yield exceeds the rate of the SOL borrow you earn a premium and
-        because the staking token price downside is highly correlated to SOL
-        there is a lower risk of liquidation.
+        Boost! allows you to increase your position size by borrowing USDC and
+        swapping it into JLP. This means you earn more yield from the JLP pool
+        because you have a larger position size. As long as this yield exceeds
+        the rate of the USDC borrow you earn a premium.
       </p>
     ),
   },
@@ -19,9 +17,9 @@ const FAQS = [
     question: 'How does unboosting work?',
     answer: (
       <p>
-        Unboosting works by selling your staking token to repay your SOL borrow
-        and withdrawing to your wallet. The staking token price increases vs SOL
-        over time so the longer you hold the position the more yield you earn.
+        Unboosting works by selling your JLP tokens to repay your USDC borrow
+        and withdrawing to your wallet. The JLP price increases vs USDC over
+        time so the longer you hold the position the more yield you earn.
       </p>
     ),
   },
@@ -42,20 +40,18 @@ const FAQS = [
           also possible for a bug in the UI to affect the ability to open and
           close positions in a timely manner.
         </p>
-        <h4>Price Depeg</h4>
+        <h4>Price Action</h4>
         <p>
-          It&apos;s possible for the staking token price to diverge
-          significantly from the SOL price. A large drop in price could result
-          in postions being liquidated. Positions with higher leverage are more
-          exposed to this risk.
+          It&apos;s possible for the price of JLP to fluctuate. A large drop in
+          price could result in postions being liquidated. Positions with higher
+          leverage are more exposed to this risk.
         </p>
         <h4>Liquidity</h4>
         <p>
-          Opening and closing positions on Boost! relies on swapping between the
-          staking tokens and SOL without significant price impact. During an
-          extreme market event there could be issues liquidating position
-          effectively. This could affect the liquidity available to open/close
-          positions.
+          Opening and closing positions on Boost! relies on swapping between JLP
+          and USDC without significant price impact. During an extreme market
+          event there could be issues liquidating position effectively. This
+          could affect the liquidity available to open/close positions.
         </p>
         <h4>Oracles</h4>
         <p>
@@ -66,11 +62,11 @@ const FAQS = [
         </p>
         <h4>Yield Duration</h4>
         <p>
-          When you borrow SOL to open a position on Boost! you&apos;ll be paying
-          interest on the borrowed amount instantaneously. The staking rewards
-          of the staking tokens is paid on a longer duration. This means you
-          could open a position and close it before earning any staking rewards
-          whilst paying interest to borrow SOL.
+          When you borrow USDC to open a position on Boost! you&apos;ll be
+          paying interest on the borrowed amount instantaneously. The JLP yield
+          accrues over a longer duration. This means you could open a position
+          and close it before earning any staking rewards whilst paying interest
+          to borrow USDC.
         </p>
       </>
     ),
@@ -79,25 +75,29 @@ const FAQS = [
     question: 'Where does the yield come from?',
     answer: (
       <p>
-        Every epoch the price of each staking token rises vs SOL. Boost!
-        increases the position size of your staking token by borrowing SOL. This
-        means you earn more of the staking reward every epoch. It&apos;s
-        important to account for the cost of borrowing SOL. This is displayed in
-        the UI.
+        The JLP token earns a portion of the fees collected by the Jupiter
+        perpetuals exchange.{' '}
+        <a
+          href="https://station.jup.ag/labs/perpetual-exchange/jlp-pool"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn more about JLP here
+        </a>
       </p>
     ),
   },
-  {
-    question: 'Why is the max leverage different between tokens?',
-    answer: (
-      <p>
-        The Mango v4 program has a safety mechanism that reduces the leverage
-        available to tokens depending on how much of that token is deposited.
-        When the notional value of deposits exceeds this value the leverage is
-        scaled down.
-      </p>
-    ),
-  },
+  // {
+  //   question: 'Why is the max leverage different between tokens?',
+  //   answer: (
+  //     <p>
+  //       The Mango v4 program has a safety mechanism that reduces the leverage
+  //       available to tokens depending on how much of that token is deposited.
+  //       When the notional value of deposits exceeds this value the leverage is
+  //       scaled down.
+  //     </p>
+  //   ),
+  // },
   {
     question: 'Why is my Ledger not working with Boost!?',
     answer: (
@@ -129,7 +129,7 @@ const FAQS = [
           target="_blank"
           rel="noopener noreferrer"
         >
-          Mango Dao
+          Mango DAO
         </a>
         .
       </p>
