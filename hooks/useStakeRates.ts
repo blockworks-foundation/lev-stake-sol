@@ -15,7 +15,7 @@ const fetchRates = async () => {
     fetchAndParsePricesCsv(DATA_SOURCE.LIDO_CSV),
   ])
 
-  const jlpPricesData = await (await fetch(`https://api.coingecko.com/api/v3/coins/jupiter-perpetuals-liquidity-provider-token/market_chart?vs_currency=usd&days=30`)).json();
+  const jlpPricesData = await (await fetch(`https://api.coingecko.com/api/v3/coins/jupiter-perpetuals-liquidity-provider-token/market_chart?vs_currency=usd&days=30&interval=daily`)).json();
   const jlpPricesPrice = jlpPricesData.prices.map((priceAndTime: Array<Number>) => priceAndTime[1])
 
   // may be null if the price range cannot be calculated
