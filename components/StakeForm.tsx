@@ -166,13 +166,14 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     return borrowAmount
   }, [leverage, borrowBank, stakeBank, inputAmount])
 
-  const [availableVaultBalance] = useMemo(() => {
-    if (!borrowBank || !group) return [0, 0]
-    const vaultBalance = group.getTokenVaultBalanceByMintUi(borrowBank.mint)
-    const vaultDeposits = borrowBank.uiDeposits()
-    const available =
-      vaultBalance - vaultDeposits * borrowBank.minVaultToDepositsRatio
-    return [available, vaultBalance]
+  const availableVaultBalance = useMemo(() => {
+    if (!borrowBank || !group) return 0;
+    const maxUtilization = 1 - borrowBank.minVaultToDepositsRatio;
+    const vaultBorrows = borrowBank.uiBorrows();
+    const vaultDeposits = borrowBank.uiDeposits();
+    const loanOriginationFeeFactor = 1 - borrowBank.loanOriginationFeeRate.toNumber() - 1e-6;
+    const available = (maxUtilization * vaultDeposits - vaultBorrows) * loanOriginationFeeFactor;
+    return available;
   }, [borrowBank, group])
 
   const handleRefreshWalletBalances = useCallback(async () => {
