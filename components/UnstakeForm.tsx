@@ -229,10 +229,8 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
     (selectedToken === 'USDC' && maxSolDeposit <= 0)
 
   const lowVaultBalance =
-    tokenMax.maxAmount.toFixed(5) > Number(inputAmount).toFixed(5) &&
+    Math.floor(tokenMax.maxAmount * 100000) > Math.floor(Number(inputAmount) * 100000) &&
     Number(inputAmount) > maxWithdraw
-
-  console.log(tokenMax.maxAmount.toFixed(5), Number(inputAmount).toFixed(5), maxWithdraw )
 
   useEffect(() => {
     const group = mangoStore.getState().group
