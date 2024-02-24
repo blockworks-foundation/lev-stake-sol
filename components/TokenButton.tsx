@@ -19,7 +19,7 @@ const TokenButton = ({
     leverage,
   )
 
-  const UiRate = tokenName == 'USDC' ? stakeBankDepositRate : estimatedNetAPY
+  const UiRate = tokenName === 'USDC' ? stakeBankDepositRate : Math.max(stakeBankDepositRate, estimatedNetAPY);
 
   return (
     <button
