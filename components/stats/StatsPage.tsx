@@ -25,35 +25,40 @@ const StatsPage = () => {
       <h1>Stats</h1>
       <div className="space-y-2">
         {banks.map((bank) => (
-          <div
-            className="flex flex-col pt-4 md:flex-row md:items-center md:justify-between"
-            key={bank.name}
-          >
-            <div className="mb-4 flex items-center space-x-3 md:mb-0">
-              <div
-                className={`inner-shadow-bottom-sm flex h-12 w-12 items-center justify-center rounded-full border border-th-bkg-2 bg-gradient-to-b from-th-bkg-1 to-th-bkg-2`}
-              >
-                <TokenLogo bank={bank} size={28} />
-              </div>
-              <div>
-                <h3>{formatTokenSymbol(bank.name)}</h3>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-              <div>
-                <p className="mb-1 text-th-fgd-4">Deposits</p>
-                <span className="text-xl font-bold text-th-fgd-1">
-                  <FormatNumericValue value={bank.uiDeposits()} decimals={2} />
-                </span>
-              </div>
-              {bank.name == 'USDC' ? (
+          <div key={bank.name}>
+            <div className="flex flex-col pt-4 md:flex-row md:items-center md:justify-between">
+              <div className="mb-4 flex items-center space-x-3 md:mb-0">
+                <div
+                  className={`inner-shadow-bottom-sm flex h-12 w-12 items-center justify-center rounded-full border border-th-bkg-2 bg-gradient-to-b from-th-bkg-1 to-th-bkg-2`}
+                >
+                  <TokenLogo bank={bank} size={28} />
+                </div>
                 <div>
-                  <p className="mb-1 text-th-fgd-4">Borrows</p>
+                  <h3>{formatTokenSymbol(bank.name)}</h3>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+                <div>
+                  <p className="mb-1 text-th-fgd-4">Deposits</p>
                   <span className="text-xl font-bold text-th-fgd-1">
-                    <FormatNumericValue value={bank.uiBorrows()} decimals={2} />
+                    <FormatNumericValue
+                      value={bank.uiDeposits()}
+                      decimals={2}
+                    />
                   </span>
                 </div>
-              ) : undefined}
+                {bank.name == 'USDC' ? (
+                  <div>
+                    <p className="mb-1 text-th-fgd-4">Borrows</p>
+                    <span className="text-xl font-bold text-th-fgd-1">
+                      <FormatNumericValue
+                        value={bank.uiBorrows()}
+                        decimals={2}
+                      />
+                    </span>
+                  </div>
+                ) : undefined}
+              </div>
             </div>
           </div>
         ))}
