@@ -53,6 +53,7 @@ const TopBar = () => {
         </Link>
       </div>
       <div className="col-span-1 flex items-center justify-end space-x-6">
+        <NavLink active={pathname === '/stats'} path="/stats" text="Stats" />
         <NavLink active={pathname === '/faqs'} path="/faqs" text="FAQs" />
         <div className="flex space-x-3">
           <ThemeToggle />
