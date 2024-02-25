@@ -1,6 +1,6 @@
 import useMangoGroup from 'hooks/useMangoGroup'
 import { useMemo } from 'react'
-import { BORROW_TOKEN, SHOW_INACTIVE_POSITIONS_KEY } from 'utils/constants'
+import { SHOW_INACTIVE_POSITIONS_KEY } from 'utils/constants'
 import TokenLogo from './shared/TokenLogo'
 import Button from './shared/Button'
 import { formatTokenSymbol } from 'utils/tokens'
@@ -15,7 +15,6 @@ import {
 } from '@blockworks-foundation/mango-v4'
 import useBankRates from 'hooks/useBankRates'
 import usePositions from 'hooks/usePositions'
-import Tooltip from './shared/Tooltip'
 
 const set = mangoStore.getState().set
 
@@ -36,7 +35,7 @@ const getLiquidationRatio = (
   return (
     (Math.abs(borrowBalance) * borrowBank.maintLiabWeight.toNumber()) /
     (stakeBalance * stakeBank.maintAssetWeight.toNumber())
-  ).toFixed(3)
+  ).toFixed(2)
 }
 
 const Positions = ({
@@ -137,6 +136,8 @@ const PositionItem = ({
     return [liqRatio, liqPriceChangePercentage.toFixed(2)]
   }, [bank, borrowBalance, borrowBank, stakeBalance])
 
+  console.log('liq price change percentage', liqPriceChangePercentage)
+
   const { estimatedNetAPY, stakeBankDepositRate } = useBankRates(
     bank.name,
     leverage,
@@ -154,13 +155,7 @@ const PositionItem = ({
           </div>
           <div>
             <h3>{formatTokenSymbol(bank.name)}</h3>
-            {/* <span
-              className={`text-sm ${
-                stakeBalance ? 'text-th-fgd-1' : 'text-th-fgd-4'
-              }`}
-            >
-              {stakeBalance ? 'Opened 2 weeks ago' : 'No Position'}
-            </span> */}
+            <p>${bank.uiPrice.toFixed(2)}</p>
           </div>
         </div>
         <Button onClick={() => handleAddOrManagePosition(bank.name)}>
@@ -178,26 +173,17 @@ const PositionItem = ({
               decimals={2}
             />{' '}
             {'USDC'}
-            {'    '}
-            <span
-              className="text-s"
-              style={{ color: pnl >= 0 ? 'lightgreen' : 'red' }}
-            >
-              (<FormatNumericValue roundUp={true} value={pnl} decimals={2} />)
-            </span>
           </span>
-          {bank.name != 'USDC' ? (
-            <div className="text-m font-bold text-th-fgd-1">
+          {bank.name !== 'USDC' ? (
+            <p className="text-th-fgd-4">
               <FormatNumericValue
                 roundUp={true}
                 value={stakeBalance}
                 decimals={3}
               />{' '}
               {formatTokenSymbol(bank.name)}
-            </div>
-          ) : (
-            <div className="text-m font-bold text-th-fgd-1"></div>
-          )}
+            </p>
+          ) : null}
         </div>
         <div>
           <p className="mb-1 text-th-fgd-4">Est. APY</p>
@@ -205,9 +191,25 @@ const PositionItem = ({
             <FormatNumericValue value={uiRate} decimals={2} />%
           </span>
         </div>
-        {position.bank.name == 'USDC' ? (
-          <></>
-        ) : (
+        <div>
+          <p className="mb-1 text-th-fgd-4">Total Earned</p>
+          <span
+            className={`text-xl font-bold ${
+              !stakeBalance
+                ? 'text-th-fgd-4'
+                : pnl >= 0
+                ? 'text-th-success'
+                : 'text-th-error'
+            }`}
+          >
+            {stakeBalance || pnl ? (
+              <FormatNumericValue value={pnl} decimals={2} isUsd />
+            ) : (
+              '–'
+            )}
+          </span>
+        </div>
+        {position.bank.name == 'USDC' ? null : (
           <>
             <div>
               <p className="mb-1 text-th-fgd-4">Leverage</p>
@@ -215,28 +217,20 @@ const PositionItem = ({
                 {leverage ? leverage.toFixed(2) : 0.0}x
               </span>
             </div>
-            {/* <div>
-          <p className="mb-1 text-th-fgd-4">Earned</p>
-          <span className="text-xl font-bold text-th-fgd-1">
-            {stakeBalance
-              ? `X.XX ${formatTokenSymbol(bank.name)}`
-              : `0 ${formatTokenSymbol(bank.name)}`}
-          </span>
-        </div> */}
             <div>
               <p className="mb-1 text-th-fgd-4">Est. Liquidation Price</p>
               <div className="flex flex-wrap items-end">
                 <span className="mr-2 whitespace-nowrap text-xl font-bold text-th-fgd-1">
-                  {liqRatio} {`${formatTokenSymbol(bank.name)}/${BORROW_TOKEN}`}
+                  ${liqRatio}
                 </span>
-                {liqPriceChangePercentage ? (
-                  <Tooltip content="Estimated price change required for liquidation.">
-                    <p className="tooltip-underline mb-0.5 text-th-fgd-4">
-                      {liqPriceChangePercentage}%
-                    </p>
-                  </Tooltip>
-                ) : null}
               </div>
+              {/* {liqPriceChangePercentage ? (
+                <Tooltip content="Estimated price change required for liquidation.">
+                  <p className="tooltip-underline mb-0.5 text-th-fgd-4">
+                    {liqPriceChangePercentage}%
+                  </p>
+                </Tooltip>
+              ) : null} */}
             </div>
           </>
         )}
