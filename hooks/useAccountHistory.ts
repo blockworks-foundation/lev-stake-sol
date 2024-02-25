@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { MANGO_DATA_API_URL, STAKEABLE_TOKENS_DATA } from 'utils/constants'
+import { BOOST_DATA_API_URL, STAKEABLE_TOKENS_DATA } from 'utils/constants'
 import { ActivityFeed, EmptyObject } from 'types'
 import dayjs from 'dayjs'
 import useStakeAccounts from './useStakeAccounts'
@@ -13,7 +13,7 @@ const fetchHistory = async (
   mangoAccountPk: string,
 ): Promise<Array<ActivityFeed> | EmptyObject | null> => {
   const response = await fetch(
-    `${MANGO_DATA_API_URL}/stats/activity-feed?mango-account=${mangoAccountPk}&offset=0&limit=1000`,
+    `${BOOST_DATA_API_URL}/stats/activity-feed?mango-account=${mangoAccountPk}&offset=0&limit=1000`,
   )
   const parsedResponse: Array<ActivityFeed> = await response.json()
 
