@@ -174,7 +174,7 @@ const PositionItem = ({
           <p className="mb-1 text-th-fgd-4">Position Size</p>
           <span className="text-xl font-bold text-th-fgd-1">
             <FormatNumericValue
-              value={stakeBalance * bank?.uiPrice}
+              value={stakeBalance * (bank.name != 'USDC' ? bank?.uiPrice : 1)}
               decimals={2}
             />{' '}
             {'USDC'}
