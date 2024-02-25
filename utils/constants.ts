@@ -18,7 +18,6 @@ export const BOOST_ACCOUNT_PREFIX = 'Leverage Stake '
 
 export const BOOST_DEPOSIT_PREFIX = 'Deposit Leverage Stake '
 
-
 export const CLIENT_TX_TIMEOUT = 90000
 
 export const SECONDS = 1000
@@ -108,6 +107,8 @@ export const PROFILE_CATEGORIES = [
 export const MANGO_ROUTER_API_URL = 'https://api.mngo.cloud/router/v1'
 
 export const MANGO_DATA_API_URL = 'https://api.mngo.cloud/data/v4'
+
+export const BOOST_DATA_API_URL = 'https://api.mngo.cloud/data/boost'
 
 export const MANGO_DATA_OPENBOOK_URL = 'https://api.mngo.cloud/openbook/v1'
 

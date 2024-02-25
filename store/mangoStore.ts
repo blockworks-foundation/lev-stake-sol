@@ -33,6 +33,7 @@ import {
 } from '../utils/tokens'
 import {
   BOOST_ACCOUNT_PREFIX,
+  BOOST_DATA_API_URL,
   CONNECTION_COMMITMENT,
   DEFAULT_MARKET_NAME,
   INPUT_TOKEN_DEFAULT,
@@ -475,7 +476,7 @@ const mangoStore = create<MangoStore>()(
 
           try {
             const response = await fetch(
-              `${MANGO_DATA_API_URL}/stats/activity-feed?mango-account=${mangoAccountPk}&offset=${offset}&limit=${limit}${
+              `${BOOST_DATA_API_URL}/stats/activity-feed?mango-account=${mangoAccountPk}&offset=${offset}&limit=${limit}${
                 params ? params : ''
               }`,
             )
