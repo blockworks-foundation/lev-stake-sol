@@ -229,7 +229,8 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
     (selectedToken === 'USDC' && maxSolDeposit <= 0)
 
   const lowVaultBalance =
-    Math.floor(tokenMax.maxAmount * 100000) > Math.floor(Number(inputAmount) * 100000) &&
+    Math.floor(tokenMax.maxAmount * 100000) >
+      Math.floor(Number(inputAmount) * 100000) &&
     Number(inputAmount) > maxWithdraw
 
   useEffect(() => {
@@ -417,8 +418,13 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
             }
           />
         ) : null}
-        {lowVaultBalance ? (
-          <InlineNotification type="error" desc={<>Vault balance to low</>} />
+        {!lowVaultBalance ? (
+          <div className="mt-4">
+            <InlineNotification
+              type="error"
+              desc={`The ${selectedToken} vault balance is too low. ${selectedToken} deposits are required to unboost.`}
+            />
+          </div>
         ) : null}
       </div>
     </>

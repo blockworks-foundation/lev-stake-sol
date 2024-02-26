@@ -17,7 +17,11 @@ import MaxAmountButton from '@components/shared/MaxAmountButton'
 import Tooltip from '@components/shared/Tooltip'
 import SolBalanceWarnings from '@components/shared/SolBalanceWarnings'
 import useSolBalance from 'hooks/useSolBalance'
-import { floorToDecimal, withValueLimit } from 'utils/numbers'
+import {
+  floorToDecimal,
+  formatNumericValue,
+  withValueLimit,
+} from 'utils/numbers'
 import { isMangoError } from 'types'
 import TokenLogo from './shared/TokenLogo'
 import SecondaryConnectButton from './shared/SecondaryConnectButton'
@@ -260,7 +264,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   const tokenDepositLimitLeftUi =
     stakeBank && tokenDepositLimitLeft
       ? toUiDecimals(tokenDepositLimitLeft, stakeBank?.mintDecimals)
-      : null
+      : 0
 
   const depositLimitExceeded =
     tokenDepositLimitLeftUi !== null
@@ -301,20 +305,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                 desc={
                   <div>
                     The available {borrowBank?.name} vault balance is low and
-                    impacting the maximum amount you can <span>borrow</span>
-                  </div>
-                }
-              />
-            </div>
-          )}
-          {depositLimitExceeded && (
-            <div className="mb-4">
-              <InlineNotification
-                type="warning"
-                desc={
-                  <div>
-                    Deposit limit exceeded limit left {tokenDepositLimitLeftUi}{' '}
-                    {stakeBank?.name}
+                    impacting the maximum amount you can borrow
                   </div>
                 }
               />
@@ -379,6 +370,16 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                 unit="%"
               />
             </div>
+            {depositLimitExceeded ? (
+              <div className="col-span-2 mt-2">
+                <InlineNotification
+                  type="error"
+                  desc={`Amount exceeds ${stakeBank?.name} deposit limit. ${formatNumericValue(
+                    tokenDepositLimitLeftUi,
+                  )} remaining.`}
+                />
+              </div>
+            ) : null}
           </div>
           <div className="mt-4">
             <div className="flex items-center justify-between">

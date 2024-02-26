@@ -39,6 +39,7 @@ const TopBar = () => {
         </Link>
       </div>
       <div className="col-span-1 flex items-center justify-center space-x-4">
+        <NavLink active={pathname === '/'} path="/" text="Boost!" />
         <NavLink active={pathname === '/stats'} path="/stats" text="Stats" />
         <NavLink active={pathname === '/faqs'} path="/faqs" text="FAQs" />
       </div>
@@ -76,8 +77,8 @@ const NavLink = ({
   return (
     <Link target={target ? target : undefined} href={path} shallow={true}>
       <span
-        className={`default-transition flex items-center rounded-md border-b-2 bg-th-bkg-1 px-2 py-0.5 text-sm font-bold text-th-fgd-1 md:text-base md:hover:text-th-link-hover ${
-          active ? 'border-th-fgd-1' : 'border-th-bkg-3'
+        className={`default-transition flex items-center rounded-md border-th-bkg-3 bg-th-bkg-1 px-2 py-0.5 text-sm font-bold md:text-base md:hover:text-th-link-hover ${
+          active ? 'border-t-2 text-th-fgd-1' : 'border-b-2 text-th-fgd-4'
         }`}
       >
         {text}
