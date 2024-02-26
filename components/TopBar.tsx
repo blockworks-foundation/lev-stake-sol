@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react'
-import {
-  ArrowTopRightOnSquareIcon,
-  ExclamationTriangleIcon,
-} from '@heroicons/react/20/solid'
+import { ExclamationTriangleIcon } from '@heroicons/react/20/solid'
 import { useWallet } from '@solana/wallet-adapter-react'
 import ConnectedMenu from './wallet/ConnectedMenu'
 import ConnectWalletButton from './wallet/ConnectWalletButton'
@@ -25,19 +22,8 @@ const TopBar = () => {
   }, [copied])
 
   return (
-    <div className="mb-8 grid h-20 grid-cols-2 px-6 sm:grid-cols-3">
-      <div className="col-span-1 hidden sm:flex sm:items-center">
-        <a
-          className="flex items-center rounded bg-th-bkg-1 px-1.5 py-1 text-th-fgd-1"
-          target="_blank"
-          href="https://boost-v1.mango.markets/"
-          rel="noopener noreferrer"
-        >
-          <span className="mr-1.5 block font-bold leading-none">Boost! v1</span>
-          <ArrowTopRightOnSquareIcon className="h-5 w-5" />
-        </a>
-      </div>
-      <div className="col-span-1 flex items-center sm:justify-center">
+    <div className="mb-8 grid h-20 grid-cols-3 px-6">
+      <div className="col-span-1 flex items-center">
         <Link href="/" shallow={true}>
           <div className="group flex items-center">
             <BoostLogo className="h-auto w-12 shrink-0 cursor-pointer group-hover:animate-shake" />
@@ -52,8 +38,11 @@ const TopBar = () => {
           </div>
         </Link>
       </div>
-      <div className="col-span-1 flex items-center justify-end space-x-6">
+      <div className="col-span-1 flex items-center justify-center space-x-4">
+        <NavLink active={pathname === '/stats'} path="/stats" text="Stats" />
         <NavLink active={pathname === '/faqs'} path="/faqs" text="FAQs" />
+      </div>
+      <div className="col-span-1 flex items-center justify-end">
         <div className="flex space-x-3">
           <ThemeToggle />
           {connected ? <ConnectedMenu /> : <ConnectWalletButton />}
@@ -87,10 +76,8 @@ const NavLink = ({
   return (
     <Link target={target ? target : undefined} href={path} shallow={true}>
       <span
-        className={`default-transition border-b-2 text-sm font-bold md:text-base md:hover:text-th-active ${
-          active
-            ? 'border-th-active text-th-active'
-            : 'border-th-fgd-1 text-th-fgd-1'
+        className={`default-transition flex items-center rounded-md border-b-2 bg-th-bkg-1 px-2 py-0.5 text-sm font-bold text-th-fgd-1 md:text-base md:hover:text-th-link-hover ${
+          active ? 'border-th-fgd-1' : 'border-th-bkg-3'
         }`}
       >
         {text}
