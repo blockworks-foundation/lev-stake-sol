@@ -1,5 +1,8 @@
 import { Fragment, ReactNode, useEffect, useMemo, useState } from 'react'
-import { ArrowPathIcon } from '@heroicons/react/20/solid'
+import {
+  ArrowPathIcon,
+  ArrowTopRightOnSquareIcon,
+} from '@heroicons/react/20/solid'
 import mangoStore from '@store/mangoStore'
 import TopBar from './TopBar'
 import useLocalStorageState from '../hooks/useLocalStorageState'
@@ -57,6 +60,17 @@ const Layout = ({ children }: { children: ReactNode }) => {
           <div className="mx-auto max-w-3xl px-6 pb-20 lg:px-12">
             {children}
             <Footer />
+          </div>
+          <div className="fixed bottom-8 right-8 hidden lg:block">
+            <a
+              className="flex items-center rounded-md border-b-2 border-th-bkg-3 bg-th-bkg-1 px-2 py-0.5 text-th-fgd-1"
+              target="_blank"
+              href="https://boost-v1.mango.markets/"
+              rel="noopener noreferrer"
+            >
+              <span className="mr-1.5 block font-bold">Boost! v1</span>
+              <ArrowTopRightOnSquareIcon className="h-5 w-5" />
+            </a>
           </div>
           <DeployRefreshManager />
           <TermsOfUse />
@@ -119,7 +133,7 @@ function DeployRefreshManager(): JSX.Element | null {
       leaveTo="opacity-0"
     >
       <button
-        className="default-transition fixed -bottom-[46px] left-1/2 z-50 flex -translate-x-1/2 items-center rounded-full border-2 border-th-fgd-1 bg-th-bkg-1 px-4 py-3 shadow-md focus:outline-none md:hover:bg-th-bkg-2 md:hover:shadow-none"
+        className="default-transition fixed bottom-[-46px] left-1/2 z-50 flex -translate-x-1/2 items-center rounded-full border-2 border-th-fgd-1 bg-th-bkg-1 px-4 py-3 shadow-md focus:outline-none md:hover:bg-th-bkg-2 md:hover:shadow-none"
         onClick={() => window.location.reload()}
       >
         <p className="mr-2 whitespace-nowrap text-th-fgd-1">
