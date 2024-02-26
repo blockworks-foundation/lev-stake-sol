@@ -23,30 +23,12 @@ export const sideBarAnimationDuration = 300
 const termsLastUpdated = 1679441610978
 
 const Layout = ({ children }: { children: ReactNode }) => {
+  const { ipCountry, loadingIpCountry } = useIpAddress()
   const themeData = mangoStore((s) => s.themeData)
 
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
   if (!mounted) return null
-
-  // this will only show if the ip api doesn't return the country
-  const RestrictedCountryCheck = () => {
-    const { ipCountry, loadingIpCountry } = useIpAddress()
-    const [confirmedCountry, setConfirmedCountry] = useLocalStorageState(
-      NON_RESTRICTED_JURISDICTION_KEY,
-      false,
-    )
-    const showModal = useMemo(() => {
-      return !confirmedCountry && !ipCountry && !loadingIpCountry
-    }, [confirmedCountry, ipCountry, loadingIpCountry])
-
-    return showModal ? (
-      <RestrictedCountryModal
-        isOpen={showModal}
-        onClose={() => setConfirmedCountry(true)}
-      />
-    ) : null
-  }
 
   return (
     <main
@@ -74,7 +56,10 @@ const Layout = ({ children }: { children: ReactNode }) => {
           </div>
           <DeployRefreshManager />
           <TermsOfUse />
-          <RestrictedCountryCheck />
+          <RestrictedCountryCheck
+            ipCountry={ipCountry}
+            loadingIpCountry={loadingIpCountry}
+          />
         </div>
       </div>
     </main>
@@ -143,4 +128,31 @@ function DeployRefreshManager(): JSX.Element | null {
       </button>
     </Transition>
   )
+}
+
+const RestrictedCountryCheck = ({
+  ipCountry,
+  loadingIpCountry,
+}: {
+  ipCountry: string
+  loadingIpCountry: boolean
+}) => {
+  const groupLoaded = mangoStore((s) => s.groupLoaded)
+  const [confirmedCountry, setConfirmedCountry] = useLocalStorageState(
+    NON_RESTRICTED_JURISDICTION_KEY,
+    false,
+  )
+
+  const showModal = useMemo(() => {
+    return !confirmedCountry && !ipCountry && !loadingIpCountry && groupLoaded
+  }, [confirmedCountry, ipCountry, loadingIpCountry, groupLoaded])
+
+  return showModal ? (
+    <RestrictedCountryModal
+      isOpen={showModal}
+      onClose={() => {
+        setConfirmedCountry(true)
+      }}
+    />
+  ) : null
 }
