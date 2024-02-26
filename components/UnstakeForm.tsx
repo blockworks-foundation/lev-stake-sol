@@ -418,7 +418,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
             }
           />
         ) : null}
-        {!lowVaultBalance ? (
+        {lowVaultBalance ? (
           <div className="mt-4">
             <InlineNotification
               type="error"
