@@ -14,6 +14,7 @@ import {
   createAssociatedTokenAccountIdempotentInstruction,
   getAssociatedTokenAddress,
   toNative,
+  toNativeI80F48,
   toUiDecimals,
 } from '@blockworks-foundation/mango-v4'
 import { TOKEN_PROGRAM_ID } from '@solana/spl-governance'
@@ -36,6 +37,7 @@ import {
 } from '@solana/web3.js'
 import { floorToDecimal } from './numbers'
 import { BOOST_ACCOUNT_PREFIX } from './constants'
+import { notify } from './notifications'
 
 export const withdrawAndClose = async (
   client: MangoClient,
@@ -111,6 +113,7 @@ export const unstakeAndSwap = async (
   group: Group,
   mangoAccount: MangoAccount,
   stakeMintPk: PublicKey,
+  amountToRepay?: number,
 ): Promise<MangoSignatureStatus> => {
   console.log('unstake and swap')
 
@@ -123,15 +126,27 @@ export const unstakeAndSwap = async (
     throw Error('Unable to find borrow bank or stake bank or mango account')
   }
   const borrowed = mangoAccount.getTokenBalance(borrowBank)
-  console.log(borrowed)
+
   let swapAlts: AddressLookupTableAccount[] = []
   if (borrowed.toNumber() < 0) {
+    const toRepay = Math.ceil(
+      (amountToRepay
+        ? toNativeI80F48(amountToRepay, stakeBank.mintDecimals).mul(
+            stakeBank.getAssetPrice(),
+          )
+        : borrowed.abs()
+      )
+        .add(I80F48.fromNumber(100))
+        .toNumber(),
+    )
+
     console.log('borrowedSol amount: ', borrowed.toNumber())
+    console.log('borrow needed to repay for withdraw', toRepay)
 
     const { bestRoute: selectedRoute } = await fetchJupiterRoutes(
       stakeMintPk.toString(),
       borrowBank.mint.toString(),
-      Math.ceil(borrowed.abs().add(I80F48.fromNumber(100)).toNumber()),
+      toRepay,
       500,
       'ExactOut',
     )
@@ -749,12 +764,18 @@ const fetchJupiterRoutes = async (
       `https://quote-api.jup.ag/v6/quote?${paramsString}`,
     )
     const res = await response.json()
-
+    if (res.error) {
+      throw res.error
+    }
     return {
       bestRoute: res as RouteInfo | null,
     }
   } catch (e) {
     console.log(e, 'Error finding jupiter route')
+    notify({
+      title: `Error finding jupiter route ${e}`,
+      type: 'info',
+    })
     return {
       bestRoute: null,
     }
