@@ -229,7 +229,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
     (selectedToken === 'USDC' && maxSolDeposit <= 0)
 
   const lowVaultBalance =
-    Math.floor(tokenMax.maxAmount * 100000) >=
+    Math.floor(tokenMax.maxAmount * 100000) <
       Math.floor(Number(inputAmount) * 100000) &&
     Number(inputAmount) > maxWithdraw
 
