@@ -122,7 +122,6 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
       Number(stakeBank?.uiPrice) *
       (Number(borrowMaintLiabWeight) / Number(stakeMaintAssetWeight)) *
       (1 - 1 / leverage)
-
     return price
   }, [stakeBank, borrowBank, leverage])
 
@@ -511,7 +510,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                       {borrowBank ? (
                         <>
                           <div className="flex justify-between">
-                            <p className="text-th-fgd-4">{`${borrowBank?.name} Borrow APY Rate`}</p>
+                            <p className="text-th-fgd-4">{`${borrowBank?.name} Borrow APY`}</p>
                             <span
                               className={`font-bold ${
                                 borrowBankBorrowRate > 0.01
