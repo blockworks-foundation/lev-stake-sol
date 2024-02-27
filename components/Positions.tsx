@@ -142,7 +142,7 @@ const PositionItem = ({
     bank.name,
     leverage,
   )
-  const uiRate = bank.name == 'USDC' ? stakeBankDepositRate : financialMetrics.APY
+  const uiRate = bank.name == 'USDC' ? Number(stakeBankDepositRate) * 100 : financialMetrics.APY
 
   return (
     <div className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">

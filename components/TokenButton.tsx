@@ -26,7 +26,7 @@ const TokenButton = ({
 
   const UiRate =
     tokenName === 'USDC'
-      ? stakeBankDepositRate
+      ? Number(stakeBankDepositRate) * 100
       : Math.max(estimatedNetAPYFor1xLev.APY, financialMetrics.APY)
 
   return (
