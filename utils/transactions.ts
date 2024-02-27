@@ -123,7 +123,7 @@ export const unstakeAndSwap = async (
     throw Error('Unable to find borrow bank or stake bank or mango account')
   }
   const borrowed = mangoAccount.getTokenBalance(borrowBank)
-
+  console.log(borrowed)
   let swapAlts: AddressLookupTableAccount[] = []
   if (borrowed.toNumber() < 0) {
     console.log('borrowedSol amount: ', borrowed.toNumber())
@@ -358,7 +358,7 @@ export const depositAndCreate = async (
         [],
       )
     : [depositBank.publicKey, depositBank.oracle]
-    
+
   const depositTokenIxs = await createDepositIx(
     client,
     group,
@@ -734,7 +734,7 @@ const fetchJupiterRoutes = async (
   feeBps = 0,
   onlyDirectRoutes = true,
 ) => {
-  {
+  try {
     const paramsString = new URLSearchParams({
       inputMint: inputMint.toString(),
       outputMint: outputMint.toString(),
@@ -752,6 +752,11 @@ const fetchJupiterRoutes = async (
 
     return {
       bestRoute: res as RouteInfo | null,
+    }
+  } catch (e) {
+    console.log(e, 'Error finding jupiter route')
+    return {
+      bestRoute: null,
     }
   }
 }
