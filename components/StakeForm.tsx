@@ -507,7 +507,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                             >
                               <FormatNumericValue
                                 value={(borrowBank?.loanOriginationFeeRate.toNumber()) * amountToBorrow}
-                                decimals={5}
+                                decimals={2}
                               />
                               <span className="font-body text-th-fgd-4">
                                 {' '}
