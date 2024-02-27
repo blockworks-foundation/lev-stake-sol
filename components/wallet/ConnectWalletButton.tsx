@@ -40,7 +40,7 @@ export default function ConnectWalletButton() {
             select(lastWalletName || detectedWallets[0].adapter.name)
           }
         }}
-        className="raised-button-neutral group flex h-12 w-32 items-center after:rounded-full lg:w-44"
+        className="raised-button-neutral group flex h-12 w-48 items-center after:rounded-full sm:w-40 lg:w-44"
       >
         <div className="relative z-10 flex h-full items-center justify-center space-x-2 px-2.5 group-hover:mt-1 group-active:mt-2 md:px-4">
           {connected && mangoAccountLoading ? (

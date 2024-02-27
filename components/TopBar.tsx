@@ -29,8 +29,8 @@ const TopBar = () => {
   }, [copied])
 
   return (
-    <div className="mb-8 grid h-20 grid-cols-3 px-6">
-      <div className="col-span-1 flex items-center">
+    <div className="mb-8 grid h-20 grid-cols-9 px-6">
+      <div className="col-span-3 flex items-center sm:col-span-1 md:col-span-3">
         <Link href="/" shallow={true}>
           <div className="group flex items-center">
             <BoostLogo className="h-auto w-12 shrink-0 cursor-pointer group-hover:animate-shake" />
@@ -45,7 +45,7 @@ const TopBar = () => {
           </div>
         </Link>
       </div>
-      <div className="col-span-1 flex items-center justify-center space-x-4">
+      <div className="col-span-3 flex items-center space-x-4 sm:col-span-4 md:col-span-3 md:justify-center">
         {!isMobile ? (
           <>
             <NavLink active={pathname === '/'} path="/" text="Boost!" />
@@ -58,10 +58,16 @@ const TopBar = () => {
           </>
         ) : null}
       </div>
-      <div className="col-span-1 flex items-center justify-end">
+      <div className="col-span-3 flex items-center justify-end sm:col-span-4 md:col-span-3">
         <div className="flex space-x-3">
-          {isMobile ? <MobileNavigation /> : <ThemeToggle />}
-          {connected ? <ConnectedMenu /> : <ConnectWalletButton />}
+          {isMobile ? (
+            <MobileNavigation />
+          ) : (
+            <>
+              <ThemeToggle />{' '}
+              {connected ? <ConnectedMenu /> : <ConnectWalletButton />}
+            </>
+          )}
         </div>
       </div>
       {!isOnline ? (
@@ -99,6 +105,7 @@ const MenuPanel = ({
   showMenu: boolean
   setShowMenu: (showMenu: boolean) => void
 }) => {
+  const { connected } = useWallet()
   const closeOnClick = () => {
     setShowMenu(false)
   }
@@ -106,13 +113,15 @@ const MenuPanel = ({
   return (
     <>
       <div
-        className={`fixed right-0 top-0 z-40 h-screen w-[90%] overflow-hidden bg-th-bkg-2 transition duration-300 ease-in-out ${
+        className={`fixed right-0 top-0 z-40 h-screen w-[97%] overflow-hidden bg-th-bkg-2 transition duration-300 ease-in-out ${
           showMenu ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="flex justify-end px-6 py-3">
-          <IconButton onClick={() => setShowMenu(false)} hideBg size="medium">
-            <XMarkIcon className="h-8 w-8" />
+        <div className="mb-6 flex justify-between space-x-4 px-4 py-3">
+          <ThemeToggle />
+          {connected ? <ConnectedMenu /> : <ConnectWalletButton />}
+          <IconButton onClick={() => setShowMenu(false)} size="large">
+            <XMarkIcon className="h-6 w-6" />
           </IconButton>
         </div>
         <div className="space-y-4 px-6">
@@ -140,9 +149,6 @@ const MenuPanel = ({
           >
             FAQs
           </Link>
-        </div>
-        <div className="absolute bottom-8 right-8">
-          <ThemeToggle />
         </div>
       </div>
       <Transition

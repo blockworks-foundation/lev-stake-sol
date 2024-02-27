@@ -16,7 +16,7 @@ const actions = mangoStore.getState().actions
 const ConnectedMenu = () => {
   const { t } = useTranslation('common')
   const { publicKey, disconnect, wallet } = useWallet()
-  const { isDesktop } = useViewport()
+  const { isDesktop, isMobile } = useViewport()
   const loadProfileDetails = mangoStore((s) => s.profile.loadDetails)
   const groupLoaded = mangoStore((s) => s.groupLoaded)
   const mangoAccountLoading = mangoStore((s) => s.mangoAccount.initialLoad)
@@ -49,11 +49,11 @@ const ConnectedMenu = () => {
       <Popover>
         <div className="relative">
           <Popover.Button
-            className={`raised-button-neutral group flex h-12 items-center justify-center after:rounded-full lg:justify-start ${
-              isDesktop ? 'w-44' : 'w-12'
+            className={`raised-button-neutral group flex h-12 items-center justify-start after:rounded-full sm:justify-center lg:justify-start ${
+              isMobile ? 'w-48' : isDesktop ? 'w-44' : 'w-12'
             } focus:outline-none`}
           >
-            <div className="flex items-center group-hover:mt-1 group-active:mt-2 lg:ml-1.5">
+            <div className="ml-1.5 flex items-center group-hover:mt-1 group-active:mt-2 sm:ml-0 lg:ml-1.5">
               {!mangoAccountLoading ? (
                 <ProfileImage
                   imageSize={!isDesktop ? '32' : '40'}
@@ -65,7 +65,7 @@ const ConnectedMenu = () => {
                   <Loading className="h-5 w-5 md:h-6 md:w-6" />
                 </div>
               )}
-              {!loadProfileDetails && isDesktop ? (
+              {!loadProfileDetails && (isDesktop || isMobile) ? (
                 <div className="ml-2.5 overflow-hidden text-left">
                   <p className="text-xs text-th-fgd-3">
                     {wallet?.adapter.name}
