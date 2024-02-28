@@ -402,12 +402,18 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                       <div className="flex items-center justify-between">
                         <p className="font-medium">Est. Net APY</p>
                         <div className="flex items-center space-x-2">
-                          <span className="text-lg font-bold text-th-success">
-                            {financialMetrics.APY >= 0
+                        <span
+                              className={`font-bold ${
+                                financialMetrics.APY > 0.001
+                                  ? 'text-th-success'
+                                  : 'text-th-error'
+                              }`}
+                            >
+                             {financialMetrics.APY >= 0
                               ? '+'
                               : financialMetrics.APY === 0
                               ? ''
-                              : '-'}
+                              : ''}
                             <FormatNumericValue
                               value={financialMetrics.APY}
                               decimals={2}
