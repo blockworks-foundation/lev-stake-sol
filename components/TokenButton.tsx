@@ -24,9 +24,10 @@ const TokenButton = ({
     1,
   )
 
+  const APY_Daily_Compound = Math.pow(1 + Number(stakeBankDepositRate) / 365, 365) - 1;
   const UiRate =
     tokenName === 'USDC'
-      ? Number(stakeBankDepositRate) * 100
+      ? APY_Daily_Compound * 100
       : Math.max(estimatedNetAPYFor1xLev.APY, financialMetrics.APY)
 
   return (
@@ -74,8 +75,8 @@ const TokenButton = ({
             //   </SheenLoader>
             // ) :
             tokenName === 'USDC'
-              ? `${UiRate.toFixed(2)}%`
-              : `Up to ${UiRate.toFixed(2)}%`
+              ? `${UiRate.toFixed(2)}% APY`
+              : `Up to ${UiRate.toFixed(2)}% APY`
           }
         </span>
       </div>
