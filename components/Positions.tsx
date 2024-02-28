@@ -121,7 +121,7 @@ const PositionItem = ({
     }
   }, [group, acct])
 
-  const [liqRatio, liqPriceChangePercentage] = useMemo(() => {
+  const [liqRatio] = useMemo(() => {
     if (!borrowBalance || !borrowBank) return ['0.00', '']
     const liqRatio = getLiquidationRatio(
       borrowBalance,
@@ -136,13 +136,13 @@ const PositionItem = ({
     return [liqRatio, liqPriceChangePercentage.toFixed(2)]
   }, [bank, borrowBalance, borrowBank, stakeBalance])
 
-  console.log('liq price change percentage', liqPriceChangePercentage)
-
-  const { estimatedNetAPY, stakeBankDepositRate } = useBankRates(
+  const { financialMetrics, stakeBankDepositRate } = useBankRates(
     bank.name,
     leverage,
   )
-  const uiRate = bank.name == 'USDC' ? stakeBankDepositRate : estimatedNetAPY
+
+  const APY_Daily_Compound = Math.pow(1 + Number(stakeBankDepositRate) / 365, 365) - 1;
+  const uiRate = bank.name == 'USDC' ? APY_Daily_Compound * 100 : financialMetrics.APY
 
   return (
     <div className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
@@ -188,7 +188,7 @@ const PositionItem = ({
         <div>
           <p className="mb-1 text-th-fgd-4">Est. APY</p>
           <span className="text-xl font-bold text-th-fgd-1">
-            <FormatNumericValue value={uiRate} decimals={2} />%
+            <FormatNumericValue value={Number(uiRate)} decimals={2} />%
           </span>
         </div>
         <div>

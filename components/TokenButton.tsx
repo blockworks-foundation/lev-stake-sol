@@ -14,20 +14,21 @@ const TokenButton = ({
 }) => {
   const leverage = useLeverageMax(tokenName) * 0.9
 
-  const { stakeBankDepositRate, estimatedNetAPY } = useBankRates(
+  const { stakeBankDepositRate, financialMetrics } = useBankRates(
     tokenName,
     leverage,
   )
 
-  const { estimatedNetAPY: estimatedNetAPYFor1xLev } = useBankRates(
+  const { financialMetrics: estimatedNetAPYFor1xLev } = useBankRates(
     tokenName,
     1,
   )
 
+  const APY_Daily_Compound = Math.pow(1 + Number(stakeBankDepositRate) / 365, 365) - 1;
   const UiRate =
     tokenName === 'USDC'
-      ? stakeBankDepositRate
-      : Math.max(estimatedNetAPYFor1xLev, estimatedNetAPY)
+      ? APY_Daily_Compound * 100
+      : Math.max(estimatedNetAPYFor1xLev.APY, financialMetrics.APY)
 
   return (
     <button
@@ -74,8 +75,8 @@ const TokenButton = ({
             //   </SheenLoader>
             // ) :
             tokenName === 'USDC'
-              ? `${UiRate.toFixed(2)}%`
-              : `Up to ${UiRate.toFixed(2)}%`
+              ? `${UiRate.toFixed(2)}% APY`
+              : `Up to ${UiRate.toFixed(2)}% APY`
           }
         </span>
       </div>
