@@ -195,14 +195,14 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
           mangoAccount.getTokenBalanceUi(borrowBank),
         )
 
-        const amountToRepay = (leverage - 1) * Number(inputAmount)
+        const stakeAmountToRepay = (leverage - 1) * Number(inputAmount)
 
         const { signature: tx } = await unstakeAndSwap(
           client,
           group,
           mangoAccount,
           stakeBank.mint,
-          amountToRepay,
+          stakeAmountToRepay,
         )
 
         notify({

@@ -113,7 +113,7 @@ export const unstakeAndSwap = async (
   group: Group,
   mangoAccount: MangoAccount,
   stakeMintPk: PublicKey,
-  amountToRepay?: number,
+  stakeAmountToRepay?: number,
 ): Promise<MangoSignatureStatus> => {
   console.log('unstake and swap')
 
@@ -130,8 +130,8 @@ export const unstakeAndSwap = async (
   let swapAlts: AddressLookupTableAccount[] = []
   if (borrowed.toNumber() < 0) {
     const toRepay = Math.ceil(
-      (amountToRepay
-        ? toNativeI80F48(amountToRepay, stakeBank.mintDecimals)
+      (stakeAmountToRepay
+        ? toNativeI80F48(stakeAmountToRepay, stakeBank.mintDecimals)
         : borrowed.abs().div(stakeBank.getAssetPrice())
       )
         .add(I80F48.fromNumber(100))
