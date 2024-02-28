@@ -116,13 +116,14 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   }, [group])
 
   const liquidationPrice = useMemo(() => {
-    const borrowMaintLiabWeight = borrowBank?.maintLiabWeight
-    const stakeMaintAssetWeight = stakeBank?.maintAssetWeight
-    const price =
-      Number(stakeBank?.uiPrice) *
-      (Number(borrowMaintLiabWeight) / Number(stakeMaintAssetWeight)) *
-      (1 - 1 / leverage)
-    return price
+    const price = Number(stakeBank?.uiPrice)
+    const borrowMaintLiabWeight = Number(borrowBank?.maintLiabWeight)
+    const stakeMaintAssetWeight = Number(stakeBank?.maintAssetWeight)
+    const loanOriginationFee = Number(borrowBank?.loanOriginationFeeRate)
+    const liqPrice = price *
+      ((borrowMaintLiabWeight * (1 + loanOriginationFee)) / stakeMaintAssetWeight) *
+      (1 - (1 / leverage))
+    return liqPrice.toFixed(3)
   }, [stakeBank, borrowBank, leverage])
 
   const tokenPositionsFull = useMemo(() => {
@@ -533,7 +534,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <p className="text-th-fgd-4">{`Liquidation Price`}</p>
+                            <p className="text-th-fgd-4">{`Est. Liquidation Price`}</p>
                             <span
                               className={`font-bold ${
                                 amountToBorrow > 0.001
@@ -543,11 +544,11 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                             >
                               <FormatNumericValue
                                 value={liquidationPrice}
-                                decimals={5}
+                                decimals={3}
                               />
                               <span className="font-body text-th-fgd-4">
                                 {' '}
-                                {borrowBank.name}
+                                {stakeBank.name}/{borrowBank.name} 
                               </span>
                             </span>
                           </div>

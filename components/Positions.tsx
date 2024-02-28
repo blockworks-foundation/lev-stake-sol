@@ -35,7 +35,7 @@ const getLiquidationRatio = (
   return (
     (Math.abs(borrowBalance) * borrowBank.maintLiabWeight.toNumber()) /
     (stakeBalance * stakeBank.maintAssetWeight.toNumber())
-  ).toFixed(2)
+  ).toFixed(3)
 }
 
 const Positions = ({
