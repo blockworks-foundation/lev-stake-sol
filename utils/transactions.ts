@@ -272,16 +272,17 @@ export const stakeAndCreate = async (
   ).toNumber()
 
   if (nativeBorrowAmount) {
+    const slippage = 1
     const { bestRoute: selectedRoute } = await fetchJupiterRoutes(
       borrowBank.mint.toString(),
       stakeMintPk.toString(),
       nativeBorrowAmount,
+      slippage,
     )
 
     if (!selectedRoute) {
       throw Error('Unable to find a swap route')
     }
-    const slippage = 100 // bips
 
     const [jupiterIxs, jupiterAlts] = await fetchJupiterTransaction(
       client.program.provider.connection,
@@ -745,7 +746,7 @@ const fetchJupiterRoutes = async (
   inputMint: string,
   outputMint: string,
   amount = 0,
-  slippage = 5,
+  slippage = 1,
   swapMode = 'ExactIn',
   feeBps = 0,
   onlyDirectRoutes = true,
