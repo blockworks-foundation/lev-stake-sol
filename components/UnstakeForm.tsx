@@ -38,6 +38,7 @@ import Decimal from 'decimal.js'
 import { Disclosure } from '@headlessui/react'
 import { sleep } from 'utils'
 import useIpAddress from 'hooks/useIpAddress'
+import { AnchorProvider } from '@project-serum/anchor'
 
 const set = mangoStore.getState().set
 
@@ -100,13 +101,39 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
 
   const { connected, publicKey } = useWallet()
 
+  const stakeBankAmount =
+    mangoAccount && stakeBank && mangoAccount.getTokenBalance(stakeBank)
+
+  const borrowAmount =
+    mangoAccount && borrowBank && mangoAccount.getTokenBalance(borrowBank)
+
+  const leverage = useMemo(() => {
+    try {
+      if (stakeBankAmount && borrowAmount) {
+        const lev = stakeBankAmount
+          .div(
+            stakeBankAmount.sub(
+              borrowAmount.abs().div(stakeBank.getAssetPrice()),
+            ),
+          )
+          .toNumber()
+
+        return Math.sign(lev) !== -1 ? lev : 1
+      }
+      return 1
+    } catch (e) {
+      console.log(e)
+      return 1
+    }
+  }, [stakeBankAmount, borrowAmount, stakeBank])
+
   const tokenMax = useMemo(() => {
     if (!stakeBank || !mangoAccount) return { maxAmount: 0.0, maxDecimals: 6 }
     return {
-      maxAmount: mangoAccount.getTokenBalanceUi(stakeBank),
+      maxAmount: mangoAccount.getTokenBalanceUi(stakeBank) / leverage,
       maxDecimals: stakeBank.mintDecimals,
     }
-  }, [stakeBank, mangoAccount])
+  }, [stakeBank, mangoAccount, leverage])
 
   const setMax = useCallback(() => {
     const max = floorToDecimal(tokenMax.maxAmount, tokenMax.maxDecimals)
@@ -168,19 +195,26 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
           mangoAccount.getTokenBalanceUi(borrowBank),
         )
 
+        const stakeAmountToRepay = (leverage - 1) * Number(inputAmount)
+
         const { signature: tx } = await unstakeAndSwap(
           client,
           group,
           mangoAccount,
           stakeBank.mint,
+          stakeAmountToRepay,
         )
+
         notify({
           title: 'Swap Transaction confirmed.',
           type: 'success',
           txid: tx,
         })
-        await sleep(300)
-        await actions.fetchMangoAccounts(mangoAccount.owner)
+        await sleep(100)
+        await actions.fetchMangoAccounts(
+          (client.program.provider as AnchorProvider).wallet.publicKey,
+        )
+        await actions.reloadMangoAccount()
         await actions.fetchWalletTokens(publicKey)
         mangoAccount = mangoStore.getState().mangoAccount.current
         notify({
@@ -203,11 +237,19 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
       })
       setSubmitting(false)
       setInputAmount('')
-      await sleep(500)
-      await actions.fetchMangoAccounts(mangoAccount.owner)
+      await sleep(100)
+      await actions.fetchMangoAccounts(
+        (client.program.provider as AnchorProvider).wallet.publicKey,
+      )
+      await actions.reloadMangoAccount()
       await actions.fetchWalletTokens(publicKey)
     } catch (e) {
-      console.error('Error depositing:', e)
+      console.error('Error withdrawing:', e)
+      notify({
+        title: 'Error withdrawing',
+        description: `${e}`,
+        type: 'error',
+      })
       setSubmitting(false)
       if (!isMangoError(e)) return
       notify({
@@ -217,7 +259,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
         type: 'error',
       })
     }
-  }, [borrowBank, stakeBank, publicKey, inputAmount])
+  }, [ipAllowed, stakeBank, borrowBank, publicKey, inputAmount, leverage])
 
   const maxWithdraw =
     group && mangoAccount && stakeBank
@@ -229,7 +271,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
     (selectedToken === 'USDC' && maxSolDeposit <= 0)
 
   const lowVaultBalance =
-    Math.floor(tokenMax.maxAmount * 100000) >
+    Math.floor(tokenMax.maxAmount * 100000) <
       Math.floor(Number(inputAmount) * 100000) &&
     Number(inputAmount) > maxWithdraw
 
@@ -352,6 +394,27 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                             </span>
                           </div>
                           <div className="flex justify-between">
+                            <p className="text-th-fgd-4">
+                              Staked Amount with borrow
+                            </p>
+                            <span className="font-bold text-th-fgd-1">
+                              <BankAmountWithValue
+                                amount={tokenMax.maxAmount * leverage}
+                                bank={stakeBank}
+                              />
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <p className="text-th-fgd-4">Leverage</p>
+                            <span className="font-bold text-th-fgd-1">
+                              <FormatNumericValue
+                                value={leverage}
+                                decimals={2}
+                              />
+                              x
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
                             <p className="text-th-fgd-4">USDC borrowed</p>
                             {borrowBank ? (
                               <span
@@ -396,10 +459,8 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                   symbol: formatTokenSymbol(selectedToken),
                 })}
               </div>
-            ) : ipAllowed ? (
-              `Unboost ${inputAmount} ${formatTokenSymbol(selectedToken)}`
             ) : (
-              'Country not allowed'
+              `Unboost ${inputAmount} ${formatTokenSymbol(selectedToken)}`
             )}
           </Button>
         ) : (

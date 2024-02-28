@@ -14,6 +14,7 @@ import {
   createAssociatedTokenAccountIdempotentInstruction,
   getAssociatedTokenAddress,
   toNative,
+  toNativeI80F48,
   toUiDecimals,
 } from '@blockworks-foundation/mango-v4'
 import { TOKEN_PROGRAM_ID } from '@solana/spl-governance'
@@ -36,6 +37,7 @@ import {
 } from '@solana/web3.js'
 import { floorToDecimal } from './numbers'
 import { BOOST_ACCOUNT_PREFIX } from './constants'
+import { notify } from './notifications'
 
 export const withdrawAndClose = async (
   client: MangoClient,
@@ -57,7 +59,7 @@ export const withdrawAndClose = async (
   const withdrawHealthRemainingAccounts: PublicKey[] =
     client.buildHealthRemainingAccounts(group, [mangoAccount], [], [], [])
   const withdrawMax =
-    amount == floorToDecimal(stakeBalance, stakeBank.mintDecimals).toNumber()
+    amount >= floorToDecimal(stakeBalance, stakeBank.mintDecimals).toNumber()
   console.log('withdrawMax: ', withdrawMax)
 
   const nativeWithdrawAmount = toNative(
@@ -111,6 +113,7 @@ export const unstakeAndSwap = async (
   group: Group,
   mangoAccount: MangoAccount,
   stakeMintPk: PublicKey,
+  stakeAmountToRepay?: number,
 ): Promise<MangoSignatureStatus> => {
   console.log('unstake and swap')
 
@@ -126,20 +129,33 @@ export const unstakeAndSwap = async (
 
   let swapAlts: AddressLookupTableAccount[] = []
   if (borrowed.toNumber() < 0) {
+    const toRepay = Math.ceil(
+      (stakeAmountToRepay
+        ? toNativeI80F48(stakeAmountToRepay, stakeBank.mintDecimals)
+        : borrowed.abs().div(stakeBank.getAssetPrice())
+      )
+        .add(I80F48.fromNumber(100))
+        .toNumber(),
+    )
+
     console.log('borrowedSol amount: ', borrowed.toNumber())
+    console.log('borrow needed to repay for withdraw', toRepay)
+    const slippage = 1
 
     const { bestRoute: selectedRoute } = await fetchJupiterRoutes(
       stakeMintPk.toString(),
       borrowBank.mint.toString(),
-      Math.ceil(borrowed.abs().add(I80F48.fromNumber(100)).toNumber()),
-      500,
-      'ExactOut',
+      Math.ceil(toRepay),
+      slippage,
+      'ExactIn',
+      0,
+      false,
     )
+    console.log(selectedRoute)
 
     if (!selectedRoute) {
       throw Error('Unable to find a swap route')
     }
-    const slippage = 500 // bips
 
     const [jupiterIxs, jupiterAlts] = await fetchJupiterTransaction(
       client.program.provider.connection,
@@ -358,7 +374,7 @@ export const depositAndCreate = async (
         [],
       )
     : [depositBank.publicKey, depositBank.oracle]
-    
+
   const depositTokenIxs = await createDepositIx(
     client,
     group,
@@ -729,12 +745,12 @@ const fetchJupiterRoutes = async (
   inputMint: string,
   outputMint: string,
   amount = 0,
-  slippage = 50,
+  slippage = 5,
   swapMode = 'ExactIn',
   feeBps = 0,
   onlyDirectRoutes = true,
 ) => {
-  {
+  try {
     const paramsString = new URLSearchParams({
       inputMint: inputMint.toString(),
       outputMint: outputMint.toString(),
@@ -749,9 +765,20 @@ const fetchJupiterRoutes = async (
       `https://quote-api.jup.ag/v6/quote?${paramsString}`,
     )
     const res = await response.json()
-
+    if (res.error) {
+      throw res.error
+    }
     return {
       bestRoute: res as RouteInfo | null,
+    }
+  } catch (e) {
+    console.log(e, 'Error finding jupiter route')
+    notify({
+      title: `Error finding jupiter route ${e}`,
+      type: 'info',
+    })
+    return {
+      bestRoute: null,
     }
   }
 }
