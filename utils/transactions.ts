@@ -59,7 +59,7 @@ export const withdrawAndClose = async (
   const withdrawHealthRemainingAccounts: PublicKey[] =
     client.buildHealthRemainingAccounts(group, [mangoAccount], [], [], [])
   const withdrawMax =
-    amount == floorToDecimal(stakeBalance, stakeBank.mintDecimals).toNumber()
+    amount >= floorToDecimal(stakeBalance, stakeBank.mintDecimals).toNumber()
   console.log('withdrawMax: ', withdrawMax)
 
   const nativeWithdrawAmount = toNative(
@@ -131,10 +131,8 @@ export const unstakeAndSwap = async (
   if (borrowed.toNumber() < 0) {
     const toRepay = Math.ceil(
       (amountToRepay
-        ? toNativeI80F48(amountToRepay, stakeBank.mintDecimals).mul(
-            stakeBank.getAssetPrice(),
-          )
-        : borrowed.abs()
+        ? toNativeI80F48(amountToRepay, stakeBank.mintDecimals)
+        : borrowed.abs().div(stakeBank.getAssetPrice())
       )
         .add(I80F48.fromNumber(100))
         .toNumber(),
@@ -142,19 +140,22 @@ export const unstakeAndSwap = async (
 
     console.log('borrowedSol amount: ', borrowed.toNumber())
     console.log('borrow needed to repay for withdraw', toRepay)
+    const slippage = 1
 
     const { bestRoute: selectedRoute } = await fetchJupiterRoutes(
       stakeMintPk.toString(),
       borrowBank.mint.toString(),
-      toRepay,
-      500,
-      'ExactOut',
+      Math.ceil(toRepay),
+      slippage,
+      'ExactIn',
+      0,
+      false,
     )
+    console.log(selectedRoute)
 
     if (!selectedRoute) {
       throw Error('Unable to find a swap route')
     }
-    const slippage = 500 // bips
 
     const [jupiterIxs, jupiterAlts] = await fetchJupiterTransaction(
       client.program.provider.connection,
@@ -744,7 +745,7 @@ const fetchJupiterRoutes = async (
   inputMint: string,
   outputMint: string,
   amount = 0,
-  slippage = 50,
+  slippage = 5,
   swapMode = 'ExactIn',
   feeBps = 0,
   onlyDirectRoutes = true,

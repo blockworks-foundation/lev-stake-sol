@@ -38,6 +38,7 @@ import Decimal from 'decimal.js'
 import { Disclosure } from '@headlessui/react'
 import { sleep } from 'utils'
 import useIpAddress from 'hooks/useIpAddress'
+import { AnchorProvider } from '@project-serum/anchor'
 
 const set = mangoStore.getState().set
 
@@ -209,8 +210,11 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
           type: 'success',
           txid: tx,
         })
-        await sleep(500)
-        await actions.fetchMangoAccounts(mangoAccount.owner)
+        await sleep(100)
+        await actions.fetchMangoAccounts(
+          (client.program.provider as AnchorProvider).wallet.publicKey,
+        )
+        await actions.reloadMangoAccount()
         await actions.fetchWalletTokens(publicKey)
         mangoAccount = mangoStore.getState().mangoAccount.current
         notify({
@@ -233,8 +237,11 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
       })
       setSubmitting(false)
       setInputAmount('')
-      await sleep(500)
-      await actions.fetchMangoAccounts(mangoAccount.owner)
+      await sleep(100)
+      await actions.fetchMangoAccounts(
+        (client.program.provider as AnchorProvider).wallet.publicKey,
+      )
+      await actions.reloadMangoAccount()
       await actions.fetchWalletTokens(publicKey)
     } catch (e) {
       console.error('Error withdrawing:', e)
