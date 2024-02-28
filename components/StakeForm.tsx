@@ -533,57 +533,6 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <p className="text-th-fgd-4">{`Loan Origination Fee (${(borrowBank?.loanOriginationFeeRate.toNumber() * 100).toFixed(2)}%)`}</p>
-                            <span
-                              className={`font-bold ${
-                                amountToBorrow > 0.001
-                                  ? 'text-th-fgd-1'
-                                  : 'text-th-bkg-4'
-                              }`}
-                            >
-                              <FormatNumericValue
-                                value={(borrowBank?.loanOriginationFeeRate.toNumber()) * amountToBorrow}
-                                decimals={2}
-                              />
-                              <span className="font-body text-th-fgd-4">
-                                {' '}
-                                {borrowBank.name}
-                              </span>
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <p className="text-th-fgd-4">{`${stakeBank.name} Position`}</p>
-                            <span
-                              className={`font-bold ${
-                                amountToBorrow > 0.001
-                                  ? 'text-th-fgd-1'
-                                  : 'text-th-bkg-4'
-                              }`}
-                            >
-                              <FormatNumericValue
-                                value={leverage * Number(inputAmount)}
-                                decimals={3}
-                              />
-                              <span className="font-body text-th-fgd-4">
-                                {' '}
-                                {stakeBank.name}{' '}
-                              </span>
-                              <span className="font-body text-th-fgd-4">
-                                {' '}
-                                (
-                                <FormatNumericValue
-                                  value={
-                                    leverage *
-                                    Number(inputAmount) *
-                                    stakeBank?.uiPrice
-                                  }
-                                  decimals={3}
-                                />{' '}
-                                {borrowBank.name})
-                              </span>
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
                             <p className="text-th-fgd-4">{`Liquidation Price`}</p>
                             <span
                               className={`font-bold ${
