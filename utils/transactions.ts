@@ -133,9 +133,7 @@ export const unstakeAndSwap = async (
       (stakeAmountToRepay
         ? toNativeI80F48(stakeAmountToRepay, stakeBank.mintDecimals)
         : borrowed.abs().div(stakeBank.getAssetPrice())
-      )
-        .add(I80F48.fromNumber(100))
-        .toNumber(),
+      ).toNumber() * 1.002,
     )
 
     console.log('borrowedSol amount: ', borrowed.toNumber())
@@ -758,6 +756,7 @@ const fetchJupiterRoutes = async (
       amount: amount.toString(),
       slippageBps: Math.ceil(slippage * 100).toString(),
       feeBps: feeBps.toString(),
+      maxAccounts: '50',
       swapMode,
       onlyDirectRoutes: `${onlyDirectRoutes}`,
     }).toString()
