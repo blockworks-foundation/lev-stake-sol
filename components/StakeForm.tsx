@@ -31,7 +31,7 @@ import Link from 'next/link'
 import LeverageSlider from './shared/LeverageSlider'
 import useMangoGroup from 'hooks/useMangoGroup'
 import FormatNumericValue from './shared/FormatNumericValue'
-import { stakeAndCreate } from 'utils/transactions'
+import { getNextAccountNumber, stakeAndCreate } from 'utils/transactions'
 // import { MangoAccount } from '@blockworks-foundation/mango-v4'
 import { AnchorProvider } from '@project-serum/anchor'
 import useBankRates from 'hooks/useBankRates'
@@ -101,10 +101,10 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { group } = useMangoGroup()
   const groupLoaded = mangoStore((s) => s.groupLoaded)
-  const {
-    financialMetrics,
-    borrowBankBorrowRate,
-  } = useBankRates(selectedToken, leverage)
+  const { financialMetrics, borrowBankBorrowRate } = useBankRates(
+    selectedToken,
+    leverage,
+  )
   const leverageMax = useLeverageMax(selectedToken) * 0.9 // Multiplied by 0.975 becuase you cant actually get to the end of the inifinite geometric series?
 
   const stakeBank = useMemo(() => {
@@ -120,9 +120,11 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     const borrowMaintLiabWeight = Number(borrowBank?.maintLiabWeight)
     const stakeMaintAssetWeight = Number(stakeBank?.maintAssetWeight)
     const loanOriginationFee = Number(borrowBank?.loanOriginationFeeRate)
-    const liqPrice = price *
-      ((borrowMaintLiabWeight * (1 + loanOriginationFee)) / stakeMaintAssetWeight) *
-      (1 - (1 / leverage))
+    const liqPrice =
+      price *
+      ((borrowMaintLiabWeight * (1 + loanOriginationFee)) /
+        stakeMaintAssetWeight) *
+      (1 - 1 / leverage)
     return liqPrice.toFixed(3)
   }, [stakeBank, borrowBank, leverage])
 
@@ -197,10 +199,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     const actions = mangoStore.getState().actions
     const mangoAccount = mangoStore.getState().mangoAccount.current
     const mangoAccounts = mangoStore.getState().mangoAccounts
-    const nextAccNumber =
-      mangoAccounts.reduce((prev, current) => {
-        return prev.accountNum > current.accountNum ? prev : current
-      }, mangoAccounts[0])?.accountNum + 1
+    const accNumber = getNextAccountNumber(mangoAccounts)
 
     if (!group || !stakeBank || !publicKey) return
     console.log(mangoAccounts)
@@ -220,7 +219,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
         amountToBorrow,
         stakeBank.mint,
         parseFloat(inputAmount),
-        mangoAccounts ? nextAccNumber : 0,
+        accNumber ?? 0,
       )
       notify({
         title: 'Transaction confirmed',
@@ -403,14 +402,14 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                       <div className="flex items-center justify-between">
                         <p className="font-medium">Est. Net APY</p>
                         <div className="flex items-center space-x-2">
-                        <span
-                              className={`font-bold ${
-                                financialMetrics.APY > 0.001
-                                  ? 'text-th-success'
-                                  : 'text-th-error'
-                              }`}
-                            >
-                             {financialMetrics.APY >= 0
+                          <span
+                            className={`font-bold ${
+                              financialMetrics.APY > 0.001
+                                ? 'text-th-success'
+                                : 'text-th-error'
+                            }`}
+                          >
+                            {financialMetrics.APY >= 0
                               ? '+'
                               : financialMetrics.APY === 0
                               ? ''
@@ -430,64 +429,65 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                       </div>
                     </Disclosure.Button>
                     <Disclosure.Panel className="space-y-2 rounded-xl rounded-t-none border-2 border-t-0 border-th-bkg-3 px-4 pb-3">
-                    
-                    <div className="flex justify-between">
-                            <p className="text-th-fgd-4">{`${stakeBank.name} Position`}</p>
-                            <span
-                              className={`font-bold ${
-                                amountToBorrow > 0.001
-                                  ? 'text-th-fgd-1'
-                                  : 'text-th-bkg-4'
-                              }`}
-                            >
-                              <FormatNumericValue
-                                value={leverage * Number(inputAmount)}
-                                decimals={3}
-                              />
-                              <span className="font-body text-th-fgd-4">
-                                {' '}
-                                {stakeBank.name}{' '}
-                              </span>
-                              <span className="font-body text-th-fgd-4">
-                                {' '}
-                                (
-                                <FormatNumericValue
-                                  value={
-                                    leverage *
-                                    Number(inputAmount) *
-                                    stakeBank?.uiPrice
-                                  }
-                                  decimals={3}
-                                />{' '}
-                                {borrowBank.name})
-                              </span>
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <p className="text-th-fgd-4">{`${borrowBank.name} Borrowed`}</p>
-                            <span
-                              className={`font-bold ${
-                                amountToBorrow > 0.001
-                                  ? 'text-th-fgd-1'
-                                  : 'text-th-bkg-4'
-                              }`}
-                            >
-                              <FormatNumericValue
-                                value={amountToBorrow}
-                                decimals={3}
-                              />
-                              <span className="font-body text-th-fgd-4">
-                                {' '}
-                                {borrowBank.name}
-                              </span>
-                            </span>
-                          </div>
+                      <div className="flex justify-between">
+                        <p className="text-th-fgd-4">{`${stakeBank.name} Position`}</p>
+                        <span
+                          className={`font-bold ${
+                            amountToBorrow > 0.001
+                              ? 'text-th-fgd-1'
+                              : 'text-th-bkg-4'
+                          }`}
+                        >
+                          <FormatNumericValue
+                            value={leverage * Number(inputAmount)}
+                            decimals={3}
+                          />
+                          <span className="font-body text-th-fgd-4">
+                            {' '}
+                            {stakeBank.name}{' '}
+                          </span>
+                          <span className="font-body text-th-fgd-4">
+                            {' '}
+                            (
+                            <FormatNumericValue
+                              value={
+                                leverage *
+                                Number(inputAmount) *
+                                stakeBank?.uiPrice
+                              }
+                              decimals={3}
+                            />{' '}
+                            {borrowBank.name})
+                          </span>
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <p className="text-th-fgd-4">{`${borrowBank.name} Borrowed`}</p>
+                        <span
+                          className={`font-bold ${
+                            amountToBorrow > 0.001
+                              ? 'text-th-fgd-1'
+                              : 'text-th-bkg-4'
+                          }`}
+                        >
+                          <FormatNumericValue
+                            value={amountToBorrow}
+                            decimals={3}
+                          />
+                          <span className="font-body text-th-fgd-4">
+                            {' '}
+                            {borrowBank.name}
+                          </span>
+                        </span>
+                      </div>
                       <div className="flex justify-between">
                         <p className="text-th-fgd-4">
                           {formatTokenSymbol(selectedToken)} Returns APY
                         </p>
                         <span className="font-bold text-th-success">
-                          {financialMetrics.collectedReturnsAPY > 0.01 ? '+' : ''}
+                          {financialMetrics.collectedReturnsAPY > 0.01
+                            ? '+'
+                            : ''}
                           <FormatNumericValue
                             value={financialMetrics.collectedReturnsAPY}
                             decimals={2}
@@ -548,7 +548,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                               />
                               <span className="font-body text-th-fgd-4">
                                 {' '}
-                                {stakeBank.name}/{borrowBank.name} 
+                                {stakeBank.name}/{borrowBank.name}
                               </span>
                             </span>
                           </div>

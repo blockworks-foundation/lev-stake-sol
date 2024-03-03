@@ -21,7 +21,7 @@ import useMangoAccountAccounts from 'hooks/useMangoAccountAccounts'
 import InlineNotification from './shared/InlineNotification'
 import Link from 'next/link'
 import useMangoGroup from 'hooks/useMangoGroup'
-import { depositAndCreate } from 'utils/transactions'
+import { depositAndCreate, getNextAccountNumber } from 'utils/transactions'
 // import { MangoAccount } from '@blockworks-foundation/mango-v4'
 import { AnchorProvider } from '@project-serum/anchor'
 import SheenLoader from './shared/SheenLoader'
@@ -125,6 +125,7 @@ function DespositForm({ token: selectedToken }: StakeFormProps) {
     const actions = mangoStore.getState().actions
     const mangoAccounts = mangoStore.getState().mangoAccounts
     const mangoAccount = mangoStore.getState().mangoAccount.current
+    const accNumber = getNextAccountNumber(mangoAccounts)
 
     if (!group || !depositBank || !publicKey) return
 
@@ -142,7 +143,7 @@ function DespositForm({ token: selectedToken }: StakeFormProps) {
         mangoAccount,
         depositBank.mint,
         parseFloat(inputAmount),
-        mangoAccounts?.length + 1 ?? 0,
+        accNumber ?? 0,
       )
       notify({
         title: 'Transaction confirmed',

@@ -3,7 +3,6 @@ import {
   Bank,
   FlashLoanType,
   Group,
-  I80F48,
   MangoAccount,
   MangoClient,
   MangoSignatureStatus,
@@ -844,4 +843,17 @@ const tokenWithdrawNativeIx = async (
     .instruction()
 
   return [...preInstructions, ix, ...postInstructions]
+}
+
+export const getNextAccountNumber = (accounts: MangoAccount[]): number => {
+  if (accounts.length > 1) {
+    return (
+      accounts
+        .map((a) => a.accountNum)
+        .reduce((a, b) => Math.max(a, b), -Infinity) + 1
+    )
+  } else if (accounts.length === 1) {
+    return accounts[0].accountNum + 1
+  }
+  return 0
 }
