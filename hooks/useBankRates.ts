@@ -34,57 +34,83 @@ export default function useBankRates(selectedToken: string, leverage: number) {
   }, [stakeRates, selectedToken])
 
   const financialMetrics = useMemo(() => {
+    // Collateral fee is charged on the assets needed to back borrows and
+    // 1 deposited JLP can back maintAssetWeight * (1 JLP-value) USDC borrows.
+    const collateralFeePerBorrowPerDay =
+      Number(stakeBank?.collateralFeePerDay) /
+      Number(stakeBank?.maintAssetWeight)
 
-    let borrowMultiplier = leverage - 1;
-    let depositMultiplier = leverage;
+    // Convert the borrow APR to a daily rate
+    const borrowRatePerDay = Number(borrowBankBorrowRate) / 365
+
+    // Convert the JLP APY to a daily rate
+    const jlpRatePerDay = (1 + jlpStakeRateAPY) ** (1 / 365) - 1
+
+    // Assume the user deposits 1 JLP, then these are the starting deposits and
+    // borrows for the desired leverage (in terms of starting-value JLP)
+    const initialBorrows = leverage - 1
+    const initialDeposits = leverage
+
+    // In the following, we'll simulate time passing and how the deposits and
+    // borrows evolve.
+    // Note that these will be in terms of starting-value JLP, meaning that JLP
+    // price increases will be modelled as deposits increasing in amount.
+    let borrows = initialBorrows
+    let deposits = initialDeposits
 
     let collectedCollateralFees = 0
     let collectedReturns = 0
 
-    const maintAssetWeight = Number(stakeBank?.maintAssetWeight);
-    const collateralFeePerDay = Number(stakeBank?.collateralFeePerDay);
-    const borrowFeeRatePerDay = 1 + Number(borrowBankBorrowRate) / 365;
-    const jlpStakeRatePerDay = ((jlpStakeRateAPY + 1) ** (1 / 365));
-
     for (let day = 1; day <= 365; day++) {
+      borrows *= 1 + borrowRatePerDay
 
-      // Collateral Fee Multiplier
-      const collateralFeeMultiplier = borrowMultiplier / (depositMultiplier * maintAssetWeight);
-      const multipliedCollateralFeeRatePerDay = collateralFeeMultiplier * collateralFeePerDay;
+      const collateralFees = collateralFeePerBorrowPerDay * borrows
+      deposits -= collateralFees
+      collectedCollateralFees += collateralFees
 
-      // USDC Liabilities Multiplier
-      borrowMultiplier =  borrowMultiplier * borrowFeeRatePerDay;
-      
-      // Daily Collateral Fees  
-      collectedCollateralFees += (multipliedCollateralFeeRatePerDay) * depositMultiplier
-      collectedReturns += (jlpStakeRatePerDay - 1) * depositMultiplier
-      depositMultiplier = depositMultiplier * jlpStakeRatePerDay;
-      depositMultiplier = depositMultiplier - (multipliedCollateralFeeRatePerDay * depositMultiplier);
+      const jlpReturns = jlpRatePerDay * deposits
+      deposits += jlpReturns
+      collectedReturns += jlpReturns
     }
 
     // APY's for the calculation
-    const depositAPY = collectedReturns * 100; // Composed of the below two
-    const collateralFeeAPY =  collectedCollateralFees * 100;
-    const collectedReturnsAPY =  (collectedReturns) * 100;
-    
-    // Interest Fee APY: Reflecting borrowing cost as an annual percentage yield
-    const interestCost = (borrowMultiplier - (leverage - 1)); // APY on interest
-    const borrowsAPY = 100 * interestCost; 
+    const depositAPY = (deposits - initialDeposits) * 100
+    const collateralFeeAPY = collectedCollateralFees * 100
+    const collectedReturnsAPY = collectedReturns * 100
 
-    // Total APY taking into account interest, collateral fees and returns
-    const APY = 100 * ((depositMultiplier - borrowMultiplier) - 1)
+    // Interest Fee APY: Reflecting borrowing cost as an annual percentage yield
+    const borrowsAPY = (borrows - initialBorrows) * 100
+
+    // Total APY, comparing the end value (deposits - borrows) to the starting value (1)
+    const APY = (deposits - borrows - 1) * 100
 
     // Comparisons to outside
-    const nonMangoAPY = jlpStakeRateAPY * leverage * 100;
-    const diffToNonMango = (depositAPY - nonMangoAPY);
-    const diffToNonLeveraged = (depositAPY - (jlpStakeRateAPY * 100));
-  
-    return { APY, depositAPY, collectedReturnsAPY, collateralFeeAPY, borrowsAPY, nonMangoAPY, diffToNonMango, diffToNonLeveraged };
-  }, [leverage, borrowBankBorrowRate, jlpStakeRateAPY, stakeBank?.collateralFeePerDay, stakeBank?.maintAssetWeight ]);
+    const nonMangoAPY = jlpStakeRateAPY * leverage * 100
+    const diffToNonMango = APY - nonMangoAPY
+    const diffToNonLeveraged = APY - jlpStakeRateAPY * 100
+
+    return {
+      APY,
+      depositAPY,
+      collectedReturnsAPY,
+      collateralFeeAPY,
+      borrowsAPY,
+      nonMangoAPY,
+      diffToNonMango,
+      diffToNonLeveraged,
+    }
+  }, [
+    leverage,
+    borrowBankBorrowRate,
+    jlpStakeRateAPY,
+    stakeBank?.collateralFeePerDay,
+    stakeBank?.maintAssetWeight,
+  ])
 
   const estimatedMaxAPY = useMemo(() => {
     return (
-      jlpStakeRateAPY * leverageMax - Number(borrowBankBorrowRate) * (leverageMax - 1)
+      jlpStakeRateAPY * leverageMax -
+      Number(borrowBankBorrowRate) * (leverageMax - 1)
     )
   }, [jlpStakeRateAPY, borrowBankBorrowRate, leverageMax])
 
