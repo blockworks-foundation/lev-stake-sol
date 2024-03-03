@@ -61,7 +61,10 @@ const TopBar = () => {
       <div className="col-span-3 flex items-center justify-end sm:col-span-4 md:col-span-3">
         <div className="flex space-x-3">
           {isMobile ? (
-            <MobileNavigation />
+            <>
+              {connected ? <ConnectedMenu /> : <ConnectWalletButton />}
+              <MobileNavigation />
+            </>
           ) : (
             <>
               <ThemeToggle />{' '}
@@ -105,7 +108,6 @@ const MenuPanel = ({
   showMenu: boolean
   setShowMenu: (showMenu: boolean) => void
 }) => {
-  const { connected } = useWallet()
   const closeOnClick = () => {
     setShowMenu(false)
   }
@@ -117,9 +119,8 @@ const MenuPanel = ({
           showMenu ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="mb-6 flex justify-between space-x-4 px-4 py-3">
+        <div className="mb-6 flex justify-end space-x-3 px-4 py-3">
           <ThemeToggle />
-          {connected ? <ConnectedMenu /> : <ConnectWalletButton />}
           <IconButton onClick={() => setShowMenu(false)} size="large">
             <XMarkIcon className="h-6 w-6" />
           </IconButton>

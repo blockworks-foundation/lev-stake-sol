@@ -86,7 +86,7 @@ const ConnectedMenu = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Popover.Panel className="absolute right-0 top-14 z-20 mt-1 w-44 space-y-1.5 rounded-xl border-2 border-th-fgd-1 bg-th-bkg-1 px-4 py-2.5 focus:outline-none">
+            <Popover.Panel className="absolute right-0 top-14 z-20 mt-1 w-48 space-y-1.5 rounded-xl border-2 border-th-fgd-1 bg-th-bkg-1 px-4 py-2.5 focus:outline-none sm:w-44">
               <button
                 className="flex w-full flex-row items-center rounded-none py-0.5 text-sm font-bold focus:outline-none md:hover:cursor-pointer md:hover:text-th-fgd-4"
                 onClick={handleDisconnect}
