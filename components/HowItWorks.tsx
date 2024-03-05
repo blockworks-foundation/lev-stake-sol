@@ -10,8 +10,8 @@ const HowItWorks = () => {
       <h3 className="mb-1">The basics of JLP</h3>
       <p className="mb-3 leading-relaxed">
         JLP is the liquidity provider token for Jupiter Perps. It represents a
-        pool of assets that traders borrow from to open leveraged perp
-        positions.
+        pool of assets that traders borrow from to open leveraged perp positions
+        on the Jupiter platform.
       </p>
       <p className="mb-6 leading-relaxed">
         Liquidity providers can deposit assets like BTC or SOL into the pool and
@@ -72,15 +72,65 @@ const HowItWorks = () => {
         to be in profit because of the upfront fees paid to borrow USDC.
       </p>
       <h3 className="mb-1">Boosting USDC</h3>
-      <p className="mb-3 leading-relaxed">
+      <p className="mb-6 leading-relaxed">
         Boosting USDC is simply supplying it to the lending pool. Your USDC
         balance will lent to JLP boosters and will continously earn the variable
-        interest rate.
+        interest rate. There are no fees associated with lending USDC.
       </p>
-      <p className="mb-3 leading-relaxed">
+      {/* <p className="mb-3 leading-relaxed">
         There are no fees associated with lending USDC but there are risks. If
         there was a catastrophic failure in JLP or Boost! you could lose all of
         your funds.
+      </p> */}
+      <h3 className="mb-1">Risks</h3>
+      <p className="mb-3 leading-relaxed">
+        The following risks are non-exhaustive
+      </p>
+      <h4 className="mb-1">JLP</h4>
+      <p className="mb-3 leading-relaxed">
+        JLP&apos;s value relies on complex market dynamics and smart contract
+        code. This exposes it to multiple potential failure points that could
+        result in total loss.
+      </p>
+      <p className="mb-3 leading-relaxed">
+        If JLP were to have a large depegging event it could leave Boost! with
+        bad debt. JLP boosters would lose due to JLP losing value and USDC
+        depositors would lose if the JLP was unable to be liquidated in time.
+      </p>
+      <h4 className="mb-1">Oracles</h4>
+      <p className="mb-3 leading-relaxed">
+        Boost! uses 3rd party oracle providers for pricing data. It is possible
+        that bad data from these oracle services could result in liquidations
+        and/or total loss of funds.
+      </p>
+      <h4 className="mb-1">Liquidity</h4>
+      <p className="mb-3 leading-relaxed">
+        Opening and closing positions on Boost! relies on swapping between JLP
+        and USDC without significant price impact. During an extreme market
+        event there could be issues liquidating positions effectively. This
+        could affect the liquidity available to open/close positions.
+      </p>
+      <h4 className="mb-1">Boost! Code</h4>
+      <p className="mb-3 leading-relaxed">
+        Boost! is an integration with the Mango v4 contracts. These are audited
+        by{' '}
+        <a href="https://osec.io/" rel="noopener noreferrer" target="_blank">
+          OtterSec
+        </a>{' '}
+        on every release. It is still possible for exploitable vulnerabilities
+        to exist that could result in total loss of funds.
+      </p>
+      <h4 className="mb-1">Boost! UI</h4>
+      <p className="mb-3 leading-relaxed">
+        As the Boost! UI changes fairly regularly it&apso;s possible for errors
+        to be introduced that could temporaily affect your ability to enter or
+        exit positions.
+      </p>
+      <h4 className="mb-1">Solana Network and RPCs</h4>
+      <p className="mb-3 leading-relaxed">
+        Boost! relies on the Solana Network and external RPCs to function. If
+        these services are down access to your funds on Boost! will be affected.
+        If this coincides with a market event you could lose funds.
       </p>
     </div>
   )

@@ -7,9 +7,9 @@ const FAQS = [
     answer: (
       <p>
         Boost! allows you to increase your position size by borrowing USDC and
-        swapping it for JLP. This means you earn more yield
-        from JLP due to a larger position size. As long
-        as this yield exceeds the rate of the USDC borrow and collateral fees, you earn a premium.
+        swapping it for JLP. This means you earn more yield from JLP due to a
+        larger position size. As long as this yield exceeds the rate of the USDC
+        borrow and collateral fees, you earn a premium.
       </p>
     ),
   },
@@ -17,8 +17,10 @@ const FAQS = [
     question: 'How does unboosting work?',
     answer: (
       <p>
-        Unboosting works by selling some of your JLP token to repay your USDC borrow
-        and withdrawing to your wallet. If the JLP token price increases enough to cover your borrow fee and collateral fee, you will earn a higher APY over time.
+        Unboosting works by selling some of your JLP token to repay your USDC
+        borrow and withdrawing to your wallet. If the JLP token price increases
+        enough to cover your borrow fee and collateral fee, you will earn a
+        higher APY over time.
       </p>
     ),
   },
@@ -50,7 +52,7 @@ const FAQS = [
         <p>
           Opening and closing positions on Boost! relies on swapping between the
           staking tokens and USDC without significant price impact. During an
-          extreme market event there could be issues liquidating position
+          extreme market event there could be issues liquidating positions
           effectively. This could affect the liquidity available to open/close
           positions.
         </p>
@@ -63,9 +65,10 @@ const FAQS = [
         </p>
         <h4>Yield Duration</h4>
         <p>
-          When you borrow USDC to open a position on Boost! you&apos;ll be paying
-          an initial loan origination fee, interest on the borrowed amount, and a collateral fee instantaneously. This means you
-          could open a position and close it before earning any additional yeild,
+          When you borrow USDC to open a position on Boost! you&apos;ll be
+          paying an initial loan origination fee, interest on the borrowed
+          amount, and a collateral fee instantaneously. This means you could
+          open a position and close it before earning any additional yeild,
           whilst paying interest and collateral fees to borrow USDC.
         </p>
       </>
@@ -75,11 +78,12 @@ const FAQS = [
     question: 'Where does the yield come from?',
     answer: (
       <p>
-        The price of JLP vs USDC. JLP is a liquidity pool provider token composed of assets, trading fees and traders profits and losses. Boost!
-        increases the position size of your staking token by borrowing USDC. This
-        means you earn more of the staking reward every epoch. It&apos;s
-        important to account for the cost of borrowing USDC. This is displayed in
-        the UI.
+        The price of JLP vs USDC. JLP is a liquidity pool provider token
+        composed of assets, trading fees and traders profits and losses. Boost!
+        increases the position size of your staking token by borrowing USDC.
+        This means you earn more of the staking reward every epoch. It&apos;s
+        important to account for the cost of borrowing USDC. This is displayed
+        in the UI.
       </p>
     ),
   },
