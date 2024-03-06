@@ -56,9 +56,25 @@ const HowItWorks = () => {
       </p>
       <h4 className="mb-1">JLP Collateral Fee</h4>
       <p className="mb-3 leading-relaxed">
-        This is charged on your JLP collateral as insurance in case JLP blows up
-        and can&apos;t be liquidated. It will reduce the size of your JLP
-        position over time. This fee accrues to Mango DAO.
+        This is charged on your JLP collateral once every two days as insurance
+        for JLP suffering a catastrophic failure resulting in bad debt. It will
+        reduce the size of your JLP position over time. The fee accrues to Mango
+        DAO.
+      </p>
+      <p className="mb-3 leading-relaxed">
+        The collateral fee is a dynamic formula that uses a fixed Annual
+        Percentage Rate (APR) of 41%. This rate is then multiplied by the ratio
+        of your USDC liabilities (the amount you&apos;ve borrowed) against your
+        &quot;weighted&quot; JLP deposits (the value of your position adjusted
+        by a factor between 0 and 1). The JLP weight is currently set at 0.9.
+      </p>
+      <p className="mb-3 leading-relaxed">
+        The key aspect of this fee is its dynamism; it scales with your
+        position&apos;s proximity to the liquidation price. Positions closer to
+        liquidation are subjected to a higher fee, reflecting increased risk,
+        while positions further from liquidation incur a lower fee.
+        Consequently, the more leverage you take on the more collateral fees
+        you&apos;ll pay.
       </p>
       <h4 className="mb-1">Position Entry Costs</h4>
       <p className="mb-3 leading-relaxed">
