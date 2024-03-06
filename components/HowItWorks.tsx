@@ -74,8 +74,8 @@ const HowItWorks = () => {
       <h3 className="mb-1">Boosting USDC</h3>
       <p className="mb-6 leading-relaxed">
         Boosting USDC is simply supplying it to the lending pool. Your USDC
-        balance will lent to JLP boosters and will continously earn the variable
-        interest rate. There are no fees associated with lending USDC.
+        balance will be lent to JLP boosters and will continously earn the
+        variable interest rate. There are no fees associated with lending USDC.
       </p>
       {/* <p className="mb-3 leading-relaxed">
         There are no fees associated with lending USDC but there are risks. If
@@ -84,13 +84,13 @@ const HowItWorks = () => {
       </p> */}
       <h3 className="mb-1">Risks</h3>
       <p className="mb-3 leading-relaxed">
-        The following risks are non-exhaustive
+        The following risks are non-exhaustive.
       </p>
       <h4 className="mb-1">JLP</h4>
       <p className="mb-3 leading-relaxed">
         JLP&apos;s value relies on complex market dynamics and smart contract
         code. This exposes it to multiple potential failure points that could
-        result in total loss.
+        result in total loss of funds.
       </p>
       <p className="mb-3 leading-relaxed">
         If JLP were to have a large depegging event it could leave Boost! with
