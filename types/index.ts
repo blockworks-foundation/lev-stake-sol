@@ -364,6 +364,7 @@ export interface TokenStatsItem {
   collected_fees: number
   date_hour: string
   deposit_apr: number
+  deposit_apy: number
   deposit_rate: number
   mango_group: string
   price: number
