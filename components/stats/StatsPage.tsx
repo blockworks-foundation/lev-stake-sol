@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { STAKEABLE_TOKENS } from 'utils/constants'
 import { formatCurrencyValue } from 'utils/numbers'
 import { formatTokenSymbol } from 'utils/tokens'
+import HistoricalStats from './HistoricalStats'
 
 const StatsPage = () => {
   const { group } = useMangoGroup()
@@ -138,6 +139,7 @@ const StatsPage = () => {
           })}
         </div>
       )}
+      <HistoricalStats />
     </div>
   )
 }
