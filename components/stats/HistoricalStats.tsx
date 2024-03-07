@@ -48,7 +48,7 @@ const HistoricalStats = () => {
         daysToShow={depositDaysToShow}
         loading={loadingHistoricalStats}
         setDaysToShow={setDepositDaysToShow}
-        title={`USDC Deposit Rates (APR)`}
+        title={`USDC Deposit Rates (APY)`}
       />
     </div>
   )
