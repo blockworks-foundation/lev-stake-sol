@@ -4,8 +4,7 @@ const HowItWorks = () => {
       <h2 className="mb-1">Before you jump in</h2>
       <p className="mb-6 leading-relaxed">
         Boost! is high risk. Make sure you understand how it works before
-        risking any funds. Please refer to the <a>Boost! docs</a> for the full
-        technical details.
+        risking any funds.
       </p>
       <h3 className="mb-1">The basics of JLP</h3>
       <p className="mb-3 leading-relaxed">
@@ -138,7 +137,7 @@ const HowItWorks = () => {
       </p>
       <h4 className="mb-1">Boost! UI</h4>
       <p className="mb-3 leading-relaxed">
-        As the Boost! UI changes fairly regularly it&apso;s possible for errors
+        As the Boost! UI changes fairly regularly it&apos;s possible for errors
         to be introduced that could temporaily affect your ability to enter or
         exit positions.
       </p>
