@@ -17,7 +17,7 @@ const fetchRates = async () => {
     ])
 
     const resp = await fetch(
-      `https://api.coingeckos.com/api/v3/coins/jupiter-perpetuals-liquidity-provider-token/market_chart?vs_currency=usd&days=30&interval=daily`,
+      `https://api.coingecko.com/api/v3/coins/jupiter-perpetuals-liquidity-provider-token/market_chart?vs_currency=usd&days=30&interval=daily`,
     )
     const jlpPricesData = await resp.json()
     const jlpPricesPrice = jlpPricesData.prices.map(
