@@ -74,7 +74,7 @@ const TopBar = () => {
         </div>
       </div>
       {!isOnline ? (
-        <div className="bg-th-down absolute left-1/2 top-3 z-10 flex h-10 w-max -translate-x-1/2 items-center rounded-full px-4 py-2 md:top-8">
+        <div className="fixed left-1/2 top-3 z-20 flex h-10 w-max -translate-x-1/2 items-center rounded-full bg-th-error px-4 py-2 md:top-8">
           <ExclamationTriangleIcon className="h-5 w-5 shrink-0 text-th-fgd-1" />
           <p className="ml-2 text-th-fgd-1">
             Your connection appears to be offline
