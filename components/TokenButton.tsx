@@ -2,6 +2,8 @@ import Image from 'next/image'
 import { formatTokenSymbol } from 'utils/tokens'
 import useBankRates from 'hooks/useBankRates'
 import useLeverageMax from 'hooks/useLeverageMax'
+import mangoStore from '@store/mangoStore'
+import SheenLoader from './shared/SheenLoader'
 
 const TokenButton = ({
   handleTokenSelect,
@@ -13,6 +15,7 @@ const TokenButton = ({
   handleTokenSelect: (v: string) => void
 }) => {
   const leverage = useLeverageMax(tokenName) * 0.9
+  const groupLoaded = mangoStore((s) => s.groupLoaded)
 
   const { stakeBankDepositRate, financialMetrics } = useBankRates(
     tokenName,
@@ -24,7 +27,8 @@ const TokenButton = ({
     1,
   )
 
-  const APY_Daily_Compound = Math.pow(1 + Number(stakeBankDepositRate) / 365, 365) - 1;
+  const APY_Daily_Compound =
+    Math.pow(1 + Number(stakeBankDepositRate) / 365, 365) - 1
   const UiRate =
     tokenName === 'USDC'
       ? APY_Daily_Compound * 100
@@ -62,22 +66,23 @@ const TokenButton = ({
             selectedToken === tokenName ? 'text-th-fgd-1' : 'text-th-fgd-4'
           }`}
         >
-          {
-            // isLoading ? (
-            //   <SheenLoader>
-            //     <div
-            //       className={`h-5 w-10 ${
-            //         selectedToken === tokenName
-            //           ? 'bg-th-active-dark'
-            //           : 'bg-th-bkg-2'
-            //       }`}
-            //     />
-            //   </SheenLoader>
-            // ) :
-            tokenName === 'USDC'
-              ? `${UiRate.toFixed(2)}% APY`
-              : `Up to ${UiRate.toFixed(2)}% APY`
-          }
+          {!groupLoaded ? (
+            <SheenLoader>
+              <div
+                className={`h-5 w-10 ${
+                  selectedToken === tokenName
+                    ? 'bg-th-active-dark'
+                    : 'bg-th-bkg-2'
+                }`}
+              />
+            </SheenLoader>
+          ) : !UiRate || isNaN(UiRate) ? (
+            'Rate Unavailable'
+          ) : tokenName === 'USDC' ? (
+            `${UiRate.toFixed(2)}% APY`
+          ) : (
+            `Up to ${UiRate.toFixed(2)}% APY`
+          )}
         </span>
       </div>
     </button>
