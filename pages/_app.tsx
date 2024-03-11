@@ -47,8 +47,7 @@ import PlausibleProvider from 'next-plausible'
 export const queryClient = new QueryClient()
 
 const metaTitle = 'Boost!'
-const metaDescription =
-  'Earn boosted yield on your liquid staking tokens. Powered by Mango Markets'
+const metaDescription = 'Earn boosted yield on JLP and USDC. Powered by Mango'
 
 // Do not add hooks to this component, that will cause unnecessary rerenders
 // Top level state hydrating/updating should go in MangoProvider
@@ -118,7 +117,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="twitter:description" content={metaDescription} />
         <meta
           name="twitter:image"
-          content="https://app.mango.markets/images/1200x600-share.png?34567879"
+          content="https://boost.mango.markets/images/1200x675-share.png?345678790"
         />
         <meta name="google" content="notranslate" />
         <link rel="manifest" href="/manifest.json"></link>
