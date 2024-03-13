@@ -137,7 +137,6 @@ export const unstakeAndSwap = async (
       ),
       Math.ceil(toNativeI80F48(0.0001, stakeBank.mintDecimals).toNumber()),
     )
-    console.log(toRepay, '@@@@@@@')
 
     console.log('borrowedSol amount: ', borrowed.toNumber())
     console.log('borrow needed to repay for withdraw', toRepay)
