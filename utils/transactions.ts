@@ -128,12 +128,16 @@ export const unstakeAndSwap = async (
 
   let swapAlts: AddressLookupTableAccount[] = []
   if (borrowed.toNumber() < 0) {
-    const toRepay = Math.ceil(
-      (stakeAmountToRepay
-        ? toNativeI80F48(stakeAmountToRepay, stakeBank.mintDecimals)
-        : borrowed.abs().div(stakeBank.getAssetPrice())
-      ).toNumber() * 1.002,
+    const toRepay = Math.max(
+      Math.ceil(
+        (stakeAmountToRepay
+          ? toNativeI80F48(stakeAmountToRepay, stakeBank.mintDecimals)
+          : borrowed.abs().div(stakeBank.getAssetPrice())
+        ).toNumber() * 1.002,
+      ),
+      Math.ceil(toNativeI80F48(0.0001, stakeBank.mintDecimals).toNumber()),
     )
+    console.log(toRepay, '@@@@@@@')
 
     console.log('borrowedSol amount: ', borrowed.toNumber())
     console.log('borrow needed to repay for withdraw', toRepay)
