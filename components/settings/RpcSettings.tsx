@@ -40,7 +40,7 @@ export const PRIORITY_FEE_LEVELS = [
   { label: 'High', value: 2 }, // +100%
 ]
 
-export const DEFAULT_PRIORITY_FEE = 1
+export const DEFAULT_PRIORITY_FEE = 80000
 export const DEFAULT_PRIORITY_FEE_LEVEL = PRIORITY_FEE_LEVELS[1]
 
 const RpcSettings = () => {

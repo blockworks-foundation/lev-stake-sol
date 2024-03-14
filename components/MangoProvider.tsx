@@ -15,6 +15,7 @@ const actions = mangoStore.getState().actions
 const HydrateStore = () => {
   const { mangoAccountPk } = useMangoAccount()
   const connection = mangoStore((s) => s.connection)
+  const fee = mangoStore((s) => s.priorityFee)
   const slowNetwork = useNetworkSpeed()
   const { wallet } = useWallet()
 
@@ -94,6 +95,7 @@ const HydrateStore = () => {
     },
     (slowNetwork ? 60 : 10) * SECONDS,
   )
+  console.log(fee)
 
   // The websocket library solana/web3.js uses closes its websocket connection when the subscription list
   // is empty after opening its first time, preventing subsequent subscriptions from receiving responses.
