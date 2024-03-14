@@ -10,6 +10,12 @@ import { Modify } from '@blockworks-foundation/mango-v4'
 import { Event } from '@project-serum/serum/lib/queue'
 import { PublicKey } from '@solana/web3.js'
 
+export interface BirdeyePriceResponse {
+  address: string
+  unixTime: number
+  value: number
+}
+
 export type EmptyObject = { [K in keyof never]?: never }
 export interface OrderbookL2 {
   bids: number[][]

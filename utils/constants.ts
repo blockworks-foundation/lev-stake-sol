@@ -2,8 +2,8 @@
 export const BORROW_TOKEN = 'USDC'
 
 export const STAKEABLE_TOKENS_DATA = [
-  { name: 'JLP', id: 1, active: true },
-  { name: 'USDC', id: 0, active: true },
+  { name: 'JLP', id: 1, active: true, mint_address: '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4' },
+  { name: 'USDC', id: 0, active: true, mint_address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' },
 ]
 export const STAKEABLE_TOKENS = STAKEABLE_TOKENS_DATA.filter(
   (d) => d.active,
