@@ -35,7 +35,7 @@ const Tooltip = ({
         content={
           content ? (
             <div
-              className={`${themeData.fonts.body.variable} ${themeData.fonts.display.variable} font-sans font-sans font-body text-xs leading-4 text-th-fgd-3 outline-none focus:outline-none ${className}`}
+              className={`${themeData.fonts.body.variable} ${themeData.fonts.display.variable} font-sans rounded-xl border-2 border-th-fgd-1 bg-th-bkg-1 p-4 font-body text-xs leading-4 text-th-fgd-3 outline-none focus:outline-none ${className}`}
               style={{ boxShadow: '0px 0px 0px 0px rgba(0,0,0,0)' }}
             >
               {content}
@@ -59,7 +59,7 @@ const Content = ({
 } & HTMLAttributes<HTMLDivElement>) => {
   return (
     <div
-      className={`inline-block cursor-help border-b border-dashed border-th-fgd-3 border-opacity-20 hover:border-th-bkg-2 ${className}`}
+      className={`inline-block cursor-help border-b border-dashed border-th-fgd-3 hover:border-th-bkg-2 ${className}`}
     >
       {children}
     </div>

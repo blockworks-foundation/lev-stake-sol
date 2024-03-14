@@ -56,8 +56,9 @@ const Positions = ({
   return (
     <>
       <div className="mb-2 flex items-center justify-between rounded-lg border-2 border-th-fgd-1 bg-th-bkg-1 px-6 py-3.5">
-        <p className="font-medium">{`You have ${numberOfPositions} active position${numberOfPositions !== 1 ? 's' : ''
-          }`}</p>
+        <p className="font-medium">{`You have ${numberOfPositions} active position${
+          numberOfPositions !== 1 ? 's' : ''
+        }`}</p>
         <Switch
           checked={showInactivePositions}
           onChange={(checked) => setShowInactivePositions(checked)}
@@ -136,14 +137,13 @@ const PositionItem = ({
     return [liqRatio, liqPriceChangePercentage.toFixed(2)]
   }, [bank, borrowBalance, borrowBank, stakeBalance])
 
-  const { financialMetrics, stakeBankDepositRate, borrowBankBorrowRate } = useBankRates(
-    bank.name,
-    leverage,
-  )
+  const { financialMetrics, stakeBankDepositRate, borrowBankBorrowRate } =
+    useBankRates(bank.name, leverage)
 
-
-  const APY_Daily_Compound = Math.pow(1 + Number(stakeBankDepositRate) / 365, 365) - 1;
-  const uiRate = bank.name == 'USDC' ? APY_Daily_Compound * 100 : financialMetrics.APY
+  const APY_Daily_Compound =
+    Math.pow(1 + Number(stakeBankDepositRate) / 365, 365) - 1
+  const uiRate =
+    bank.name == 'USDC' ? APY_Daily_Compound * 100 : financialMetrics.APY
 
   return (
     <div className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
@@ -188,93 +188,94 @@ const PositionItem = ({
         </div>
         <div>
           <p className="mb-1 text-th-fgd-4">Est. APY</p>
-          {bank.name !== 'USDC' ?
-            <Tooltip content={
-              <div className='rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6 '>
-                <h4 className="mb-4 border-b border-th-bkg-3 pb-2 text-sm">
-                  Rates and Fees
-                </h4>
-                <div className="space-y-2 md:px-3">
-                  <div className="flex justify-between">
-                    <p className="text-th-fgd-4">
-                      {formatTokenSymbol(bank.name)} Yield APY
-                    </p>
-                    <span className="font-bold text-th-success">
-                      {financialMetrics.collectedReturnsAPY > 0.01
-                        ? '+'
-                        : ''}
-                      <FormatNumericValue
-                        value={financialMetrics.collectedReturnsAPY}
-                        decimals={2}
-                      />
-                      %
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <p className="text-th-fgd-4 mr-10">
-                      {formatTokenSymbol(bank.name)} Collateral Fee
-                      APY
-                    </p>
-                    <span
-                      className={`font-bold ${financialMetrics?.collateralFeeAPY > 0.01
-                        ? 'text-th-error'
-                        : 'text-th-bkg-4'
-                        }`}
-                    >
-                      {financialMetrics?.collateralFeeAPY > 0.01
-                        ? '-'
-                        : ''}
-                      <FormatNumericValue
-                        value={financialMetrics?.collateralFeeAPY?.toString()}
-                        decimals={2}
-                      />
-                      %
-                    </span>
-                  </div>
-                  {borrowBank ? (
-                    <>
-                      <div className="flex justify-between">
-                        <p className="text-th-fgd-4">{`${borrowBank?.name} Borrow APY`}</p>
-                        <span
-                          className={`font-bold ${borrowBankBorrowRate > 0.01
-                            ? 'text-th-error'
-                            : 'text-th-bkg-4'
-                            }`}
-                        >
-                          -
+          {bank.name !== 'USDC' ? (
+            <div className="w-max">
+              <Tooltip
+                content={
+                  <>
+                    <div className="space-y-2 md:px-3">
+                      <div className="flex justify-between gap-6">
+                        <p className="text-th-fgd-4">
+                          {formatTokenSymbol(bank.name)} Yield APY
+                        </p>
+                        <span className="font-bold text-th-success">
+                          {financialMetrics.collectedReturnsAPY > 0.01
+                            ? '+'
+                            : ''}
                           <FormatNumericValue
-                            value={financialMetrics.borrowsAPY}
+                            value={financialMetrics.collectedReturnsAPY}
                             decimals={2}
                           />
                           %
                         </span>
                       </div>
-                    </>
-                  ) : null}
-                </div>
-
-              </div>}>
-              <span className="tooltip-underline text-xl font-bold text-th-fgd-1">
-                <FormatNumericValue value={Number(uiRate)} decimals={2} />%
-              </span>
-            </Tooltip>
-            :
+                      <div className="flex justify-between gap-6">
+                        <p className="text-th-fgd-4">
+                          {formatTokenSymbol(bank.name)} Collateral Fee APY
+                        </p>
+                        <span
+                          className={`font-bold ${
+                            financialMetrics?.collateralFeeAPY > 0.01
+                              ? 'text-th-error'
+                              : 'text-th-bkg-4'
+                          }`}
+                        >
+                          {financialMetrics?.collateralFeeAPY > 0.01 ? '-' : ''}
+                          <FormatNumericValue
+                            value={financialMetrics?.collateralFeeAPY?.toString()}
+                            decimals={2}
+                          />
+                          %
+                        </span>
+                      </div>
+                      {borrowBank ? (
+                        <>
+                          <div className="flex justify-between gap-6">
+                            <p className="text-th-fgd-4">{`${borrowBank?.name} Borrow APY`}</p>
+                            <span
+                              className={`font-bold ${
+                                borrowBankBorrowRate > 0.01
+                                  ? 'text-th-error'
+                                  : 'text-th-bkg-4'
+                              }`}
+                            >
+                              -
+                              <FormatNumericValue
+                                value={financialMetrics.borrowsAPY}
+                                decimals={2}
+                              />
+                              %
+                            </span>
+                          </div>
+                        </>
+                      ) : null}
+                    </div>
+                  </>
+                }
+              >
+                <span className="tooltip-underline text-xl font-bold text-th-fgd-1">
+                  <FormatNumericValue value={Number(uiRate)} decimals={2} />%
+                </span>
+              </Tooltip>
+            </div>
+          ) : (
             <>
               <span className="text-xl font-bold text-th-fgd-1">
                 <FormatNumericValue value={Number(uiRate)} decimals={2} />%
               </span>
             </>
-          }
+          )}
         </div>
         <div>
           <p className="mb-1 text-th-fgd-4">Total Earned</p>
           <span
-            className={`text-xl font-bold ${!stakeBalance
-              ? 'text-th-fgd-4'
-              : pnl >= 0
+            className={`text-xl font-bold ${
+              !stakeBalance
+                ? 'text-th-fgd-4'
+                : pnl >= 0
                 ? 'text-th-success'
                 : 'text-th-error'
-              }`}
+            }`}
           >
             {stakeBalance || pnl ? (
               <FormatNumericValue value={pnl} decimals={2} isUsd />
