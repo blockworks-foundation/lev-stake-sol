@@ -20,7 +20,7 @@ const fetchRates = async () => {
 
     const rateData: Record<string, number> = {}
     rateData.jlp =
-      (12 * (jlpPrices[jlpPrices.length - 1].price - jlpPrices[0].price)) /
+      (12 * (jlpPrices[jlpPrices.length - 2].price - jlpPrices[0].price)) /
       jlpPrices[0].price
 
 
