@@ -191,6 +191,82 @@ export const unstakeAndSwap = async (
   })
 }
 
+export const simpleSwap = async (
+  client: MangoClient,
+  group: Group,
+  mangoAccount: MangoAccount,
+  inputMintPk: PublicKey,
+  outputMintPk: PublicKey,
+  amount: number, // Amount of input token to swap
+  slippage = 1 // Slippage tolerance in percentage
+) => {
+  console.log('Performing simple swap');
+  const instructions: TransactionInstruction[] = []
+
+  // Fetching the input and output banks from the group
+  const inputBank = group?.banksMapByMint.get(inputMintPk.toString())?.[0];
+  const outputBank = group?.banksMapByMint.get(outputMintPk.toString())?.[0];
+
+  if (!inputBank || !outputBank) {
+    throw Error('Unable to find input bank or output bank');
+  }
+
+  console.log(amount)
+
+  // Calculate the native amount for the swap
+  const nativeAmount = toNative(amount, inputBank.mintDecimals);
+
+  // Step 1: Fetch the best swap route from Jupiter
+  const { bestRoute: selectedRoute } = await fetchJupiterRoutes(
+    inputMintPk.toString(),
+    outputMintPk.toString(),
+    nativeAmount.toNumber(),
+    slippage,
+    'ExactIn'
+  );
+
+  if (!selectedRoute) {
+    throw Error('Unable to find a swap route');
+  }
+
+  // Step 2: Fetch Jupiter swap instructions
+  const payer = (client.program.provider as AnchorProvider).wallet.publicKey;
+  const [jupiterIxs, jupiterAlts] = await fetchJupiterTransaction(
+    client.program.provider.connection,
+    selectedRoute,
+    payer,
+    slippage,
+    inputMintPk,
+    outputMintPk,
+  );
+
+  const swapHealthRemainingAccounts: PublicKey[] = mangoAccount
+    ? client.buildHealthRemainingAccounts(group, [mangoAccount], [], [], [])
+    : [inputBank?.publicKey, outputBank?.oracle]
+
+  let swapAlts: AddressLookupTableAccount[] = []
+  const [swapIxs, alts] = await createSwapIxs({
+    client: client,
+    group: group,
+    mangoAccountPk: mangoAccount.publicKey,
+    owner: payer,
+    inputMintPk: inputBank?.mint,
+    amountIn: toUiDecimals(selectedRoute.inAmount, inputBank?.mintDecimals),
+    outputMintPk: outputBank?.mint,
+    userDefinedInstructions: jupiterIxs,
+    userDefinedAlts: jupiterAlts,
+    flashLoanType: FlashLoanType.swap,
+    swapHealthRemainingAccounts,
+  })
+  swapAlts = alts
+  instructions.push(...swapIxs)
+
+  // Step 4: Send and confirm the transaction
+  return await client.sendAndConfirmTransactionForGroup(group, [...swapIxs], {
+    alts: [...group.addressLookupTablesList, ...swapAlts],
+  });
+};
+
 export const stakeAndCreate = async (
   client: MangoClient,
   group: Group,
@@ -246,12 +322,12 @@ export const stakeAndCreate = async (
 
   const depositHealthRemainingAccounts: PublicKey[] = mangoAccount
     ? client.buildHealthRemainingAccounts(
-        group,
-        [mangoAccount],
-        [stakeBank],
-        [],
-        [],
-      )
+      group,
+      [mangoAccount],
+      [stakeBank],
+      [],
+      [],
+    )
     : [stakeBank.publicKey, stakeBank.oracle]
   const depositTokenIxs = await createDepositIx(
     client,
@@ -280,6 +356,7 @@ export const stakeAndCreate = async (
       slippage,
     )
 
+    console.log(selectedRoute)
     if (!selectedRoute) {
       throw Error('Unable to find a swap route')
     }
@@ -368,12 +445,12 @@ export const depositAndCreate = async (
 
   const depositHealthRemainingAccounts: PublicKey[] = mangoAccount
     ? client.buildHealthRemainingAccounts(
-        group,
-        [mangoAccount],
-        [depositBank],
-        [],
-        [],
-      )
+      group,
+      [mangoAccount],
+      [depositBank],
+      [],
+      [],
+    )
     : [depositBank.publicKey, depositBank.oracle]
 
   const depositTokenIxs = await createDepositIx(
@@ -510,11 +587,11 @@ const createSwapIxs = async ({
   const healthRemainingAccounts: PublicKey[] = swapHealthRemainingAccounts
     ? swapHealthRemainingAccounts
     : [
-        outputBank.publicKey,
-        inputBank.publicKey,
-        outputBank.oracle,
-        inputBank.oracle,
-      ]
+      outputBank.publicKey,
+      inputBank.publicKey,
+      outputBank.oracle,
+      inputBank.oracle,
+    ]
   // client.buildHealthRemainingAccounts(
   //   group,
   //   [],
@@ -703,7 +780,7 @@ export const fetchJupiterTransaction = async (
   const isDuplicateAta = (ix: TransactionInstruction): boolean => {
     return (
       ix.programId.toString() ===
-        'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL' &&
+      'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL' &&
       (ix.keys[3].pubkey.toString() === inputMint.toString() ||
         ix.keys[3].pubkey.toString() === outputMint.toString())
     )

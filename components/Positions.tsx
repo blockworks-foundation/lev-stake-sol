@@ -1,5 +1,5 @@
 import useMangoGroup from 'hooks/useMangoGroup'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { SHOW_INACTIVE_POSITIONS_KEY } from 'utils/constants'
 import TokenLogo from './shared/TokenLogo'
 import Button from './shared/Button'
@@ -15,6 +15,8 @@ import {
 } from '@blockworks-foundation/mango-v4'
 import useBankRates from 'hooks/useBankRates'
 import usePositions from 'hooks/usePositions'
+import { PencilIcon } from '@heroicons/react/20/solid'
+import EditLeverageModal from './modals/EditLeverageModal'
 
 const set = mangoStore.getState().set
 
@@ -55,9 +57,8 @@ const Positions = ({
   return (
     <>
       <div className="mb-2 flex items-center justify-between rounded-lg border-2 border-th-fgd-1 bg-th-bkg-1 px-6 py-3.5">
-        <p className="font-medium">{`You have ${numberOfPositions} active position${
-          numberOfPositions !== 1 ? 's' : ''
-        }`}</p>
+        <p className="font-medium">{`You have ${numberOfPositions} active position${numberOfPositions !== 1 ? 's' : ''
+          }`}</p>
         <Switch
           checked={showInactivePositions}
           onChange={(checked) => setShowInactivePositions(checked)}
@@ -105,6 +106,7 @@ const PositionItem = ({
       state.selectedToken = token
     })
   }
+  const [showEditLeverageModal, setShowEditLeverageModal] = useState(false)
 
   const leverage = useMemo(() => {
     if (!group || !acct) return 1
@@ -160,7 +162,7 @@ const PositionItem = ({
         </div>
         <Button onClick={() => handleAddOrManagePosition(bank.name)}>
           <p className="mb-1 text-base tracking-wider text-th-bkg-1">
-            {stakeBalance ? 'Manage' : 'Add Position'}
+            {stakeBalance ? 'Add/Remove' : 'Add Position'}
           </p>
         </Button>
       </div>
@@ -194,13 +196,12 @@ const PositionItem = ({
         <div>
           <p className="mb-1 text-th-fgd-4">Total Earned</p>
           <span
-            className={`text-xl font-bold ${
-              !stakeBalance
-                ? 'text-th-fgd-4'
-                : pnl >= 0
+            className={`text-xl font-bold ${!stakeBalance
+              ? 'text-th-fgd-4'
+              : pnl >= 0
                 ? 'text-th-success'
                 : 'text-th-error'
-            }`}
+              }`}
           >
             {stakeBalance || pnl ? (
               <FormatNumericValue value={pnl} decimals={2} isUsd />
@@ -213,9 +214,14 @@ const PositionItem = ({
           <>
             <div>
               <p className="mb-1 text-th-fgd-4">Leverage</p>
-              <span className="text-xl font-bold text-th-fgd-1">
-                {leverage ? leverage.toFixed(2) : 0.0}x
-              </span>
+              <div className="flex items-center">
+                <span className="text-xl font-bold text-th-fgd-1">
+                  {leverage ? leverage.toFixed(2) : 0.0}x
+                </span>
+                <Button onClick={() => setShowEditLeverageModal(!showEditLeverageModal)} className='ml-3 bg-opacity-/0 p-0'>
+                  <PencilIcon className='p-0' width={'15px'} />
+                </Button>
+              </div>
             </div>
             <div>
               <p className="mb-1 text-th-fgd-4">Est. Liquidation Price</p>
@@ -235,6 +241,14 @@ const PositionItem = ({
           </>
         )}
       </div>
+      {showEditLeverageModal ? (
+        <EditLeverageModal
+          token={bank.name}
+          action="deposit"
+          isOpen={showEditLeverageModal}
+          onClose={() => setShowEditLeverageModal(false)}
+        />
+      ) : null}
     </div>
   )
 }
