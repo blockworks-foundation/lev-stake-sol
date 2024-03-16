@@ -346,6 +346,7 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
               <p className="mb-2 font-bold text-th-fgd-1">{leverage.toFixed(2)}x</p>
             </div>
             <LeverageSlider
+              startingValue={current_leverage}
               leverageMax={leverageMax}
               onChange={changeLeverage}
               step={0.01}
