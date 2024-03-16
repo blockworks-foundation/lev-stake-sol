@@ -91,7 +91,7 @@ export const walletBalanceForToken = (
 //   return 0
 // }
 
-function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
+function EditLeverageForm({ token: selectedToken, onSuccess }: StakeFormProps) {
   const { t } = useTranslation(['common', 'account'])
   const submitting = mangoStore((s) => s.submittingBoost)
   const { ipAllowed } = useIpAddress()
@@ -195,11 +195,6 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
     }
   }, [leverage, tokenMax, stakeBankAmount, stakeBank]);
 
-  const loanOriginationFeeRate = useMemo(() => {
-    if (!borrowBank || !stakeBank) return
-    return toUiDecimals(borrowBank?.loanOriginationFeeRate, borrowBank?.mintDecimals) * 10000000 //adjustment for slippage so doesn't overshoot
-  }, [borrowBank]);
-
   const changeInUSDC = useMemo(() => {
     if (borrowAmount) {
       const fee = toUiDecimals(borrowBank?.loanOriginationFeeRate, borrowBank?.mintDecimals) * 5000000 //adjustment for slippage so doesn't overshoot
@@ -284,7 +279,9 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
 
       await actions.reloadMangoAccount(slot_retrieved)
       await actions.fetchWalletTokens(publicKey)
-
+      await actions.fetchGroup()
+      await actions.reloadMangoAccount()
+      onSuccess()
     } catch (e) {
       console.error('Error depositing:', e)
       set((state) => {
@@ -422,10 +419,11 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
                                 value={leverage * Number(tokenMax.maxAmount)}
                                 decimals={3}
                               />
+                              {' '}
                               (
-                                {changeInJLP > 0 ? '+' : '-'}
+                                {changeInJLP > 0 ? '+' : ''}
                               <FormatNumericValue
-                                value={changeInJLP > 0 ?  changeInJLP : - changeInJLP}
+                                value={changeInJLP > 0 ?  changeInJLP :  changeInJLP}
                                 decimals={3}
                               />)
                               <span className="font-body text-th-fgd-4">
@@ -458,10 +456,11 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
                               value={amountToBorrow}
                               decimals={3}
                             />
+                            {' '}
                             (
-                              {changeInUSDC > 0? '-' : '+'}
+                              {changeInUSDC >= 0 ? '' : '+'}
                             <FormatNumericValue
-                              value={changeInUSDC > 0 ?  changeInUSDC : - changeInUSDC}
+                              value={changeInUSDC > 0 ?  - changeInUSDC :  - changeInUSDC}
                               decimals={3}
                             />)
                           </span>

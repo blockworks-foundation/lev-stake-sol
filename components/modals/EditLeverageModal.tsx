@@ -2,11 +2,10 @@ import { ModalProps } from '../../types/modal'
 import Modal from '../shared/Modal'
 import EditLeverageForm from '@components/EditLeverageForm'
 
-interface DepositWithdrawModalProps {
-  action: 'deposit' | 'withdraw'
+interface EditLeverageModalProps {
   token?: string | undefined
 } 
-type ModalCombinedProps = DepositWithdrawModalProps & ModalProps
+type ModalCombinedProps = EditLeverageModalProps & ModalProps
 
 const EditLeverageModal = ({
   isOpen,
@@ -15,7 +14,7 @@ const EditLeverageModal = ({
 }: ModalCombinedProps) => {
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal disableOutsideClose={true} isOpen={isOpen} onClose={onClose}>
         <div >
             <>
               <div className="pb-2">
