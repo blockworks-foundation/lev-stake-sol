@@ -1,33 +1,21 @@
-import { ArrowPathIcon, ExclamationCircleIcon } from '@heroicons/react/20/solid'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useTranslation } from 'next-i18next'
 import React, { useCallback, useMemo, useState } from 'react'
-import NumberFormat, { NumberFormatValues } from 'react-number-format'
 import mangoStore from '@store/mangoStore'
 import { notify } from '../utils/notifications'
 import { TokenAccount, formatTokenSymbol } from '../utils/tokens'
 import Label from './forms/Label'
-import Button, { IconButton } from './shared/Button'
+import Button from './shared/Button'
 import Loading from './shared/Loading'
-import MaxAmountButton from '@components/shared/MaxAmountButton'
-import Tooltip from '@components/shared/Tooltip'
-import SolBalanceWarnings from '@components/shared/SolBalanceWarnings'
-import useSolBalance from 'hooks/useSolBalance'
-import { floorToDecimal, withValueLimit } from 'utils/numbers'
 import { isMangoError } from 'types'
-import TokenLogo from './shared/TokenLogo'
 import SecondaryConnectButton from './shared/SecondaryConnectButton'
 import useMangoAccountAccounts from 'hooks/useMangoAccountAccounts'
 import InlineNotification from './shared/InlineNotification'
 import Link from 'next/link'
 import useMangoGroup from 'hooks/useMangoGroup'
-import { depositAndCreate, getNextAccountNumber } from 'utils/transactions'
-// import { MangoAccount } from '@blockworks-foundation/mango-v4'
 import { AnchorProvider } from '@project-serum/anchor'
 import SheenLoader from './shared/SheenLoader'
 import { sleep } from 'utils'
-import ButtonGroup from './forms/ButtonGroup'
-import Decimal from 'decimal.js'
 import useIpAddress from 'hooks/useIpAddress'
 import LeverageSlider from './shared/LeverageSlider'
 import useMangoAccount from 'hooks/useMangoAccount'
@@ -39,13 +27,11 @@ import {
   formatNumericValue,
 } from 'utils/numbers'
 import FormatNumericValue from './shared/FormatNumericValue'
-import { stakeAndCreate } from 'utils/transactions'
 // import { MangoAccount } from '@blockworks-foundation/mango-v4'
 import useBankRates from 'hooks/useBankRates'
 import { Disclosure } from '@headlessui/react'
 import useLeverageMax from 'hooks/useLeverageMax'
-import { toNativeI80F48, toUiDecimals, toUiDecimalsForQuote } from '@blockworks-foundation/mango-v4'
-import { token } from '@project-serum/anchor/dist/cjs/utils'
+import { toUiDecimals } from '@blockworks-foundation/mango-v4'
 import { simpleSwap } from 'utils/transactions'
 
 const set = mangoStore.getState().set
@@ -53,8 +39,9 @@ const set = mangoStore.getState().set
 export const NUMBERFORMAT_CLASSES =
   'inner-shadow-top-sm w-full rounded-xl border border-th-bkg-3 bg-th-input-bkg p-3 pl-12 pr-4 text-left font-bold text-xl text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:border-th-bkg-4 md:hover:focus-visible:border-th-fgd-4'
 
-interface StakeFormProps {
-  token: string
+interface EditLeverageFormProps {
+  token: string;
+  onSuccess: () => void;
 }
 
 export const walletBalanceForToken = (
@@ -91,7 +78,7 @@ export const walletBalanceForToken = (
 //   return 0
 // }
 
-function EditLeverageForm({ token: selectedToken, onSuccess }: StakeFormProps) {
+function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormProps) {
   const { t } = useTranslation(['common', 'account'])
   const submitting = mangoStore((s) => s.submittingBoost)
   const { ipAllowed } = useIpAddress()
@@ -198,7 +185,6 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: StakeFormProps) {
   const changeInUSDC = useMemo(() => {
     if (borrowAmount) {
       const fee = toUiDecimals(borrowBank?.loanOriginationFeeRate, borrowBank?.mintDecimals) * 5000000 //adjustment for slippage so doesn't overshoot
-      console.log(fee)
       return Number((- amountToBorrow - toUiDecimals(borrowAmount, borrowBank?.mintDecimals)).toFixed(2)) * (1 - fee);
     }
     else {
@@ -218,7 +204,7 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: StakeFormProps) {
     const mangoAccount = mangoStore.getState().mangoAccount.current
     const mangoAccounts = mangoStore.getState().mangoAccounts
 
-    if (!group || !stakeBank || !publicKey || !mangoAccount) return
+    if (!group || !stakeBank || !borrowBank || !publicKey || !mangoAccount) return
     console.log(mangoAccounts)
     set((state) => {
       state.submittingBoost = true

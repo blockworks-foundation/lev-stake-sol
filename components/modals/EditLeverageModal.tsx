@@ -18,7 +18,7 @@ const EditLeverageModal = ({
         <div >
             <>
               <div className="pb-2">
-                <EditLeverageForm onSuccess={onClose} token={token} />
+                <EditLeverageForm onSuccess={onClose} token={token ? token : 'null'} />
               </div>
             </>
         </div>

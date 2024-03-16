@@ -244,7 +244,6 @@ const PositionItem = ({
       {showEditLeverageModal ? (
         <EditLeverageModal
           token={bank.name}
-          action="deposit"
           isOpen={showEditLeverageModal}
           onClose={() => setShowEditLeverageModal(false)}
         />
