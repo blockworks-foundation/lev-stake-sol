@@ -107,6 +107,7 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
   const borrowBank = useMemo(() => {
     return group?.banksMapByName.get('USDC')?.[0]
   }, [group])
+
   const stakeBankAmount =
     mangoAccount && stakeBank && mangoAccount?.getTokenBalance(stakeBank)
 
@@ -128,6 +129,7 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
   }, [stakeBankAmount, borrowAmount, stakeBank])
 
   const [leverage, setLeverage] = useState(current_leverage)
+
   const { financialMetrics, borrowBankBorrowRate } = useBankRates(
     selectedToken,
     leverage,
@@ -184,8 +186,30 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
     return available
   }, [borrowBank, group])
 
-  const changeInJLP = Number(((leverage * tokenMax?.maxAmount) - toUiDecimals(stakeBankAmount, stakeBank?.mintDecimals)).toFixed(2))
-  const changeInUSDC = Number((- amountToBorrow  - toUiDecimals(borrowAmount, borrowBank?.mintDecimals)).toFixed(2))
+  const changeInJLP = useMemo(() => {
+    if (stakeBankAmount) {
+      return Number(((leverage * tokenMax?.maxAmount) - toUiDecimals(stakeBankAmount, stakeBank?.mintDecimals)).toFixed(2));
+    }
+    else {
+      return 0
+    }
+  }, [leverage, tokenMax, stakeBankAmount, stakeBank]);
+
+  const loanOriginationFeeRate = useMemo(() => {
+    if (!borrowBank || !stakeBank) return
+    return toUiDecimals(borrowBank?.loanOriginationFeeRate, borrowBank?.mintDecimals) * 10000000 //adjustment for slippage so doesn't overshoot
+  }, [borrowBank]);
+
+  const changeInUSDC = useMemo(() => {
+    if (borrowAmount) {
+      const fee = toUiDecimals(borrowBank?.loanOriginationFeeRate, borrowBank?.mintDecimals) * 5000000 //adjustment for slippage so doesn't overshoot
+      console.log(fee)
+      return Number((- amountToBorrow - toUiDecimals(borrowAmount, borrowBank?.mintDecimals)).toFixed(2)) * (1 - fee);
+    }
+    else {
+      return 0
+    }
+  }, [amountToBorrow, borrowAmount, borrowBank]);
 
   const handleChangeLeverage = useCallback(async () => {
     if (!ipAllowed) {
@@ -211,8 +235,8 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
         type: 'info',
       })
 
-      console.log(-changeInUSDC, changeInJLP)
-      if (changeInJLP > 0){
+      let slot_retrieved
+      if (changeInJLP > 0) {
         console.log('Swapping From USDC to JLP')
         const { signature: tx, slot } = await simpleSwap(
           client,
@@ -222,13 +246,14 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
           stakeBank?.mint,
           - changeInUSDC,
         )
+        slot_retrieved = slot
         notify({
           title: 'Transaction confirmed',
           type: 'success',
           txid: tx,
         })
       }
-      else{
+      else {
         console.log('Swapping From JLP to USDC')
         const { signature: tx, slot } = await simpleSwap(
           client,
@@ -238,6 +263,7 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
           borrowBank?.mint,
           - changeInJLP,
         )
+        slot_retrieved = slot
         notify({
           title: 'Transaction confirmed',
           type: 'success',
@@ -245,18 +271,20 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
         })
       }
 
-
       set((state) => {
         state.submittingBoost = false
       })
+
       await sleep(500)
       if (!mangoAccount) {
         await actions.fetchMangoAccounts(
           (client.program.provider as AnchorProvider).wallet.publicKey,
         )
       }
-      await actions.reloadMangoAccount(slot)
+
+      await actions.reloadMangoAccount(slot_retrieved)
       await actions.fetchWalletTokens(publicKey)
+
     } catch (e) {
       console.error('Error depositing:', e)
       set((state) => {
@@ -270,7 +298,7 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
         type: 'error',
       })
     }
-  }, [ipAllowed, stakeBank, publicKey, amountToBorrow])
+  }, [ipAllowed, stakeBank, publicKey, amountToBorrow, borrowBank?.mint])
 
   const tokenDepositLimitLeft = stakeBank?.getRemainingDepositLimit()
   const tokenDepositLimitLeftUi =
@@ -332,7 +360,7 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
           <div className="mt-4">
             <div className="flex items-center justify-between">
               <Label text="Leverage" />
-              <p className="mb-2 font-bold text-th-fgd-1">{leverage}x</p>
+              <p className="mb-2 font-bold text-th-fgd-1">{leverage.toFixed(2)}x</p>
             </div>
             <LeverageSlider
               leverageMax={leverageMax}
@@ -354,8 +382,8 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
                         <div className="flex items-center space-x-2">
                           <span
                             className={`font-bold ${financialMetrics.APY > 0.001
-                                ? 'text-th-success'
-                                : 'text-th-error'
+                              ? 'text-th-success'
+                              : 'text-th-error'
                               }`}
                           >
                             {financialMetrics.APY >= 0
@@ -386,17 +414,18 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
                           <div className="flex flex-col items-end">
                             <span
                               className={`font-bold ${amountToBorrow > 0.001
-                                  ? 'text-th-fgd-1'
-                                  : 'text-th-bkg-4'
+                                ? 'text-th-fgd-1'
+                                : 'text-th-bkg-4'
                                 }`}
                             >
                               <FormatNumericValue
                                 value={leverage * Number(tokenMax.maxAmount)}
                                 decimals={3}
                               />
-                              (                              
-                                <FormatNumericValue
-                                value={changeInJLP}
+                              (
+                                {changeInJLP > 0 ? '+' : '-'}
+                              <FormatNumericValue
+                                value={changeInJLP > 0 ?  changeInJLP : - changeInJLP}
                                 decimals={3}
                               />)
                               <span className="font-body text-th-fgd-4">
@@ -421,27 +450,28 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
                           <p className="text-th-fgd-4">{`${borrowBank.name} Borrowed`}</p>
                           <span
                             className={`font-bold ${amountToBorrow > 0.001
-                                ? 'text-th-fgd-1'
-                                : 'text-th-bkg-4'
+                              ? 'text-th-fgd-1'
+                              : 'text-th-bkg-4'
                               }`}
                           >
                             <FormatNumericValue
                               value={amountToBorrow}
                               decimals={3}
                             />
-                             (                              
-                                <FormatNumericValue
-                                value={changeInUSDC}
-                                decimals={3}
-                              />)
+                            (
+                              {changeInUSDC > 0? '-' : '+'}
+                            <FormatNumericValue
+                              value={changeInUSDC > 0 ?  changeInUSDC : - changeInUSDC}
+                              decimals={3}
+                            />)
                           </span>
                         </div>
                         <div className="flex justify-between">
                           <p className="text-th-fgd-4">{`Est. Liquidation Price`}</p>
                           <span
                             className={`font-bold ${amountToBorrow > 0.001
-                                ? 'text-th-fgd-1'
-                                : 'text-th-bkg-4'
+                              ? 'text-th-fgd-1'
+                              : 'text-th-bkg-4'
                               }`}
                           >
                             $
@@ -478,8 +508,8 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
                           </p>
                           <span
                             className={`font-bold ${financialMetrics?.collateralFeeAPY > 0.01
-                                ? 'text-th-error'
-                                : 'text-th-bkg-4'
+                              ? 'text-th-error'
+                              : 'text-th-bkg-4'
                               }`}
                           >
                             {financialMetrics?.collateralFeeAPY > 0.01
@@ -498,8 +528,8 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
                               <p className="text-th-fgd-4">{`${borrowBank?.name} Borrow APY`}</p>
                               <span
                                 className={`font-bold ${borrowBankBorrowRate > 0.01
-                                    ? 'text-th-error'
-                                    : 'text-th-bkg-4'
+                                  ? 'text-th-error'
+                                  : 'text-th-bkg-4'
                                   }`}
                               >
                                 -
@@ -519,8 +549,11 @@ function EditLeverageForm({ token: selectedToken }: StakeFormProps) {
                                   <span className="font-bold text-th-fgd-1">
                                     <FormatNumericValue
                                       value={
-                                        borrowBank.loanOriginationFeeRate.toNumber() *
-                                        amountToBorrow
+                                        changeInUSDC < 0 ?
+                                          borrowBank?.loanOriginationFeeRate.toNumber() *
+                                          - changeInUSDC
+                                          :
+                                          0
                                       }
                                       decimals={2}
                                     />

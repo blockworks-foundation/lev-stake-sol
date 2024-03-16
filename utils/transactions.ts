@@ -203,7 +203,6 @@ export const simpleSwap = async (
   console.log('Performing simple swap');
   const instructions: TransactionInstruction[] = []
 
-  // Fetching the input and output banks from the group
   const inputBank = group?.banksMapByMint.get(inputMintPk.toString())?.[0];
   const outputBank = group?.banksMapByMint.get(outputMintPk.toString())?.[0];
 
@@ -211,12 +210,7 @@ export const simpleSwap = async (
     throw Error('Unable to find input bank or output bank');
   }
 
-  console.log(amount)
-
-  // Calculate the native amount for the swap
   const nativeAmount = toNative(amount, inputBank.mintDecimals);
-
-  // Step 1: Fetch the best swap route from Jupiter
   const { bestRoute: selectedRoute } = await fetchJupiterRoutes(
     inputMintPk.toString(),
     outputMintPk.toString(),
@@ -229,7 +223,6 @@ export const simpleSwap = async (
     throw Error('Unable to find a swap route');
   }
 
-  // Step 2: Fetch Jupiter swap instructions
   const payer = (client.program.provider as AnchorProvider).wallet.publicKey;
   const [jupiterIxs, jupiterAlts] = await fetchJupiterTransaction(
     client.program.provider.connection,
@@ -261,7 +254,6 @@ export const simpleSwap = async (
   swapAlts = alts
   instructions.push(...swapIxs)
 
-  // Step 4: Send and confirm the transaction
   return await client.sendAndConfirmTransactionForGroup(group, [...swapIxs], {
     alts: [...group.addressLookupTablesList, ...swapAlts],
   });
