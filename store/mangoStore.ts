@@ -36,6 +36,7 @@ import {
   BOOST_DATA_API_URL,
   CONNECTION_COMMITMENT,
   DEFAULT_MARKET_NAME,
+  FALLBACK_ORACLES,
   INPUT_TOKEN_DEFAULT,
   MANGO_DATA_API_URL,
   MAX_PRIORITY_FEE_KEYS,
@@ -111,10 +112,14 @@ export const emptyWallet = new EmptyWallet(Keypair.generate())
 
 const initMangoClient = (
   provider: AnchorProvider,
-  opts = { prioritizationFee: DEFAULT_PRIORITY_FEE },
+  opts = {
+    prioritizationFee: DEFAULT_PRIORITY_FEE,
+    fallbackOracleConfig: FALLBACK_ORACLES,
+  },
 ): MangoClient => {
   return MangoClient.connect(provider, CLUSTER, MANGO_BOOST_ID, {
     prioritizationFee: opts.prioritizationFee,
+    fallbackOracleConfig: opts.fallbackOracleConfig,
     idsSource: 'get-program-accounts',
     postSendTxCallback: ({ txid }: { txid: string }) => {
       notify({
@@ -777,6 +782,7 @@ const mangoStore = create<MangoStore>()(
             const priorityFee = get().priorityFee ?? DEFAULT_PRIORITY_FEE
             const client = initMangoClient(provider, {
               prioritizationFee: priorityFee,
+              fallbackOracleConfig: FALLBACK_ORACLES,
             })
 
             set((s) => {
@@ -827,7 +833,11 @@ const mangoStore = create<MangoStore>()(
             options,
           )
           newProvider.opts.skipPreflight = true
-          const newClient = initMangoClient(newProvider)
+          const priorityFee = get().priorityFee ?? DEFAULT_PRIORITY_FEE
+          const newClient = initMangoClient(newProvider, {
+            prioritizationFee: priorityFee,
+            fallbackOracleConfig: FALLBACK_ORACLES,
+          })
           set((state) => {
             state.connection = newConnection
             state.client = newClient
@@ -880,6 +890,7 @@ const mangoStore = create<MangoStore>()(
 
           const newClient = initMangoClient(provider, {
             prioritizationFee: feeEstimate,
+            fallbackOracleConfig: FALLBACK_ORACLES,
           })
           set((state) => {
             state.priorityFee = feeEstimate
