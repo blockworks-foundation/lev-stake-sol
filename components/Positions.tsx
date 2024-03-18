@@ -15,7 +15,7 @@ import {
 } from '@blockworks-foundation/mango-v4'
 import useBankRates from 'hooks/useBankRates'
 import usePositions from 'hooks/usePositions'
-import { PencilIcon } from '@heroicons/react/20/solid'
+import { AdjustmentsHorizontalIcon } from '@heroicons/react/20/solid'
 import EditLeverageModal from './modals/EditLeverageModal'
 
 const set = mangoStore.getState().set
@@ -57,8 +57,9 @@ const Positions = ({
   return (
     <>
       <div className="mb-2 flex items-center justify-between rounded-lg border-2 border-th-fgd-1 bg-th-bkg-1 px-6 py-3.5">
-        <p className="font-medium">{`You have ${numberOfPositions} active position${numberOfPositions !== 1 ? 's' : ''
-          }`}</p>
+        <p className="font-medium">{`You have ${numberOfPositions} active position${
+          numberOfPositions !== 1 ? 's' : ''
+        }`}</p>
         <Switch
           checked={showInactivePositions}
           onChange={(checked) => setShowInactivePositions(checked)}
@@ -143,8 +144,10 @@ const PositionItem = ({
     leverage,
   )
 
-  const APY_Daily_Compound = Math.pow(1 + Number(stakeBankDepositRate) / 365, 365) - 1;
-  const uiRate = bank.name == 'USDC' ? APY_Daily_Compound * 100 : financialMetrics.APY
+  const APY_Daily_Compound =
+    Math.pow(1 + Number(stakeBankDepositRate) / 365, 365) - 1
+  const uiRate =
+    bank.name == 'USDC' ? APY_Daily_Compound * 100 : financialMetrics.APY
 
   return (
     <div className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
@@ -162,7 +165,7 @@ const PositionItem = ({
         </div>
         <Button onClick={() => handleAddOrManagePosition(bank.name)}>
           <p className="mb-1 text-base tracking-wider text-th-bkg-1">
-            {stakeBalance ? 'Add/Remove' : 'Add Position'}
+            {stakeBalance ? 'Add/Remove' : `Boost! ${bank.name}`}
           </p>
         </Button>
       </div>
@@ -196,12 +199,13 @@ const PositionItem = ({
         <div>
           <p className="mb-1 text-th-fgd-4">Total Earned</p>
           <span
-            className={`text-xl font-bold ${!stakeBalance
-              ? 'text-th-fgd-4'
-              : pnl >= 0
+            className={`text-xl font-bold ${
+              !stakeBalance
+                ? 'text-th-fgd-4'
+                : pnl >= 0
                 ? 'text-th-success'
                 : 'text-th-error'
-              }`}
+            }`}
           >
             {stakeBalance || pnl ? (
               <FormatNumericValue value={pnl} decimals={2} isUsd />
@@ -215,12 +219,18 @@ const PositionItem = ({
             <div>
               <p className="mb-1 text-th-fgd-4">Leverage</p>
               <div className="flex items-center">
-                <span className="text-xl font-bold text-th-fgd-1">
+                <span className="mr-3 text-xl font-bold text-th-fgd-1">
                   {leverage ? leverage.toFixed(2) : 0.0}x
                 </span>
-                <Button onClick={() => setShowEditLeverageModal(!showEditLeverageModal)} className='ml-3 bg-opacity-/0 p-0'>
-                  <PencilIcon className='p-0' width={'15px'} />
-                </Button>
+                <button
+                  onClick={() =>
+                    setShowEditLeverageModal(!showEditLeverageModal)
+                  }
+                  className="default-transition flex items-center rounded-md border-b-2 border-th-bkg-4 bg-th-bkg-2 px-2.5 py-1 text-th-fgd-1 md:hover:bg-th-bkg-3"
+                >
+                  <AdjustmentsHorizontalIcon className="mr-1.5 h-4 w-4" />
+                  <span className="font-bold">Edit</span>
+                </button>
               </div>
             </div>
             <div>

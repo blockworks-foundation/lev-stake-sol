@@ -19,13 +19,9 @@ import { sleep } from 'utils'
 import useIpAddress from 'hooks/useIpAddress'
 import LeverageSlider from './shared/LeverageSlider'
 import useMangoAccount from 'hooks/useMangoAccount'
-import {
-  ChevronDownIcon,
-} from '@heroicons/react/20/solid'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { useEffect } from 'react'
-import {
-  formatNumericValue,
-} from 'utils/numbers'
+import { formatNumericValue } from 'utils/numbers'
 import FormatNumericValue from './shared/FormatNumericValue'
 // import { MangoAccount } from '@blockworks-foundation/mango-v4'
 import useBankRates from 'hooks/useBankRates'
@@ -40,8 +36,8 @@ export const NUMBERFORMAT_CLASSES =
   'inner-shadow-top-sm w-full rounded-xl border border-th-bkg-3 bg-th-input-bkg p-3 pl-12 pr-4 text-left font-bold text-xl text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:border-th-bkg-4 md:hover:focus-visible:border-th-fgd-4'
 
 interface EditLeverageFormProps {
-  token: string;
-  onSuccess: () => void;
+  token: string
+  onSuccess: () => void
 }
 
 export const walletBalanceForToken = (
@@ -78,7 +74,10 @@ export const walletBalanceForToken = (
 //   return 0
 // }
 
-function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormProps) {
+function EditLeverageForm({
+  token: selectedToken,
+  onSuccess,
+}: EditLeverageFormProps) {
   const { t } = useTranslation(['common', 'account'])
   const submitting = mangoStore((s) => s.submittingBoost)
   const { ipAllowed } = useIpAddress()
@@ -99,13 +98,14 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
     mangoAccount && stakeBank && mangoAccount?.getTokenBalance(stakeBank)
 
   const borrowAmount =
-    mangoAccount && borrowBank && mangoAccount?.getTokenBalance(borrowBank);
+    mangoAccount && borrowBank && mangoAccount?.getTokenBalance(borrowBank)
 
   const current_leverage = useMemo(() => {
     try {
       if (stakeBankAmount && borrowAmount) {
-        const currentDepositValue = (Number(stakeBankAmount) * stakeBank.uiPrice)
-        const lev = currentDepositValue / (currentDepositValue + Number(borrowAmount));
+        const currentDepositValue = Number(stakeBankAmount) * stakeBank.uiPrice
+        const lev =
+          currentDepositValue / (currentDepositValue + Number(borrowAmount))
         return Math.sign(lev) !== -1 ? lev : 1
       }
       return 1
@@ -175,22 +175,37 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
 
   const changeInJLP = useMemo(() => {
     if (stakeBankAmount) {
-      return Number(((leverage * tokenMax?.maxAmount) - toUiDecimals(stakeBankAmount, stakeBank?.mintDecimals)).toFixed(2));
-    }
-    else {
+      return Number(
+        (
+          leverage * tokenMax?.maxAmount -
+          toUiDecimals(stakeBankAmount, stakeBank?.mintDecimals)
+        ).toFixed(2),
+      )
+    } else {
       return 0
     }
-  }, [leverage, tokenMax, stakeBankAmount, stakeBank]);
+  }, [leverage, tokenMax, stakeBankAmount, stakeBank])
 
   const changeInUSDC = useMemo(() => {
     if (borrowAmount) {
-      const fee = toUiDecimals(borrowBank?.loanOriginationFeeRate, borrowBank?.mintDecimals) * 5000000 //adjustment for slippage so doesn't overshoot
-      return Number((- amountToBorrow - toUiDecimals(borrowAmount, borrowBank?.mintDecimals)).toFixed(2)) * (1 - fee);
-    }
-    else {
+      const fee =
+        toUiDecimals(
+          borrowBank?.loanOriginationFeeRate,
+          borrowBank?.mintDecimals,
+        ) * 5000000 //adjustment for slippage so doesn't overshoot
+      return (
+        Number(
+          (
+            -amountToBorrow -
+            toUiDecimals(borrowAmount, borrowBank?.mintDecimals)
+          ).toFixed(2),
+        ) *
+        (1 - fee)
+      )
+    } else {
       return 0
     }
-  }, [amountToBorrow, borrowAmount, borrowBank]);
+  }, [amountToBorrow, borrowAmount, borrowBank])
 
   const handleChangeLeverage = useCallback(async () => {
     if (!ipAllowed) {
@@ -204,13 +219,13 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
     const mangoAccount = mangoStore.getState().mangoAccount.current
     const mangoAccounts = mangoStore.getState().mangoAccounts
 
-    if (!group || !stakeBank || !borrowBank || !publicKey || !mangoAccount) return
+    if (!group || !stakeBank || !borrowBank || !publicKey || !mangoAccount)
+      return
     console.log(mangoAccounts)
     set((state) => {
       state.submittingBoost = true
     })
     try {
-
       notify({
         title: 'Building transaction. This may take a moment.',
         type: 'info',
@@ -225,7 +240,7 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
           mangoAccount,
           borrowBank?.mint,
           stakeBank?.mint,
-          - changeInUSDC,
+          -changeInUSDC,
         )
         slot_retrieved = slot
         notify({
@@ -233,8 +248,7 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
           type: 'success',
           txid: tx,
         })
-      }
-      else {
+      } else {
         console.log('Swapping From JLP to USDC')
         const { signature: tx, slot } = await simpleSwap(
           client,
@@ -242,7 +256,7 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
           mangoAccount,
           stakeBank?.mint,
           borrowBank?.mint,
-          - changeInJLP,
+          -changeInJLP,
         )
         slot_retrieved = slot
         notify({
@@ -310,9 +324,13 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
     })
   }, [selectedToken])
 
-
   return (
     <>
+      <h2 className="mb-1 text-center">Edit Leverage</h2>
+      <p className="mb-2 text-center">
+        The current leverage of your position is{' '}
+        <span className="font-mono">{current_leverage.toFixed(2)}x</span>
+      </p>
       <div className="flex flex-col justify-between">
         <div className="pb-8">
           {availableVaultBalance < amountToBorrow && borrowBank && (
@@ -342,8 +360,10 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
           </div>
           <div className="mt-4">
             <div className="flex items-center justify-between">
-              <Label text="Leverage" />
-              <p className="mb-2 font-bold text-th-fgd-1">{leverage.toFixed(2)}x</p>
+              <Label text="New Leverage" />
+              <p className="mb-2 font-bold text-th-fgd-1">
+                {leverage.toFixed(2)}x
+              </p>
             </div>
             <LeverageSlider
               startingValue={current_leverage}
@@ -353,28 +373,30 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
             />
           </div>
           {stakeBank && borrowBank ? (
-            <div className="pt-8">
+            <div className="pt-6">
               <Disclosure>
                 {({ open }) => (
                   <>
                     <Disclosure.Button
-                      className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${open ? 'rounded-b-none border-b-0' : ''
-                        }`}
+                      className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${
+                        open ? 'rounded-b-none border-b-0' : ''
+                      }`}
                     >
                       <div className="flex items-center justify-between">
                         <p className="font-medium">Est. Net APY</p>
                         <div className="flex items-center space-x-2">
                           <span
-                            className={`font-bold ${financialMetrics.APY > 0.001
-                              ? 'text-th-success'
-                              : 'text-th-error'
-                              }`}
+                            className={`font-bold ${
+                              financialMetrics.APY > 0.001
+                                ? 'text-th-success'
+                                : 'text-th-error'
+                            }`}
                           >
                             {financialMetrics.APY >= 0
                               ? '+'
                               : financialMetrics.APY === 0
-                                ? ''
-                                : ''}
+                              ? ''
+                              : ''}
                             <FormatNumericValue
                               value={financialMetrics.APY}
                               decimals={2}
@@ -382,8 +404,9 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
                             %
                           </span>
                           <ChevronDownIcon
-                            className={`${open ? 'rotate-180' : 'rotate-360'
-                              } h-6 w-6 shrink-0 text-th-fgd-1`}
+                            className={`${
+                              open ? 'rotate-180' : 'rotate-360'
+                            } h-6 w-6 shrink-0 text-th-fgd-1`}
                           />
                         </div>
                       </div>
@@ -397,22 +420,24 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
                           <p className="text-th-fgd-4">Size</p>
                           <div className="flex flex-col items-end">
                             <span
-                              className={`font-bold ${amountToBorrow > 0.001
-                                ? 'text-th-fgd-1'
-                                : 'text-th-bkg-4'
-                                }`}
+                              className={`font-bold ${
+                                amountToBorrow > 0.001
+                                  ? 'text-th-fgd-1'
+                                  : 'text-th-bkg-4'
+                              }`}
                             >
                               <FormatNumericValue
                                 value={leverage * Number(tokenMax.maxAmount)}
                                 decimals={3}
-                              />
-                              {' '}
-                              (
-                                {changeInJLP > 0 ? '+' : ''}
+                              />{' '}
+                              {/* ({changeInJLP > 0 ? '+' : ''}
                               <FormatNumericValue
-                                value={changeInJLP > 0 ?  changeInJLP :  changeInJLP}
+                                value={
+                                  changeInJLP > 0 ? changeInJLP : changeInJLP
+                                }
                                 decimals={3}
-                              />)
+                              />
+                              ) */}
                               <span className="font-body text-th-fgd-4">
                                 {' '}
                                 {stakeBank.name}{' '}
@@ -434,31 +459,34 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
                         <div className="flex justify-between">
                           <p className="text-th-fgd-4">{`${borrowBank.name} Borrowed`}</p>
                           <span
-                            className={`font-bold ${amountToBorrow > 0.001
-                              ? 'text-th-fgd-1'
-                              : 'text-th-bkg-4'
-                              }`}
+                            className={`font-bold ${
+                              amountToBorrow > 0.001
+                                ? 'text-th-fgd-1'
+                                : 'text-th-bkg-4'
+                            }`}
                           >
                             <FormatNumericValue
                               value={amountToBorrow}
                               decimals={3}
-                            />
-                            {' '}
-                            (
-                              {changeInUSDC >= 0 ? '' : '+'}
+                            />{' '}
+                            {/* ({changeInUSDC >= 0 ? '' : '+'}
                             <FormatNumericValue
-                              value={changeInUSDC > 0 ?  - changeInUSDC :  - changeInUSDC}
+                              value={
+                                changeInUSDC > 0 ? -changeInUSDC : -changeInUSDC
+                              }
                               decimals={3}
-                            />)
+                            />
+                            ) */}
                           </span>
                         </div>
                         <div className="flex justify-between">
                           <p className="text-th-fgd-4">{`Est. Liquidation Price`}</p>
                           <span
-                            className={`font-bold ${amountToBorrow > 0.001
-                              ? 'text-th-fgd-1'
-                              : 'text-th-bkg-4'
-                              }`}
+                            className={`font-bold ${
+                              amountToBorrow > 0.001
+                                ? 'text-th-fgd-1'
+                                : 'text-th-bkg-4'
+                            }`}
                           >
                             $
                             <FormatNumericValue
@@ -493,10 +521,11 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
                             APY
                           </p>
                           <span
-                            className={`font-bold ${financialMetrics?.collateralFeeAPY > 0.01
-                              ? 'text-th-error'
-                              : 'text-th-bkg-4'
-                              }`}
+                            className={`font-bold ${
+                              financialMetrics?.collateralFeeAPY > 0.01
+                                ? 'text-th-error'
+                                : 'text-th-bkg-4'
+                            }`}
                           >
                             {financialMetrics?.collateralFeeAPY > 0.01
                               ? '-'
@@ -513,10 +542,11 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
                             <div className="flex justify-between">
                               <p className="text-th-fgd-4">{`${borrowBank?.name} Borrow APY`}</p>
                               <span
-                                className={`font-bold ${borrowBankBorrowRate > 0.01
-                                  ? 'text-th-error'
-                                  : 'text-th-bkg-4'
-                                  }`}
+                                className={`font-bold ${
+                                  borrowBankBorrowRate > 0.01
+                                    ? 'text-th-error'
+                                    : 'text-th-bkg-4'
+                                }`}
                               >
                                 -
                                 <FormatNumericValue
@@ -535,11 +565,10 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
                                   <span className="font-bold text-th-fgd-1">
                                     <FormatNumericValue
                                       value={
-                                        changeInUSDC < 0 ?
-                                          borrowBank?.loanOriginationFeeRate.toNumber() *
-                                          - changeInUSDC
-                                          :
-                                          0
+                                        changeInUSDC < 0
+                                          ? borrowBank?.loanOriginationFeeRate.toNumber() *
+                                            -changeInUSDC
+                                          : 0
                                       }
                                       decimals={2}
                                     />
@@ -577,7 +606,8 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
             className="w-full"
             disabled={
               connected &&
-              (!tokenMax.maxAmount || (borrowBank && availableVaultBalance < amountToBorrow) ||
+              (!tokenMax.maxAmount ||
+                (borrowBank && availableVaultBalance < amountToBorrow) ||
                 depositLimitExceeded ||
                 !ipAllowed)
             }
@@ -586,7 +616,7 @@ function EditLeverageForm({ token: selectedToken, onSuccess }: EditLeverageFormP
             {submitting ? (
               <Loading className="mr-2 h-5 w-5" />
             ) : ipAllowed ? (
-              `Adjust Leverage`
+              `Confirm`
             ) : (
               'Country not allowed'
             )}

@@ -4,24 +4,14 @@ import EditLeverageForm from '@components/EditLeverageForm'
 
 interface EditLeverageModalProps {
   token?: string | undefined
-} 
+}
 type ModalCombinedProps = EditLeverageModalProps & ModalProps
 
-const EditLeverageModal = ({
-  isOpen,
-  onClose,
-  token,
-}: ModalCombinedProps) => {
+const EditLeverageModal = ({ isOpen, onClose, token }: ModalCombinedProps) => {
   return (
     <>
-      <Modal disableOutsideClose={true} isOpen={isOpen} onClose={onClose}>
-        <div >
-            <>
-              <div className="pb-2">
-                <EditLeverageForm onSuccess={onClose} token={token ? token : 'null'} />
-              </div>
-            </>
-        </div>
+      <Modal disableOutsideClose isOpen={isOpen} onClose={onClose}>
+        <EditLeverageForm onSuccess={onClose} token={token ? token : 'null'} />
       </Modal>
     </>
   )
