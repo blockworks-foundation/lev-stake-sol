@@ -384,7 +384,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
               <p className="mb-2 font-bold text-th-fgd-1">{leverage}x</p>
             </div>
             <LeverageSlider
-              startingValue={1}
+              startingValue={0}
               leverageMax={leverageMax}
               onChange={changeLeverage}
               step={0.01}

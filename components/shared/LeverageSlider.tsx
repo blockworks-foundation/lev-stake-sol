@@ -13,7 +13,7 @@ const LeverageSlider = ({
   onChange: (x: number) => void
   step: number
 }) => {
-  const [value, setValue] = useState([0, startingValue])
+  const [value, setValue] = useState([1, startingValue])
   const prevMax = usePrevious(leverageMax)
 
   // if leverageMax changes, force rerender
