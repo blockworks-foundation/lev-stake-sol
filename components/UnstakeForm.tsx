@@ -104,16 +104,20 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
   const stakeBankAmount =
     mangoAccount && stakeBank && mangoAccount.getTokenBalance(stakeBank)
 
-  const borrowAmount =
+  const borrowBankAmount =
     mangoAccount && borrowBank && mangoAccount.getTokenBalance(borrowBank)
 
   const leverage = useMemo(() => {
     try {
-      if (stakeBankAmount && borrowAmount) {
+      if (
+        stakeBankAmount &&
+        borrowBankAmount &&
+        borrowBankAmount.toNumber() < 0
+      ) {
         const lev = stakeBankAmount
           .div(
             stakeBankAmount.sub(
-              borrowAmount.abs().div(stakeBank.getAssetPrice()),
+              borrowBankAmount.abs().div(stakeBank.getAssetPrice()),
             ),
           )
           .toNumber()
@@ -125,7 +129,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
       console.log(e)
       return 1
     }
-  }, [stakeBankAmount, borrowAmount, stakeBank])
+  }, [stakeBankAmount, borrowBankAmount, stakeBank])
 
   const tokenMax = useMemo(() => {
     if (!stakeBank || !mangoAccount) return { maxAmount: 0.0, maxDecimals: 6 }

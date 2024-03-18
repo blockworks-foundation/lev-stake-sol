@@ -1,40 +1,31 @@
 import { useQuery } from '@tanstack/react-query'
-import {
-  fetchAndParsePricesCsv,
-  getPriceRangeFromPeriod,
-  calcYield,
-  DATA_SOURCE,
-  PERIOD,
-} from '@glitchful-dev/sol-apy-sdk'
+import { fetchSwapChartPrices } from 'apis/birdeye/helpers'
+import { STAKEABLE_TOKENS_DATA } from 'utils/constants'
 
 const fetchRates = async () => {
   try {
-    const [msolPrices, jitoPrices, bsolPrices, lidoPrices] = await Promise.all([
-      fetchAndParsePricesCsv(DATA_SOURCE.MARINADE_CSV),
-      fetchAndParsePricesCsv(DATA_SOURCE.JITO_CSV),
-      fetchAndParsePricesCsv(DATA_SOURCE.SOLBLAZE_CSV),
-      fetchAndParsePricesCsv(DATA_SOURCE.LIDO_CSV),
+    const [jlpPrices] = await Promise.all([
+      fetchSwapChartPrices(STAKEABLE_TOKENS_DATA[0]?.mint_address, STAKEABLE_TOKENS_DATA[1]?.mint_address, '30')
     ])
 
-    const resp = await fetch(
-      `https://api.coingecko.com/api/v3/coins/jupiter-perpetuals-liquidity-provider-token/market_chart?vs_currency=usd&days=30&interval=daily`,
-    )
-    const jlpPricesData = await resp.json()
-    const jlpPricesPrice = jlpPricesData.prices.map(
-      (priceAndTime: Array<number>) => priceAndTime[1],
-    )
-
     // may be null if the price range cannot be calculated
+    /*
+    
     const msolRange = getPriceRangeFromPeriod(msolPrices, PERIOD.DAYS_30)
     const jitoRange = getPriceRangeFromPeriod(jitoPrices, PERIOD.DAYS_30)
     const bsolRange = getPriceRangeFromPeriod(bsolPrices, PERIOD.DAYS_30)
     const lidoRange = getPriceRangeFromPeriod(lidoPrices, PERIOD.DAYS_30)
+    
+    */
 
     const rateData: Record<string, number> = {}
     rateData.jlp =
-      (12 * (jlpPricesPrice[jlpPricesPrice.length - 2] - jlpPricesPrice[1])) /
-      jlpPricesPrice[1]
+      (12 * (jlpPrices[jlpPrices.length - 2].price - jlpPrices[0].price)) /
+      jlpPrices[0].price
 
+
+    /*
+    
     if (msolRange) {
       rateData.msol = calcYield(msolRange)?.apy
     }
@@ -47,6 +38,9 @@ const fetchRates = async () => {
     if (lidoRange) {
       rateData.stsol = calcYield(lidoRange)?.apy
     }
+    
+    */
+   
     return rateData
   } catch (e) {
     return {}

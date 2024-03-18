@@ -17,6 +17,7 @@ import useBankRates from 'hooks/useBankRates'
 import usePositions from 'hooks/usePositions'
 import { AdjustmentsHorizontalIcon } from '@heroicons/react/20/solid'
 import EditLeverageModal from './modals/EditLeverageModal'
+import Tooltip from './shared/Tooltip'
 
 const set = mangoStore.getState().set
 
@@ -139,10 +140,8 @@ const PositionItem = ({
     return [liqRatio, liqPriceChangePercentage.toFixed(2)]
   }, [bank, borrowBalance, borrowBank, stakeBalance])
 
-  const { financialMetrics, stakeBankDepositRate } = useBankRates(
-    bank.name,
-    leverage,
-  )
+  const { financialMetrics, stakeBankDepositRate, borrowBankBorrowRate } =
+    useBankRates(bank.name, leverage)
 
   const APY_Daily_Compound =
     Math.pow(1 + Number(stakeBankDepositRate) / 365, 365) - 1
@@ -192,9 +191,83 @@ const PositionItem = ({
         </div>
         <div>
           <p className="mb-1 text-th-fgd-4">Est. APY</p>
-          <span className="text-xl font-bold text-th-fgd-1">
-            <FormatNumericValue value={Number(uiRate)} decimals={2} />%
-          </span>
+          {bank.name !== 'USDC' ? (
+            <div className="w-max">
+              <Tooltip
+                content={
+                  <>
+                    <div className="space-y-2 md:px-3">
+                      <div className="flex justify-between gap-6">
+                        <p className="text-th-fgd-4">
+                          {formatTokenSymbol(bank.name)} Yield APY
+                        </p>
+                        <span className="font-bold text-th-success">
+                          {financialMetrics.collectedReturnsAPY > 0.01
+                            ? '+'
+                            : ''}
+                          <FormatNumericValue
+                            value={financialMetrics.collectedReturnsAPY}
+                            decimals={2}
+                          />
+                          %
+                        </span>
+                      </div>
+                      <div className="flex justify-between gap-6">
+                        <p className="text-th-fgd-4">
+                          {formatTokenSymbol(bank.name)} Collateral Fee APY
+                        </p>
+                        <span
+                          className={`font-bold ${
+                            financialMetrics?.collateralFeeAPY > 0.01
+                              ? 'text-th-error'
+                              : 'text-th-bkg-4'
+                          }`}
+                        >
+                          {financialMetrics?.collateralFeeAPY > 0.01 ? '-' : ''}
+                          <FormatNumericValue
+                            value={financialMetrics?.collateralFeeAPY?.toString()}
+                            decimals={2}
+                          />
+                          %
+                        </span>
+                      </div>
+                      {borrowBank ? (
+                        <>
+                          <div className="flex justify-between gap-6">
+                            <p className="text-th-fgd-4">{`${borrowBank?.name} Borrow APY`}</p>
+                            <span
+                              className={`font-bold ${
+                                borrowBankBorrowRate > 0.01
+                                  ? 'text-th-error'
+                                  : 'text-th-bkg-4'
+                              }`}
+                            >
+                              -
+                              <FormatNumericValue
+                                value={financialMetrics.borrowsAPY}
+                                decimals={2}
+                              />
+                              %
+                            </span>
+                          </div>
+                        </>
+                      ) : null}
+                    </div>
+                  </>
+                }
+              >
+                <span className="tooltip-underline text-xl font-bold text-th-fgd-1">
+                  <FormatNumericValue value={Number(uiRate)} decimals={2} />%
+                </span>
+              </Tooltip>
+            </div>
+          ) : (
+            <>
+              <span className="text-xl font-bold text-th-fgd-1">
+                <FormatNumericValue value={Number(uiRate)} decimals={2} />%
+              </span>
+            </>
+          )}
         </div>
         <div>
           <p className="mb-1 text-th-fgd-4">Total Earned</p>
