@@ -56,7 +56,7 @@ export const withdrawAndClose = async (
   }
   const stakeBalance = mangoAccount.getTokenBalanceUi(stakeBank)
   const withdrawHealthRemainingAccounts: PublicKey[] =
-    client.buildHealthRemainingAccounts(group, [mangoAccount], [], [], [])
+    await client.buildHealthRemainingAccounts(group, [mangoAccount], [], [], [])
   const withdrawMax =
     amount >= floorToDecimal(stakeBalance, stakeBank.mintDecimals).toNumber()
   console.log('withdrawMax: ', withdrawMax)
@@ -167,7 +167,13 @@ export const unstakeAndSwap = async (
     )
 
     const swapHealthRemainingAccounts: PublicKey[] = mangoAccount
-      ? client.buildHealthRemainingAccounts(group, [mangoAccount], [], [], [])
+      ? await client.buildHealthRemainingAccounts(
+          group,
+          [mangoAccount],
+          [],
+          [],
+          [],
+        )
       : [stakeBank.publicKey, stakeBank.oracle]
     const [swapIxs, alts] = await createSwapIxs({
       client: client,
@@ -313,13 +319,13 @@ export const stakeAndCreate = async (
   }
 
   const depositHealthRemainingAccounts: PublicKey[] = mangoAccount
-    ? client.buildHealthRemainingAccounts(
-      group,
-      [mangoAccount],
-      [stakeBank],
-      [],
-      [],
-    )
+    ? await client.buildHealthRemainingAccounts(
+        group,
+        [mangoAccount],
+        [stakeBank],
+        [],
+        [],
+      )
     : [stakeBank.publicKey, stakeBank.oracle]
   const depositTokenIxs = await createDepositIx(
     client,
@@ -436,13 +442,13 @@ export const depositAndCreate = async (
   }
 
   const depositHealthRemainingAccounts: PublicKey[] = mangoAccount
-    ? client.buildHealthRemainingAccounts(
-      group,
-      [mangoAccount],
-      [depositBank],
-      [],
-      [],
-    )
+    ? await client.buildHealthRemainingAccounts(
+        group,
+        [mangoAccount],
+        [depositBank],
+        [],
+        [],
+      )
     : [depositBank.publicKey, depositBank.oracle]
 
   const depositTokenIxs = await createDepositIx(
