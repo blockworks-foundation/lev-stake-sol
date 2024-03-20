@@ -3,23 +3,27 @@ import useStakeRates from './useStakeRates'
 import useMangoGroup from './useMangoGroup'
 // import mangoStore from '@store/mangoStore'
 import useLeverageMax from './useLeverageMax'
+import { JLP_BORROW_TOKEN, LST_BORROW_TOKEN } from 'utils/constants'
 
 // const set = mangoStore.getState().set
 
 export default function useBankRates(selectedToken: string, leverage: number) {
   const { data: stakeRates } = useStakeRates()
-  const { group } = useMangoGroup()
+  const { jlpGroup, lstGroup } = useMangoGroup()
 
   // const estimatedMaxAPY = mangoStore((s) => s.estimatedMaxAPY.current)
   const leverageMax = useLeverageMax(selectedToken)
 
-  const stakeBank = useMemo(() => {
-    return group?.banksMapByName.get(selectedToken)?.[0]
-  }, [selectedToken, group])
-
-  const borrowBank = useMemo(() => {
-    return group?.banksMapByName.get('USDC')?.[0]
-  }, [group])
+  const [stakeBank, borrowBank] = useMemo(() => {
+    const isJlpGroup = selectedToken === 'JLP' || selectedToken === 'USDC'
+    const stakeBank = isJlpGroup
+      ? jlpGroup?.banksMapByName.get(selectedToken)?.[0]
+      : lstGroup?.banksMapByName.get(selectedToken)?.[0]
+    const borrowBank = isJlpGroup
+      ? jlpGroup?.banksMapByName.get(JLP_BORROW_TOKEN)?.[0]
+      : lstGroup?.banksMapByName.get(LST_BORROW_TOKEN)?.[0]
+    return [stakeBank, borrowBank]
+  }, [selectedToken, jlpGroup, lstGroup])
 
   const stakeBankDepositRate = useMemo(() => {
     return stakeBank ? stakeBank.getDepositRate() : 0

@@ -1,38 +1,51 @@
 import { useMemo } from 'react'
-import { BORROW_TOKEN, STAKEABLE_TOKENS } from 'utils/constants'
+import {
+  JLP_BORROW_TOKEN,
+  LST_BORROW_TOKEN,
+  STAKEABLE_TOKENS,
+} from 'utils/constants'
 import useStakeAccounts from './useStakeAccounts'
 import useMangoGroup from './useMangoGroup'
-import {
-  toUiDecimalsForQuote,
-} from '@blockworks-foundation/mango-v4'
+import { toUiDecimalsForQuote } from '@blockworks-foundation/mango-v4'
 
 export default function usePositions(showInactive = false) {
   const { stakeAccounts } = useStakeAccounts()
-  const { group } = useMangoGroup()
+  const { jlpGroup, lstGroup } = useMangoGroup()
 
-  const borrowBank = useMemo(() => {
-    return group?.banksMapByName.get(BORROW_TOKEN)?.[0]
-  }, [group])
+  const jlpBorrowBank = useMemo(() => {
+    return jlpGroup?.banksMapByName.get(JLP_BORROW_TOKEN)?.[0]
+  }, [jlpGroup])
+
+  const lstBorrowBank = useMemo(() => {
+    return lstGroup?.banksMapByName.get(LST_BORROW_TOKEN)?.[0]
+  }, [lstGroup])
 
   const banks = useMemo(() => {
-    if (!group) return []
+    if (!jlpGroup || !lstGroup) return []
     const positionBanks = []
     for (const token of STAKEABLE_TOKENS) {
-      const bank = group.banksMapByName.get(token)?.[0]
+      const isJlpGroup = token === 'JLP' || token === 'USDC'
+      const bank = isJlpGroup
+        ? jlpGroup.banksMapByName.get(token)?.[0]
+        : lstGroup.banksMapByName.get(token)?.[0]
       positionBanks.push(bank)
     }
     return positionBanks
-  }, [group])
+  }, [jlpGroup, lstGroup])
 
   const positions = useMemo(() => {
     const positions = []
 
     for (const bank of banks) {
-      if (!bank || !group) continue
+      if (!bank || !jlpGroup || !lstGroup) continue
+      const isJlpGroup = bank.name === 'JLP' || bank.name === 'USDC'
+      const group = isJlpGroup ? jlpGroup : lstGroup
+      const borrowBank = isJlpGroup ? jlpBorrowBank : lstBorrowBank
       const acct = stakeAccounts?.find((acc) => acc.getTokenBalanceUi(bank) > 0)
       const stakeBalance = acct ? acct.getTokenBalanceUi(bank) : 0
       const pnl = acct ? toUiDecimalsForQuote(acct.getPnl(group).toNumber()) : 0
-      const borrowBalance = acct && borrowBank ? acct.getTokenBalanceUi(borrowBank) : 0
+      const borrowBalance =
+        acct && borrowBank ? acct.getTokenBalanceUi(borrowBank) : 0
       positions.push({ borrowBalance, stakeBalance, bank, pnl, acct })
     }
     const sortedPositions = positions.sort(
@@ -41,7 +54,15 @@ export default function usePositions(showInactive = false) {
     return showInactive
       ? sortedPositions
       : sortedPositions.filter((pos) => pos.stakeBalance > 0)
-  }, [banks, showInactive, stakeAccounts, group, borrowBank])
+  }, [
+    banks,
+    showInactive,
+    stakeAccounts,
+    jlpGroup,
+    lstGroup,
+    jlpBorrowBank,
+    lstBorrowBank,
+  ])
 
-  return { borrowBank, positions }
+  return { jlpBorrowBank, lstBorrowBank, positions }
 }

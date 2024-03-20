@@ -40,16 +40,18 @@ const accountNums = STAKEABLE_TOKENS_DATA.map((d) => d.id)
 
 export default function useAccountHistory() {
   const { stakeAccounts } = useStakeAccounts()
-  const { group } = useMangoGroup()
+  const { jlpGroup, lstGroup } = useMangoGroup()
   const { wallet } = useWallet()
 
   // const accountPks = stakeAccounts?.map((acc) => acc.publicKey.toString()) || []
   const accountPks = useMemo(() => {
     const client = mangoStore.getState().client
     const payer = wallet?.adapter.publicKey?.toBuffer()
-    if (!group || !payer) return []
+    if (!jlpGroup || !lstGroup || !payer) return []
 
     const x = accountNums.map((n) => {
+      const isJlpGroup = n === 0 || n === 1
+      const group = isJlpGroup ? jlpGroup : lstGroup
       const acctNumBuffer = Buffer.alloc(4)
       acctNumBuffer.writeUInt32LE(n)
       const [mangoAccountPda] = PublicKey.findProgramAddressSync(
@@ -64,7 +66,7 @@ export default function useAccountHistory() {
       return mangoAccountPda.toString()
     })
     return x
-  }, [group, wallet])
+  }, [jlpGroup, lstGroup, wallet])
 
   const activeStakeAccts =
     stakeAccounts?.map((acc) => acc.publicKey.toString()) ?? []

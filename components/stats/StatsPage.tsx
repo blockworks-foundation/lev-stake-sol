@@ -11,21 +11,23 @@ import { formatTokenSymbol } from 'utils/tokens'
 import HistoricalStats from './HistoricalStats'
 
 const StatsPage = () => {
-  const { group } = useMangoGroup()
+  const { jlpGroup, lstGroup } = useMangoGroup()
   const { t } = useTranslation('common')
   const { isMobile } = useViewport()
 
   const banks = useMemo(() => {
-    if (!group) return []
-    const positionBanks = []
+    const statsBanks = []
     for (const token of STAKEABLE_TOKENS) {
-      const bank = group.banksMapByName.get(token)?.[0]
+      const isJlpGroup = token === 'JLP' || token === 'USDC'
+      const bank = isJlpGroup
+        ? jlpGroup?.banksMapByName.get(token)?.[0]
+        : lstGroup?.banksMapByName.get(token)?.[0]
       if (bank !== undefined) {
-        positionBanks.push(bank)
+        statsBanks.push(bank)
       }
     }
-    return positionBanks
-  }, [group])
+    return statsBanks
+  }, [jlpGroup, lstGroup])
 
   return (
     <div className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">

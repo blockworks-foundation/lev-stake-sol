@@ -1,11 +1,40 @@
 import { PublicKey } from '@solana/web3.js'
 
 // lev stake
-export const BORROW_TOKEN = 'USDC'
+export const JLP_BORROW_TOKEN = 'USDC'
+export const LST_BORROW_TOKEN = 'SOL'
 
 export const STAKEABLE_TOKENS_DATA = [
-  { name: 'JLP', id: 1, active: true, mint_address: '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4' },
-  { name: 'USDC', id: 0, active: true, mint_address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' },
+  {
+    name: 'JLP',
+    id: 1,
+    active: true,
+    mint_address: '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4',
+  },
+  {
+    name: 'USDC',
+    id: 0,
+    active: true,
+    mint_address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+  },
+  {
+    name: 'MSOL',
+    id: 521,
+    active: true,
+    mint_address: 'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So',
+  },
+  {
+    name: 'JitoSOL',
+    id: 621,
+    active: true,
+    mint_address: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn',
+  },
+  {
+    name: 'bSOL',
+    id: 721,
+    active: true,
+    mint_address: 'bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1',
+  },
 ]
 export const STAKEABLE_TOKENS = STAKEABLE_TOKENS_DATA.filter(
   (d) => d.active,
@@ -27,6 +56,7 @@ export const SECONDS = 1000
 export const INPUT_TOKEN_DEFAULT = 'USDC'
 export const MANGO_MINT = 'MangoCzJ36AjZyKwVj3VnYU4GTonjfVEnJmvvWaxLac'
 export const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+export const SOL_MINT = 'So11111111111111111111111111111111111111112'
 export const OUTPUT_TOKEN_DEFAULT = 'JLP'
 
 export const JUPITER_V4_PROGRAM_ID =
@@ -152,6 +182,7 @@ export const CUSTOM_TOKEN_ICONS: { [key: string]: boolean } = {
   'eth (portal)': true,
   hnt: true,
   jitosol: true,
+  jlp: true,
   kin: true,
   ldo: true,
   mngo: true,

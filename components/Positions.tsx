@@ -46,7 +46,11 @@ const Positions = ({
 }) => {
   const [showInactivePositions, setShowInactivePositions] =
     useLocalStorageState(SHOW_INACTIVE_POSITIONS_KEY, true)
-  const { borrowBank, positions } = usePositions(showInactivePositions)
+  const { positions, jlpBorrowBank, lstBorrowBank } = usePositions(
+    showInactivePositions,
+  )
+
+  console.log(positions)
 
   const numberOfPositions = useMemo(() => {
     if (!positions.length) return 0
@@ -69,12 +73,14 @@ const Positions = ({
       <div className="grid grid-cols-1 gap-2">
         {positions.length ? (
           positions.map((position) => {
+            const { bank } = position
+            const isUsdcBorrow = bank.name === 'JLP' || bank.name === 'USDC'
             return position.bank ? (
               <PositionItem
-                key={position.bank.name}
+                key={bank.name}
                 position={position}
                 setActiveTab={setActiveTab}
-                borrowBank={borrowBank}
+                borrowBank={isUsdcBorrow ? jlpBorrowBank : lstBorrowBank}
               />
             ) : null
           })
@@ -97,7 +103,7 @@ const PositionItem = ({
   setActiveTab: (v: ActiveTab) => void
   borrowBank: Bank | undefined
 }) => {
-  const { group } = useMangoGroup()
+  const { jlpGroup, lstGroup } = useMangoGroup()
   const { stakeBalance, borrowBalance, bank, pnl, acct } = position
 
   const handleAddOrManagePosition = (token: string) => {
@@ -108,7 +114,10 @@ const PositionItem = ({
   }
 
   const leverage = useMemo(() => {
-    if (!group || !acct) return 1
+    if (!acct || !bank) return 1
+    const isJlpGroup = bank.name === 'JLP' || bank.name === 'USDC'
+    const group = isJlpGroup ? jlpGroup : lstGroup
+    if (!group) return 1
     const accountValue = toUiDecimalsForQuote(acct.getEquity(group).toNumber())
 
     const assetsValue = toUiDecimalsForQuote(
@@ -120,7 +129,7 @@ const PositionItem = ({
     } else {
       return Math.abs(1 - assetsValue / accountValue) + 1
     }
-  }, [group, acct])
+  }, [acct, bank, jlpGroup, lstGroup])
 
   const [liqRatio] = useMemo(() => {
     if (!borrowBalance || !borrowBank) return ['0.00', '']

@@ -5,7 +5,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import NumberFormat, { NumberFormatValues } from 'react-number-format'
 import mangoStore from '@store/mangoStore'
 import { notify } from '../utils/notifications'
-import { TokenAccount, formatTokenSymbol } from '../utils/tokens'
+import { formatTokenSymbol } from '../utils/tokens'
 import Label from './forms/Label'
 import Button, { IconButton } from './shared/Button'
 import Loading from './shared/Loading'
@@ -29,6 +29,7 @@ import { sleep } from 'utils'
 import ButtonGroup from './forms/ButtonGroup'
 import Decimal from 'decimal.js'
 import useIpAddress from 'hooks/useIpAddress'
+import { walletBalanceForToken } from './StakeForm'
 
 const set = mangoStore.getState().set
 
@@ -37,27 +38,6 @@ export const NUMBERFORMAT_CLASSES =
 
 interface StakeFormProps {
   token: string
-}
-
-export const walletBalanceForToken = (
-  walletTokens: TokenAccount[],
-  token: string,
-): { maxAmount: number; maxDecimals: number } => {
-  const group = mangoStore.getState().group
-  const bank = group?.banksMapByName.get(token)?.[0]
-
-  let walletToken
-  if (bank) {
-    const tokenMint = bank?.mint
-    walletToken = tokenMint
-      ? walletTokens.find((t) => t.mint.toString() === tokenMint.toString())
-      : null
-  }
-
-  return {
-    maxAmount: walletToken ? walletToken.uiAmount : 0,
-    maxDecimals: bank?.mintDecimals || 6,
-  }
 }
 
 // const getNextAccountNumber = (accounts: MangoAccount[]): number => {
@@ -80,7 +60,7 @@ function DespositForm({ token: selectedToken }: StakeFormProps) {
   const [refreshingWalletTokens, setRefreshingWalletTokens] = useState(false)
   const { maxSolDeposit } = useSolBalance()
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
-  const { group } = useMangoGroup()
+  const { jlpGroup } = useMangoGroup()
   const groupLoaded = mangoStore((s) => s.groupLoaded)
   const { connected, publicKey } = useWallet()
   const walletTokens = mangoStore((s) => s.wallet.tokens)
@@ -88,8 +68,8 @@ function DespositForm({ token: selectedToken }: StakeFormProps) {
   const { ipAllowed } = useIpAddress()
 
   const depositBank = useMemo(() => {
-    return group?.banksMapByName.get(selectedToken)?.[0]
-  }, [selectedToken, group])
+    return jlpGroup?.banksMapByName.get(selectedToken)?.[0]
+  }, [selectedToken, jlpGroup])
 
   const tokenMax = useMemo(() => {
     return walletBalanceForToken(walletTokens, selectedToken)
@@ -121,7 +101,7 @@ function DespositForm({ token: selectedToken }: StakeFormProps) {
       return
     }
     const client = mangoStore.getState().client
-    const group = mangoStore.getState().group
+    const group = mangoStore.getState().group.jlpGroup
     const actions = mangoStore.getState().actions
     const mangoAccounts = mangoStore.getState().mangoAccounts
     const mangoAccount = mangoStore.getState().mangoAccount.current
@@ -175,7 +155,7 @@ function DespositForm({ token: selectedToken }: StakeFormProps) {
         type: 'error',
       })
     }
-  }, [depositBank, publicKey, inputAmount])
+  }, [depositBank, publicKey, inputAmount, ipAllowed])
 
   const showInsufficientBalance =
     tokenMax.maxAmount < Number(inputAmount) ||
@@ -288,7 +268,7 @@ function DespositForm({ token: selectedToken }: StakeFormProps) {
               <Loading className="mr-2 h-5 w-5" />
             ) : showInsufficientBalance ? (
               <div className="flex items-center">
-                <ExclamationCircleIcon className="icon-shadow mr-2 h-5 w-5 flex-shrink-0" />
+                <ExclamationCircleIcon className="icon-shadow mr-2 h-5 w-5 shrink-0" />
                 {t('swap:insufficient-balance', {
                   symbol: selectedToken,
                 })}

@@ -9,11 +9,15 @@ import { formatTokenSymbol } from 'utils/tokens'
 import { useViewport } from 'hooks/useViewport'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
 import DespositForm from './DepositForm'
+import { EnterBottomExitBottom } from './shared/Transitions'
+import TokenSelect from './TokenSelect'
+import Label from './forms/Label'
 
 const set = mangoStore.getState().set
 
 const Stake = () => {
   const [activeFormTab, setActiveFormTab] = useState('Add')
+  const [showTokenSelect, setShowTokenSelect] = useState(false)
   const selectedToken = mangoStore((s) => s.selectedToken)
   const { isDesktop } = useViewport()
 
@@ -21,25 +25,33 @@ const Stake = () => {
     set((state) => {
       state.selectedToken = token
     })
+    setShowTokenSelect(false)
   }, [])
 
   const swapUrl = `https://app.mango.markets/swap?in=USDC&out=${selectedToken}&walletSwap=true`
 
   return (
     <>
-      <div className="grid grid-cols-2 rounded-t-2xl border-2 border-b-0 border-th-fgd-1 bg-th-bkg-1">
-        {STAKEABLE_TOKENS.map((token) => (
-          <TokenButton
-            key={token}
-            handleTokenSelect={handleTokenSelect}
-            selectedToken={selectedToken}
-            tokenName={token}
-          />
-        ))}
-      </div>
-      <div className="grid grid-cols-12">
+      <div className="relative overflow-hidden">
+        <EnterBottomExitBottom
+          className="thin-scroll absolute bottom-0 left-0 z-20 h-full w-full overflow-auto rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6 pb-0"
+          show={!!showTokenSelect}
+        >
+          <h2 className="mb-4 text-center">
+            Select token to {activeFormTab === 'Add' ? 'Boost!' : 'Unboost'}
+          </h2>
+          <div className="space-y-4">
+            {STAKEABLE_TOKENS.map((token) => (
+              <TokenSelect
+                key={token}
+                onClick={() => handleTokenSelect(token)}
+                tokenName={token}
+              />
+            ))}
+          </div>
+        </EnterBottomExitBottom>
         <div
-          className={`col-span-12 rounded-b-2xl border-2 border-t border-th-fgd-1 bg-th-bkg-1 text-th-fgd-1`}
+          className={`rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 text-th-fgd-1`}
         >
           <div className={`p-6 pt-4 md:p-8 md:pt-6`}>
             <div className="pb-2">
@@ -47,6 +59,13 @@ const Stake = () => {
                 activeValue={activeFormTab}
                 values={['Add', 'Remove']}
                 onChange={(v) => setActiveFormTab(v)}
+              />
+            </div>
+            <div className="pb-6">
+              <Label text="Token" />
+              <TokenButton
+                onClick={() => setShowTokenSelect(true)}
+                tokenName={selectedToken}
               />
             </div>
             {selectedToken == 'USDC' ? (

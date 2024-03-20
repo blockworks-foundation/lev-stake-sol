@@ -1,12 +1,18 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetchSwapChartPrices } from 'apis/birdeye/helpers'
-import { STAKEABLE_TOKENS_DATA } from 'utils/constants'
+import { SOL_MINT, STAKEABLE_TOKENS_DATA, USDC_MINT } from 'utils/constants'
 
 const fetchRates = async () => {
   try {
-    const [jlpPrices] = await Promise.all([
-      fetchSwapChartPrices(STAKEABLE_TOKENS_DATA[0]?.mint_address, STAKEABLE_TOKENS_DATA[1]?.mint_address, '30')
-    ])
+    const promises = STAKEABLE_TOKENS_DATA.filter(
+      (token) => token.mint_address !== USDC_MINT,
+    ).map((t) => {
+      const isUsdcBorrow = t.name === 'JLP' || t.name === 'USDC'
+      const outputMint = isUsdcBorrow ? USDC_MINT : SOL_MINT
+      return fetchSwapChartPrices(t.mint_address, outputMint, '30')
+    })
+    const [jlpPrices, msolPrices, jitoPrices, bsolPrices] =
+      await Promise.all(promises)
 
     // may be null if the price range cannot be calculated
     /*
@@ -19,10 +25,26 @@ const fetchRates = async () => {
     */
 
     const rateData: Record<string, number> = {}
-    rateData.jlp =
-      (12 * (jlpPrices[jlpPrices.length - 2].price - jlpPrices[0].price)) /
-      jlpPrices[0].price
-
+    if (jlpPrices && jlpPrices?.length > 1) {
+      rateData.jlp =
+        (12 * (jlpPrices[jlpPrices.length - 2].price - jlpPrices[0].price)) /
+        jlpPrices[0].price
+    }
+    if (msolPrices && msolPrices?.length > 1) {
+      rateData.msol =
+        (12 * (msolPrices[msolPrices.length - 2].price - msolPrices[0].price)) /
+        msolPrices[0].price
+    }
+    if (jitoPrices && jitoPrices?.length > 1) {
+      rateData.jito =
+        (12 * (jitoPrices[jitoPrices.length - 2].price - jitoPrices[0].price)) /
+        jitoPrices[0].price
+    }
+    if (bsolPrices && bsolPrices?.length > 1) {
+      rateData.bsol =
+        (12 * (bsolPrices[bsolPrices.length - 2].price - bsolPrices[0].price)) /
+        bsolPrices[0].price
+    }
 
     /*
     
@@ -40,7 +62,7 @@ const fetchRates = async () => {
     }
     
     */
-   
+
     return rateData
   } catch (e) {
     return {}

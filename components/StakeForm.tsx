@@ -43,6 +43,7 @@ import ButtonGroup from './forms/ButtonGroup'
 import Decimal from 'decimal.js'
 import { toUiDecimals } from '@blockworks-foundation/mango-v4'
 import useIpAddress from 'hooks/useIpAddress'
+import { JLP_BORROW_TOKEN, LST_BORROW_TOKEN } from 'utils/constants'
 
 const set = mangoStore.getState().set
 
@@ -57,8 +58,12 @@ export const walletBalanceForToken = (
   walletTokens: TokenAccount[],
   token: string,
 ): { maxAmount: number; maxDecimals: number } => {
-  const group = mangoStore.getState().group
-  const bank = group?.banksMapByName.get(token)?.[0]
+  const jlpGroup = mangoStore.getState().group.jlpGroup
+  const lstGroup = mangoStore.getState().group.lstGroup
+  const isJlpGroup = token === 'JLP' || token === 'USDC'
+  const bank = isJlpGroup
+    ? jlpGroup?.banksMapByName.get(token)?.[0]
+    : lstGroup?.banksMapByName.get(token)?.[0]
 
   let walletToken
   if (bank) {
@@ -99,7 +104,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
 
   const storedLeverage = mangoStore((s) => s.leverage)
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
-  const { group } = useMangoGroup()
+  const { jlpGroup, lstGroup } = useMangoGroup()
   const groupLoaded = mangoStore((s) => s.groupLoaded)
   const { financialMetrics, borrowBankBorrowRate } = useBankRates(
     selectedToken,
@@ -107,13 +112,16 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   )
   const leverageMax = useLeverageMax(selectedToken) * 0.9 // Multiplied by 0.975 becuase you cant actually get to the end of the inifinite geometric series?
 
-  const stakeBank = useMemo(() => {
-    return group?.banksMapByName.get(selectedToken)?.[0]
-  }, [selectedToken, group])
-
-  const borrowBank = useMemo(() => {
-    return group?.banksMapByName.get('USDC')?.[0]
-  }, [group])
+  const [stakeBank, borrowBank] = useMemo(() => {
+    const isJlpGroup = selectedToken === 'JLP' || selectedToken === 'USDC'
+    const stakeBank = isJlpGroup
+      ? jlpGroup?.banksMapByName.get(selectedToken)?.[0]
+      : lstGroup?.banksMapByName.get(selectedToken)?.[0]
+    const borrowBank = isJlpGroup
+      ? jlpGroup?.banksMapByName.get(JLP_BORROW_TOKEN)?.[0]
+      : lstGroup?.banksMapByName.get(LST_BORROW_TOKEN)?.[0]
+    return [stakeBank, borrowBank]
+  }, [selectedToken, jlpGroup, lstGroup])
 
   const liquidationPrice = useMemo(() => {
     const price = Number(stakeBank?.uiPrice)
@@ -171,7 +179,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   }, [leverage, borrowBank, stakeBank, inputAmount])
 
   const availableVaultBalance = useMemo(() => {
-    if (!borrowBank || !group) return 0
+    if (!borrowBank) return 0
     const maxUtilization = 1 - borrowBank.minVaultToDepositsRatio
     const vaultBorrows = borrowBank.uiBorrows()
     const vaultDeposits = borrowBank.uiDeposits()
@@ -180,7 +188,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     const available =
       (maxUtilization * vaultDeposits - vaultBorrows) * loanOriginationFeeFactor
     return available
-  }, [borrowBank, group])
+  }, [borrowBank])
 
   const handleRefreshWalletBalances = useCallback(async () => {
     if (!publicKey) return
@@ -191,17 +199,20 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   }, [publicKey])
 
   const handleDeposit = useCallback(async () => {
-    if (!ipAllowed) {
+    if (!ipAllowed || !stakeBank || !publicKey) {
       return
     }
     const client = mangoStore.getState().client
-    const group = mangoStore.getState().group
+    const jlpGroup = mangoStore.getState().group.jlpGroup
+    const lstGroup = mangoStore.getState().group.lstGroup
+    const isJlpGroup = stakeBank.name === 'JLP' || stakeBank.name === 'USDC'
+    const group = isJlpGroup ? jlpGroup : lstGroup
     const actions = mangoStore.getState().actions
     const mangoAccount = mangoStore.getState().mangoAccount.current
     const mangoAccounts = mangoStore.getState().mangoAccounts
     const accNumber = getNextAccountNumber(mangoAccounts)
 
-    if (!group || !stakeBank || !publicKey) return
+    if (!group) return
     console.log(mangoAccounts)
     set((state) => {
       state.submittingBoost = true
@@ -279,7 +290,10 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   }
 
   useEffect(() => {
-    const group = mangoStore.getState().group
+    const jlpGroup = mangoStore.getState().group.jlpGroup
+    const lstGroup = mangoStore.getState().group.lstGroup
+    const isJlpGroup = selectedToken === 'JLP' || selectedToken === 'USDC'
+    const group = isJlpGroup ? jlpGroup : lstGroup
     set((state) => {
       state.swap.outputBank = group?.banksMapByName.get(selectedToken)?.[0]
     })
