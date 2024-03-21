@@ -1,5 +1,5 @@
 import useMangoGroup from 'hooks/useMangoGroup'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { SHOW_INACTIVE_POSITIONS_KEY } from 'utils/constants'
 import TokenLogo from './shared/TokenLogo'
 import Button from './shared/Button'
@@ -15,6 +15,8 @@ import {
 } from '@blockworks-foundation/mango-v4'
 import useBankRates from 'hooks/useBankRates'
 import usePositions from 'hooks/usePositions'
+import { AdjustmentsHorizontalIcon } from '@heroicons/react/20/solid'
+import EditLeverageModal from './modals/EditLeverageModal'
 import Tooltip from './shared/Tooltip'
 
 const set = mangoStore.getState().set
@@ -106,6 +108,7 @@ const PositionItem = ({
       state.selectedToken = token
     })
   }
+  const [showEditLeverageModal, setShowEditLeverageModal] = useState(false)
 
   const leverage = useMemo(() => {
     if (!group || !acct) return 1
@@ -161,7 +164,7 @@ const PositionItem = ({
         </div>
         <Button onClick={() => handleAddOrManagePosition(bank.name)}>
           <p className="mb-1 text-base tracking-wider text-th-bkg-1">
-            {stakeBalance ? 'Manage' : 'Add Position'}
+            {stakeBalance ? 'Add/Remove' : `Boost! ${bank.name}`}
           </p>
         </Button>
       </div>
@@ -288,9 +291,20 @@ const PositionItem = ({
           <>
             <div>
               <p className="mb-1 text-th-fgd-4">Leverage</p>
-              <span className="text-xl font-bold text-th-fgd-1">
-                {leverage ? leverage.toFixed(2) : 0.0}x
-              </span>
+              <div className="flex items-center">
+                <span className="mr-3 text-xl font-bold text-th-fgd-1">
+                  {leverage ? leverage.toFixed(2) : 0.0}x
+                </span>
+                <button
+                  onClick={() =>
+                    setShowEditLeverageModal(!showEditLeverageModal)
+                  }
+                  className="default-transition flex items-center rounded-md border-b-2 border-th-bkg-4 bg-th-bkg-2 px-2.5 py-1 text-th-fgd-1 md:hover:bg-th-bkg-3"
+                >
+                  <AdjustmentsHorizontalIcon className="mr-1.5 h-4 w-4" />
+                  <span className="font-bold">Edit</span>
+                </button>
+              </div>
             </div>
             <div>
               <p className="mb-1 text-th-fgd-4">Est. Liquidation Price</p>
@@ -310,6 +324,13 @@ const PositionItem = ({
           </>
         )}
       </div>
+      {showEditLeverageModal ? (
+        <EditLeverageModal
+          token={bank.name}
+          isOpen={showEditLeverageModal}
+          onClose={() => setShowEditLeverageModal(false)}
+        />
+      ) : null}
     </div>
   )
 }

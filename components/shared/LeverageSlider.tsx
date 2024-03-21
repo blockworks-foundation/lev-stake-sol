@@ -3,15 +3,17 @@ import { useEffect, useState } from 'react'
 import RangeSlider from 'react-range-slider-input'
 
 const LeverageSlider = ({
+  startingValue,
   leverageMax,
   onChange,
   step,
 }: {
+  startingValue: number
   leverageMax: number
   onChange: (x: number) => void
   step: number
 }) => {
-  const [value, setValue] = useState([0, 1])
+  const [value, setValue] = useState([1, startingValue])
   const prevMax = usePrevious(leverageMax)
 
   // if leverageMax changes, force rerender

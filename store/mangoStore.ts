@@ -7,6 +7,7 @@ import {
   ConfirmOptions,
   Connection,
   Keypair,
+  LAMPORTS_PER_SOL,
   PublicKey,
   RecentPrioritizationFees,
 } from '@solana/web3.js'
@@ -883,7 +884,10 @@ const mangoStore = create<MangoStore>()(
               : (recentFees[mid - 1].prioritizationFee +
                   recentFees[mid].prioritizationFee) /
                 2
-          const feeEstimate = Math.ceil(medianFee * feeMultiplier)
+          const feeEstimate = Math.min(
+            Math.ceil(medianFee * feeMultiplier),
+            LAMPORTS_PER_SOL * 0.01,
+          )
 
           const provider = client.program.provider as AnchorProvider
           provider.opts.skipPreflight = true
