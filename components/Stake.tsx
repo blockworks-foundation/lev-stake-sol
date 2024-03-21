@@ -30,21 +30,21 @@ const Stake = () => {
     setShowTokenSelect(false)
   }, [])
 
+  const hasPosition = useMemo(() => {
+    if (!positions || !selectedToken) return false
+    return positions.find((position) => position.bank.name === selectedToken)
+  }, [positions, selectedToken])
+
   const handleTabChange = useCallback(
     (tab: string) => {
       setActiveFormTab(tab)
-      if (tab === 'Remove' && positions?.length) {
-        const hasPosition = positions.find(
-          (position) => position.bank.name === selectedToken,
-        )
-        if (!hasPosition) {
-          set((state) => {
-            state.selectedToken = positions[0].bank.name
-          })
-        }
+      if (tab === 'Remove' && positions?.length && !hasPosition) {
+        set((state) => {
+          state.selectedToken = positions[0].bank.name
+        })
       }
     },
-    [positions, selectedToken],
+    [hasPosition, positions],
   )
 
   const selectableTokens = useMemo(() => {

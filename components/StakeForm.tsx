@@ -374,12 +374,33 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
               </div>
             </div>
             <div className="col-span-2 mt-2">
-              <ButtonGroup
-                activeValue={sizePercentage}
-                onChange={(p) => handleSizePercentage(p)}
-                values={['10', '25', '50', '75', '100']}
-                unit="%"
-              />
+              {tokenMax.maxAmount === 0 ? (
+                <InlineNotification
+                  type="warning"
+                  desc={
+                    <div>
+                      <p>
+                        No {formatTokenSymbol(selectedToken)} balance to Boost!{' '}
+                        <a
+                          className="font-bold"
+                          href={`https://app.mango.markets/swap?in=USDC&out=${selectedToken}&walletSwap=true`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Get {formatTokenSymbol(selectedToken)} Now
+                        </a>
+                      </p>
+                    </div>
+                  }
+                />
+              ) : (
+                <ButtonGroup
+                  activeValue={sizePercentage}
+                  onChange={(p) => handleSizePercentage(p)}
+                  values={['10', '25', '50', '75', '100']}
+                  unit="%"
+                />
+              )}
             </div>
             {depositLimitExceeded ? (
               <div className="col-span-2 mt-2">
