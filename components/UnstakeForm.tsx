@@ -51,13 +51,9 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
   const { t } = useTranslation(['common', 'account'])
   const [inputAmount, setInputAmount] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  // const [selectedToken, setSelectedToken] = useState(
-  //   token || INPUT_TOKEN_DEFAULT,
-  // )
   const [refreshingWalletTokens, setRefreshingWalletTokens] = useState(false)
   const [sizePercentage, setSizePercentage] = useState('')
   const { maxSolDeposit } = useSolBalance()
-  // const banks = useBanksWithBalances('walletBalance')
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { jlpGroup, lstGroup } = useMangoGroup()
   const { mangoAccount } = useMangoAccount()
@@ -73,14 +69,6 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
       : lstGroup?.banksMapByName.get(LST_BORROW_TOKEN)?.[0]
     return [stakeBank, borrowBank]
   }, [selectedToken, jlpGroup, lstGroup])
-
-  // const stakeBank = useMemo(() => {
-  //   return group?.banksMapByName.get(selectedToken)?.[0]
-  // }, [selectedToken, group])
-
-  // const borrowBank = useMemo(() => {
-  //   return group?.banksMapByName.get('USDC')?.[0]
-  // }, [group])
 
   const tokenPositionsFull = useMemo(() => {
     if (!stakeBank || !usedTokens.length || !totalTokens.length) return false

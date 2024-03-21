@@ -50,8 +50,6 @@ const Positions = ({
     showInactivePositions,
   )
 
-  console.log(positions)
-
   const numberOfPositions = useMemo(() => {
     if (!positions.length) return 0
     return positions.filter((pos) => pos.stakeBalance > 0).length
