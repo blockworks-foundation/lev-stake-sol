@@ -23,6 +23,7 @@ import {
   PerpPosition,
   BookSide,
   ParsedFillEvent,
+  MANGO_V4_ID,
 } from '@blockworks-foundation/mango-v4'
 
 import EmptyWallet from '../utils/wallet'
@@ -113,20 +114,33 @@ const initMangoClient = (
     prioritizationFee: DEFAULT_PRIORITY_FEE,
     fallbackOracleConfig: FALLBACK_ORACLES,
   },
-): MangoClient => {
-  return MangoClient.connect(provider, CLUSTER, MANGO_BOOST_ID, {
-    prioritizationFee: opts.prioritizationFee,
-    fallbackOracleConfig: opts.fallbackOracleConfig,
-    idsSource: 'get-program-accounts',
-    postSendTxCallback: ({ txid }: { txid: string }) => {
-      notify({
-        title: 'Transaction sent',
-        description: 'Waiting for confirmation',
-        type: 'confirm',
-        txid: txid,
-      })
-    },
-  })
+): { lst: MangoClient; jlp: MangoClient } => {
+  return {
+    lst: MangoClient.connect(provider, CLUSTER, MANGO_V4_ID['mainnet-beta'], {
+      prioritizationFee: opts.prioritizationFee,
+      idsSource: 'api',
+      postSendTxCallback: ({ txid }: { txid: string }) => {
+        notify({
+          title: 'Transaction sent',
+          description: 'Waiting for confirmation',
+          type: 'confirm',
+          txid: txid,
+        })
+      },
+    }),
+    jlp: MangoClient.connect(provider, CLUSTER, MANGO_BOOST_ID, {
+      prioritizationFee: opts.prioritizationFee,
+      idsSource: 'get-program-accounts',
+      postSendTxCallback: ({ txid }: { txid: string }) => {
+        notify({
+          title: 'Transaction sent',
+          description: 'Waiting for confirmation',
+          type: 'confirm',
+          txid: txid,
+        })
+      },
+    }),
+  }
 }
 
 export const DEFAULT_TRADE_FORM: TradeForm = {
@@ -161,7 +175,7 @@ export type MangoStore = {
   connection: Connection
   group: { jlpGroup: Group | undefined; lstGroup: Group | undefined }
   groupLoaded: boolean
-  client: MangoClient
+  client: { jlp: MangoClient; lst: MangoClient }
   showUserSetup: boolean
   leverage: number
   mangoAccount: {
@@ -528,8 +542,8 @@ const mangoStore = create<MangoStore>()(
           try {
             const set = get().set
             const client = get().client
-            const jlpGroup = await client.getGroup(GROUP_JLP)
-            const lstGroup = await client.getGroup(GROUP_V1)
+            const lstGroup = await client.lst.getGroup(GROUP_V1)
+            const jlpGroup = await client.jlp.getGroup(GROUP_JLP)
 
             set((state) => {
               state.group.jlpGroup = jlpGroup
@@ -601,10 +615,10 @@ const mangoStore = create<MangoStore>()(
               jlpDelegateAccounts,
               lstDelegateAccounts,
             ] = await Promise.all([
-              client.getMangoAccountsForOwner(jlpGroup, ownerPk),
-              client.getMangoAccountsForOwner(lstGroup, ownerPk),
-              client.getMangoAccountsForDelegate(jlpGroup, ownerPk),
-              client.getMangoAccountsForDelegate(lstGroup, ownerPk),
+              client.jlp.getMangoAccountsForOwner(jlpGroup, ownerPk),
+              client.lst.getMangoAccountsForOwner(lstGroup, ownerPk),
+              client.jlp.getMangoAccountsForDelegate(jlpGroup, ownerPk),
+              client.lst.getMangoAccountsForDelegate(lstGroup, ownerPk),
             ])
             const mangoAccounts = [
               ...jlpOwnerMangoAccounts,
@@ -786,7 +800,7 @@ const mangoStore = create<MangoStore>()(
             endpointUrl,
             CONNECTION_COMMITMENT,
           )
-          const oldProvider = client.program.provider as AnchorProvider
+          const oldProvider = client.jlp.program.provider as AnchorProvider
           const newProvider = new AnchorProvider(
             newConnection,
             oldProvider.wallet,
@@ -811,7 +825,7 @@ const mangoStore = create<MangoStore>()(
           if (!group || !client) return
 
           const altResponse = await connection.getAddressLookupTable(
-            new PublicKey('AgCBUZ6UMWqPLftTxeAqpQxtrfiCyL2HgRfmmM6QTfCj'),
+            new PublicKey('AgCBUZ6UMWqPyLftTxeAqpQxtrfiCyL2HgRfmmM6QTfCj'),
           )
 
           const altKeys = altResponse.value?.state.addresses
@@ -845,7 +859,7 @@ const mangoStore = create<MangoStore>()(
                 2
           const feeEstimate = Math.ceil(medianFee * feeMultiplier)
 
-          const provider = client.program.provider as AnchorProvider
+          const provider = client.jlp.program.provider as AnchorProvider
           provider.opts.skipPreflight = true
 
           const newClient = initMangoClient(provider, {
