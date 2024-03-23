@@ -136,9 +136,7 @@ function DespositForm({ token: selectedToken }: StakeFormProps) {
       setInputAmount('')
       await sleep(500)
       if (!mangoAccount) {
-        await actions.fetchMangoAccounts(
-          (client.program.provider as AnchorProvider).wallet.publicKey,
-        )
+        await actions.fetchMangoAccounts(publicKey)
       }
       await actions.reloadMangoAccount(slot)
       await actions.fetchWalletTokens(publicKey)

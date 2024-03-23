@@ -196,9 +196,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
           txid: tx,
         })
         await sleep(100)
-        await actions.fetchMangoAccounts(
-          (client.program.provider as AnchorProvider).wallet.publicKey,
-        )
+        await actions.fetchMangoAccounts(publicKey)
         await actions.reloadMangoAccount()
         await actions.fetchWalletTokens(publicKey)
         mangoAccount = mangoStore.getState().mangoAccount.current
@@ -223,9 +221,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
       setSubmitting(false)
       setInputAmount('')
       await sleep(100)
-      await actions.fetchMangoAccounts(
-        (client.program.provider as AnchorProvider).wallet.publicKey,
-      )
+      await actions.fetchMangoAccounts(publicKey)
       await actions.reloadMangoAccount()
       await actions.fetchWalletTokens(publicKey)
     } catch (e) {

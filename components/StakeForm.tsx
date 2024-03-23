@@ -33,7 +33,6 @@ import useMangoGroup from 'hooks/useMangoGroup'
 import FormatNumericValue from './shared/FormatNumericValue'
 import { getNextAccountNumber, stakeAndCreate } from 'utils/transactions'
 // import { MangoAccount } from '@blockworks-foundation/mango-v4'
-import { AnchorProvider } from '@project-serum/anchor'
 import useBankRates from 'hooks/useBankRates'
 import { Disclosure } from '@headlessui/react'
 import SheenLoader from './shared/SheenLoader'
@@ -202,11 +201,13 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     if (!ipAllowed || !stakeBank || !publicKey) {
       return
     }
-    const client = mangoStore.getState().client
     const jlpGroup = mangoStore.getState().group.jlpGroup
     const lstGroup = mangoStore.getState().group.lstGroup
     const isJlpGroup = stakeBank.name === 'JLP' || stakeBank.name === 'USDC'
     const group = isJlpGroup ? jlpGroup : lstGroup
+    const client = isJlpGroup
+      ? mangoStore.getState().client.jlp
+      : mangoStore.getState().client.lst
     const actions = mangoStore.getState().actions
     const mangoAccount = mangoStore.getState().mangoAccount.current
     const mangoAccounts = mangoStore.getState().mangoAccounts
@@ -243,9 +244,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
       setInputAmount('')
       await sleep(500)
       if (!mangoAccount) {
-        await actions.fetchMangoAccounts(
-          (client.program.provider as AnchorProvider).wallet.publicKey,
-        )
+        await actions.fetchMangoAccounts(publicKey)
       }
       await actions.reloadMangoAccount(slot)
       await actions.fetchWalletTokens(publicKey)

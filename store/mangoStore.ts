@@ -825,7 +825,7 @@ const mangoStore = create<MangoStore>()(
           if (!group || !client) return
 
           const altResponse = await connection.getAddressLookupTable(
-            new PublicKey('AgCBUZ6UMWqPyLftTxeAqpQxtrfiCyL2HgRfmmM6QTfCj'),
+            new PublicKey('AgCBUZ6UMWqPLftTxeAqpQxtrfiCyL2HgRfmmM6QTfCj'),
           )
 
           const altKeys = altResponse.value?.state.addresses
