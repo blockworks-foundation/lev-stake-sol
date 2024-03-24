@@ -37,6 +37,7 @@ import {
   BOOST_DATA_API_URL,
   CONNECTION_COMMITMENT,
   FALLBACK_ORACLES,
+  ClientContextKeys,
   MANGO_DATA_API_URL,
   MAX_PRIORITY_FEE_KEYS,
   PAGINATION_PAGE_LENGTH,
@@ -173,7 +174,7 @@ export type MangoStore = {
   }
   connected: boolean
   connection: Connection
-  group: { jlpGroup: Group | undefined; lstGroup: Group | undefined }
+  group: { jlp: Group | undefined; lst: Group | undefined }
   groupLoaded: boolean
   client: { jlp: MangoClient; lst: MangoClient }
   showUserSetup: boolean
@@ -280,7 +281,10 @@ export type MangoStore = {
       limit?: number,
     ) => Promise<void>
     fetchGroup: () => Promise<void>
-    reloadMangoAccount: (slot?: number) => Promise<void>
+    reloadMangoAccount: (
+      clientContext: ClientContextKeys,
+      slot?: number,
+    ) => Promise<void>
     fetchMangoAccounts: (ownerPk: PublicKey) => Promise<void>
     fetchProfileDetails: (walletPk: string) => void
     fetchSwapHistory: (
@@ -338,7 +342,7 @@ const mangoStore = create<MangoStore>()(
       },
       connected: false,
       connection,
-      group: { jlpGroup: undefined, lstGroup: undefined },
+      group: { jlp: undefined, lst: undefined },
       groupLoaded: false,
       client,
       showUserSetup: false,
@@ -546,8 +550,8 @@ const mangoStore = create<MangoStore>()(
             const jlpGroup = await client.jlp.getGroup(GROUP_JLP)
 
             set((state) => {
-              state.group.jlpGroup = jlpGroup
-              state.group.lstGroup = lstGroup
+              state.group.jlp = jlpGroup
+              state.group.lst = lstGroup
               state.groupLoaded = true
             })
           } catch (e) {
@@ -555,7 +559,7 @@ const mangoStore = create<MangoStore>()(
             console.error('Error fetching groups', e)
           }
         },
-        reloadMangoAccount: async (confirmationSlot) => {
+        reloadMangoAccount: async (clientContext, confirmationSlot) => {
           const set = get().set
           const actions = get().actions
           try {
@@ -566,7 +570,7 @@ const mangoStore = create<MangoStore>()(
             if (!mangoAccount) return
 
             const { value: reloadedMangoAccount, slot } =
-              await mangoAccount.reloadWithSlot(client)
+              await mangoAccount.reloadWithSlot(client[clientContext])
 
             const lastSlot = get().mangoAccount.lastSlot
             if (
@@ -586,7 +590,7 @@ const mangoStore = create<MangoStore>()(
                 })
               }
             } else if (confirmationSlot && slot < confirmationSlot) {
-              await actions.reloadMangoAccount(confirmationSlot)
+              await actions.reloadMangoAccount(clientContext, confirmationSlot)
               await sleep(100)
             }
           } catch (e) {
@@ -600,11 +604,12 @@ const mangoStore = create<MangoStore>()(
         fetchMangoAccounts: async (ownerPk: PublicKey) => {
           const set = get().set
           try {
-            const jlpGroup = get().group.jlpGroup
-            const lstGroup = get().group.lstGroup
-            const client = get().client
-            const selectedMangoAccount = get().mangoAccount.current
+            const jlpGroup = get().group.jlp
+            const lstGroup = get().group.lst
             const selectedToken = get().selectedToken
+            const client = get().client
+
+            const selectedMangoAccount = get().mangoAccount.current
             if (!jlpGroup) throw new Error('JLP group not loaded')
             if (!lstGroup) throw new Error('LST group not loaded')
             if (!client) throw new Error('Client not loaded')
@@ -859,6 +864,7 @@ const mangoStore = create<MangoStore>()(
                 2
           const feeEstimate = Math.ceil(medianFee * feeMultiplier)
 
+          //can use any provider doesn't matter both should be same
           const provider = client.jlp.program.provider as AnchorProvider
           provider.opts.skipPreflight = true
 

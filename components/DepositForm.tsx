@@ -23,13 +23,13 @@ import Link from 'next/link'
 import useMangoGroup from 'hooks/useMangoGroup'
 import { depositAndCreate, getNextAccountNumber } from 'utils/transactions'
 // import { MangoAccount } from '@blockworks-foundation/mango-v4'
-import { AnchorProvider } from '@project-serum/anchor'
 import SheenLoader from './shared/SheenLoader'
 import { sleep } from 'utils'
 import ButtonGroup from './forms/ButtonGroup'
 import Decimal from 'decimal.js'
 import useIpAddress from 'hooks/useIpAddress'
 import { walletBalanceForToken } from './StakeForm'
+import { ClientContextKeys } from 'utils/constants'
 
 const set = mangoStore.getState().set
 
@@ -38,6 +38,7 @@ export const NUMBERFORMAT_CLASSES =
 
 interface StakeFormProps {
   token: string
+  clientContext: ClientContextKeys
 }
 
 // const getNextAccountNumber = (accounts: MangoAccount[]): number => {
@@ -53,7 +54,7 @@ interface StakeFormProps {
 //   return 0
 // }
 
-function DespositForm({ token: selectedToken }: StakeFormProps) {
+function DespositForm({ token: selectedToken, clientContext }: StakeFormProps) {
   const { t } = useTranslation(['common', 'account'])
   const [inputAmount, setInputAmount] = useState('')
   const submitting = mangoStore((s) => s.submittingBoost)
@@ -72,7 +73,7 @@ function DespositForm({ token: selectedToken }: StakeFormProps) {
   }, [selectedToken, jlpGroup])
 
   const tokenMax = useMemo(() => {
-    return walletBalanceForToken(walletTokens, selectedToken)
+    return walletBalanceForToken(walletTokens, selectedToken, clientContext)
   }, [walletTokens, selectedToken])
 
   const setMax = useCallback(() => {
@@ -101,7 +102,7 @@ function DespositForm({ token: selectedToken }: StakeFormProps) {
       return
     }
     const client = mangoStore.getState().client
-    const group = mangoStore.getState().group.jlpGroup
+    const group = mangoStore.getState().group[clientContext]
     const actions = mangoStore.getState().actions
     const mangoAccounts = mangoStore.getState().mangoAccounts
     const mangoAccount = mangoStore.getState().mangoAccount.current
@@ -118,7 +119,7 @@ function DespositForm({ token: selectedToken }: StakeFormProps) {
         type: 'info',
       })
       const { signature: tx, slot } = await depositAndCreate(
-        client,
+        client[clientContext],
         group,
         mangoAccount,
         depositBank.mint,
@@ -138,7 +139,7 @@ function DespositForm({ token: selectedToken }: StakeFormProps) {
       if (!mangoAccount) {
         await actions.fetchMangoAccounts(publicKey)
       }
-      await actions.reloadMangoAccount(slot)
+      await actions.reloadMangoAccount(clientContext, slot)
       await actions.fetchWalletTokens(publicKey)
     } catch (e) {
       console.error('Error depositing:', e)

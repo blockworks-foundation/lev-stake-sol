@@ -4,7 +4,7 @@ import TabUnderline from './shared/TabUnderline'
 import StakeForm from '@components/StakeForm'
 import UnstakeForm from '@components/UnstakeForm'
 import mangoStore from '@store/mangoStore'
-import { STAKEABLE_TOKENS } from 'utils/constants'
+import { STAKEABLE_TOKENS, STAKEABLE_TOKENS_DATA } from 'utils/constants'
 import { formatTokenSymbol } from 'utils/tokens'
 import { useViewport } from 'hooks/useViewport'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
@@ -101,19 +101,45 @@ const Stake = () => {
                 {selectedToken == 'USDC' ? (
                   <>
                     {activeFormTab === 'Add' ? (
-                      <DespositForm token="USDC" />
+                      <DespositForm
+                        token="USDC"
+                        clientContext={
+                          STAKEABLE_TOKENS_DATA.find((x) => x.name === 'USDC')!
+                            .clientContext
+                        }
+                      />
                     ) : null}
                     {activeFormTab === 'Remove' ? (
-                      <UnstakeForm token="USDC" />
+                      <UnstakeForm
+                        token="USDC"
+                        clientContext={
+                          STAKEABLE_TOKENS_DATA.find((x) => x.name === 'USDC')!
+                            .clientContext
+                        }
+                      />
                     ) : null}
                   </>
                 ) : (
                   <>
                     {activeFormTab === 'Add' ? (
-                      <StakeForm token={selectedToken} />
+                      <StakeForm
+                        token={selectedToken}
+                        clientContext={
+                          STAKEABLE_TOKENS_DATA.find(
+                            (x) => x.name === selectedToken,
+                          )!.clientContext
+                        }
+                      />
                     ) : null}
                     {activeFormTab === 'Remove' ? (
-                      <UnstakeForm token={selectedToken} />
+                      <UnstakeForm
+                        token={selectedToken}
+                        clientContext={
+                          STAKEABLE_TOKENS_DATA.find(
+                            (x) => x.name === selectedToken,
+                          )!.clientContext
+                        }
+                      />
                     ) : null}
                   </>
                 )}

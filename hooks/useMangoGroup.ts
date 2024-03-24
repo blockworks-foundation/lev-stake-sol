@@ -5,8 +5,8 @@ export default function useMangoGroup(): {
   jlpGroup: Group | undefined
   lstGroup: Group | undefined
 } {
-  const jlpGroup = mangoStore((s) => s.group.jlpGroup)
-  const lstGroup = mangoStore((s) => s.group.lstGroup)
+  const jlpGroup = mangoStore((s) => s.group.jlp)
+  const lstGroup = mangoStore((s) => s.group.lst)
 
   return { jlpGroup, lstGroup }
 }

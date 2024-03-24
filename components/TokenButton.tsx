@@ -13,7 +13,7 @@ const TokenButton = ({
   tokenName: string
   onClick: () => void
 }) => {
-  const leverage = useLeverageMax(tokenName) * 0.9
+  const leverage = useLeverageMax(tokenName)
   const groupLoaded = mangoStore((s) => s.groupLoaded)
 
   const { stakeBankDepositRate, financialMetrics } = useBankRates(

@@ -52,6 +52,7 @@ export default function useAccountHistory() {
     const x = accountNums.map((n) => {
       const isJlpGroup = n === 0 || n === 1
       const group = isJlpGroup ? jlpGroup : lstGroup
+
       const acctNumBuffer = Buffer.alloc(4)
       acctNumBuffer.writeUInt32LE(n)
       const [mangoAccountPda] = PublicKey.findProgramAddressSync(
@@ -61,7 +62,7 @@ export default function useAccountHistory() {
           payer,
           acctNumBuffer,
         ],
-        client.program.programId,
+        client[isJlpGroup ? 'jlp' : 'lst'].program.programId,
       )
       return mangoAccountPda.toString()
     })

@@ -5,16 +5,16 @@ import { Token } from 'types/jupiter'
 import { JUPITER_API_DEVNET, JUPITER_API_MAINNET } from 'utils/constants'
 
 const fetchJupiterTokens = async () => {
-  const { jlpGroup, lstGroup } = mangoStore.getState().group
-  if (!jlpGroup || !lstGroup) return
+  const { jlp, lst } = mangoStore.getState().group
+  if (!jlp || !lst) return
   const url = CLUSTER === 'devnet' ? JUPITER_API_DEVNET : JUPITER_API_MAINNET
   const response = await fetch(url)
   const data: Token[] = await response.json()
 
-  const jlpBankMints = Array.from(jlpGroup.banksMapByName.values()).map((b) =>
+  const jlpBankMints = Array.from(jlp.banksMapByName.values()).map((b) =>
     b[0].mint.toString(),
   )
-  const lstBankMints = Array.from(lstGroup.banksMapByName.values()).map((b) =>
+  const lstBankMints = Array.from(lst.banksMapByName.values()).map((b) =>
     b[0].mint.toString(),
   )
   const mangoTokens = data.filter(

@@ -4,38 +4,52 @@ import { PublicKey } from '@solana/web3.js'
 export const JLP_BORROW_TOKEN = 'USDC'
 export const LST_BORROW_TOKEN = 'SOL'
 
-export const STAKEABLE_TOKENS_DATA = [
+export const STAKEABLE_TOKENS_DATA: {
+  name: string
+  id: number
+  active: boolean
+  mint_address: string
+  clientContext: ClientContextKeys
+}[] = [
   {
     name: 'JLP',
     id: 1,
     active: true,
     mint_address: '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4',
+    clientContext: 'jlp',
   },
   {
     name: 'USDC',
     id: 0,
     active: true,
     mint_address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    clientContext: 'jlp',
   },
   {
     name: 'MSOL',
     id: 521,
     active: true,
     mint_address: 'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So',
+    clientContext: 'lst',
   },
   {
     name: 'JitoSOL',
     id: 621,
     active: true,
     mint_address: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn',
+    clientContext: 'lst',
   },
   {
     name: 'bSOL',
     id: 721,
     active: true,
     mint_address: 'bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1',
+    clientContext: 'lst',
   },
 ]
+
+export type ClientContextKeys = 'lst' | 'jlp'
+
 export const STAKEABLE_TOKENS = STAKEABLE_TOKENS_DATA.filter(
   (d) => d.active,
 ).map((d) => d.name)
