@@ -36,7 +36,7 @@ const fetchRates = async () => {
         msolPrices[0].price
     }
     if (jitoPrices && jitoPrices?.length > 1) {
-      rateData.jito =
+      rateData.jitosol =
         (12 * (jitoPrices[jitoPrices.length - 2].price - jitoPrices[0].price)) /
         jitoPrices[0].price
     }

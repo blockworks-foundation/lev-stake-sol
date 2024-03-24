@@ -33,7 +33,7 @@ export default function useBankRates(selectedToken: string, leverage: number) {
     return borrowBank ? Number(borrowBank.getBorrowRate()) : 0
   }, [borrowBank])
 
-  const jlpStakeRateAPY = useMemo(() => {
+  const tokenStakeRateAPY = useMemo(() => {
     return stakeRates ? stakeRates[selectedToken.toLowerCase()] : 0
   }, [stakeRates, selectedToken])
 
@@ -48,7 +48,7 @@ export default function useBankRates(selectedToken: string, leverage: number) {
     const borrowRatePerDay = Number(borrowBankBorrowRate) / 365
 
     // Convert the JLP APY to a daily rate
-    const jlpRatePerDay = (1 + jlpStakeRateAPY) ** (1 / 365) - 1
+    const tokenRatePerDay = (1 + tokenStakeRateAPY) ** (1 / 365) - 1
 
     // Assume the user deposits 1 JLP, then these are the starting deposits and
     // borrows for the desired leverage (in terms of starting-value JLP)
@@ -72,9 +72,9 @@ export default function useBankRates(selectedToken: string, leverage: number) {
       deposits -= collateralFees
       collectedCollateralFees += collateralFees
 
-      const jlpReturns = jlpRatePerDay * deposits
-      deposits += jlpReturns
-      collectedReturns += jlpReturns
+      const tokenReturns = tokenRatePerDay * deposits
+      deposits += tokenReturns
+      collectedReturns += tokenReturns
     }
 
     // APY's for the calculation
@@ -87,11 +87,13 @@ export default function useBankRates(selectedToken: string, leverage: number) {
 
     // Total APY, comparing the end value (deposits - borrows) to the starting value (1)
     const APY = (deposits - borrows - 1) * 100
-
+    console.log(selectedToken, {
+      stakeRates,
+    })
     // Comparisons to outside
-    const nonMangoAPY = jlpStakeRateAPY * leverage * 100
+    const nonMangoAPY = tokenStakeRateAPY * leverage * 100
     const diffToNonMango = APY - nonMangoAPY
-    const diffToNonLeveraged = APY - jlpStakeRateAPY * 100
+    const diffToNonLeveraged = APY - tokenStakeRateAPY * 100
 
     return {
       APY,
@@ -104,25 +106,26 @@ export default function useBankRates(selectedToken: string, leverage: number) {
       diffToNonLeveraged,
     }
   }, [
-    leverage,
-    borrowBankBorrowRate,
-    jlpStakeRateAPY,
     stakeBank?.collateralFeePerDay,
     stakeBank?.maintAssetWeight,
+    borrowBankBorrowRate,
+    tokenStakeRateAPY,
+    leverage,
+    selectedToken,
   ])
 
   const estimatedMaxAPY = useMemo(() => {
     return (
-      jlpStakeRateAPY * leverageMax -
+      tokenStakeRateAPY * leverageMax -
       Number(borrowBankBorrowRate) * (leverageMax - 1)
     )
-  }, [jlpStakeRateAPY, borrowBankBorrowRate, leverageMax])
+  }, [tokenStakeRateAPY, borrowBankBorrowRate, leverageMax])
 
   return {
     financialMetrics,
     stakeBankDepositRate,
     borrowBankBorrowRate,
-    jlpStakeRateAPY,
+    jlpStakeRateAPY: tokenStakeRateAPY,
     estimatedMaxAPY,
   }
 }
