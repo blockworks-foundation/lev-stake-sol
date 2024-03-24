@@ -1,6 +1,7 @@
 import { PublicKey, Connection } from '@solana/web3.js'
 import { TokenInstructions } from '@project-serum/serum'
 import { toUiDecimals } from '@blockworks-foundation/mango-v4'
+import { STAKEABLE_TOKENS_DATA } from './constants'
 
 export class TokenAccount {
   publicKey!: PublicKey
@@ -26,7 +27,7 @@ export class TokenAccount {
   }
 }
 
-function exists<T>(item: T | null | undefined): item is T {
+export function exists<T>(item: T | null | undefined): item is T {
   return !!item
 }
 
@@ -73,4 +74,12 @@ export const formatTokenSymbol = (symbol: string) => {
     return truncSymbol === 'WBTC' ? 'wBTC' : truncSymbol
   }
   return symbol === 'MSOL' ? 'mSOL' : symbol
+}
+
+export const getStakableTokensDataForMint = (mintPk: string) => {
+  return STAKEABLE_TOKENS_DATA.find((x) => x.mint_address === mintPk)!
+}
+
+export const getStakableTokensDataForTokenName = (tokenName: string) => {
+  return STAKEABLE_TOKENS_DATA.find((x) => x.name === tokenName)!
 }

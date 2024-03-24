@@ -10,6 +10,7 @@ export const STAKEABLE_TOKENS_DATA: {
   active: boolean
   mint_address: string
   clientContext: ClientContextKeys
+  borrowToken: 'USDC' | 'SOL'
 }[] = [
   {
     name: 'JLP',
@@ -17,6 +18,7 @@ export const STAKEABLE_TOKENS_DATA: {
     active: true,
     mint_address: '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4',
     clientContext: 'jlp',
+    borrowToken: 'USDC',
   },
   {
     name: 'USDC',
@@ -24,6 +26,7 @@ export const STAKEABLE_TOKENS_DATA: {
     active: true,
     mint_address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
     clientContext: 'jlp',
+    borrowToken: 'USDC',
   },
   {
     name: 'MSOL',
@@ -31,6 +34,7 @@ export const STAKEABLE_TOKENS_DATA: {
     active: true,
     mint_address: 'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So',
     clientContext: 'lst',
+    borrowToken: 'SOL',
   },
   {
     name: 'JitoSOL',
@@ -38,6 +42,7 @@ export const STAKEABLE_TOKENS_DATA: {
     active: true,
     mint_address: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn',
     clientContext: 'lst',
+    borrowToken: 'SOL',
   },
   {
     name: 'bSOL',
@@ -45,6 +50,7 @@ export const STAKEABLE_TOKENS_DATA: {
     active: true,
     mint_address: 'bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1',
     clientContext: 'lst',
+    borrowToken: 'SOL',
   },
 ]
 

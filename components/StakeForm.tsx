@@ -112,7 +112,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     leverage,
   )
   const leverageMax = useLeverageMax(selectedToken)
-  console.log(leverageMax)
+
   const [stakeBank, borrowBank] = useMemo(() => {
     const stakeBank =
       clientContext === 'jlp'
@@ -175,9 +175,17 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     const borrowPrice = borrowBank?.uiPrice
     const stakePrice = stakeBank?.uiPrice
     if (!borrowPrice || !stakePrice || !Number(inputAmount)) return 0
-    const borrowAmount =
-      stakeBank?.uiPrice * Number(inputAmount) * (leverage - 1)
-    return borrowAmount
+    if (clientContext === 'jlp') {
+      const borrowAmount =
+        stakeBank?.uiPrice * Number(inputAmount) * (leverage - 1)
+      return borrowAmount
+    } else {
+      const priceDifference = (stakePrice - borrowPrice) / borrowPrice
+      const borrowAmount =
+        (1 + priceDifference) * Number(inputAmount) * Math.min(leverage - 1, 1)
+
+      return borrowAmount
+    }
   }, [leverage, borrowBank, stakeBank, inputAmount])
 
   const availableVaultBalance = useMemo(() => {
@@ -213,7 +221,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     const accNumber = getNextAccountNumber(mangoAccounts)
 
     if (!group) return
-    console.log(mangoAccounts)
+
     set((state) => {
       state.submittingBoost = true
     })

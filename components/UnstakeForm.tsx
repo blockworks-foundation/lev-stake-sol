@@ -101,10 +101,11 @@ function UnstakeForm({
         borrowBankAmount &&
         borrowBankAmount.toNumber() < 0
       ) {
-        const lev = stakeBankAmount
+        const stakeAmountValue = stakeBankAmount.mul(stakeBank.getAssetPrice())
+        const lev = stakeAmountValue
           .div(
-            stakeBankAmount.sub(
-              borrowBankAmount.abs().div(stakeBank.getAssetPrice()),
+            stakeAmountValue.sub(
+              borrowBankAmount.abs().mul(borrowBank.getAssetPrice()),
             ),
           )
           .toNumber()
@@ -259,10 +260,14 @@ function UnstakeForm({
     if (!mangoAccount || !stakeBank) return 0
     const group = clientContext === 'jlp' ? jlpGroup : lstGroup
     if (!group) return 0
-    return mangoAccount.getMaxWithdrawWithBorrowForTokenUi(
-      group,
-      stakeBank.mint,
-    )
+    try {
+      return mangoAccount.getMaxWithdrawWithBorrowForTokenUi(
+        group,
+        stakeBank.mint,
+      )
+    } catch (e) {
+      return 0
+    }
   }, [jlpGroup, lstGroup, mangoAccount, stakeBank, clientContext])
 
   const showInsufficientBalance =
@@ -414,7 +419,9 @@ function UnstakeForm({
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <p className="text-th-fgd-4">USDC borrowed</p>
+                            <p className="text-th-fgd-4">
+                              {borrowBank.name} borrowed
+                            </p>
                             {borrowBank ? (
                               <span
                                 className={`font-bold ${

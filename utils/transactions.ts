@@ -37,6 +37,7 @@ import {
 import { floorToDecimal } from './numbers'
 import { BOOST_ACCOUNT_PREFIX } from './constants'
 import { notify } from './notifications'
+import { getStakableTokensDataForMint } from './tokens'
 
 export const withdrawAndClose = async (
   client: MangoClient,
@@ -47,10 +48,12 @@ export const withdrawAndClose = async (
 ) => {
   console.log('withdraw and close')
 
-  const borrowBank = group?.banksMapByName.get('USDC')?.[0]
+  const borrowBank = group?.banksMapByName.get(
+    getStakableTokensDataForMint(stakeMintPk.toBase58()).borrowToken,
+  )?.[0]
   const stakeBank = group?.banksMapByMint.get(stakeMintPk.toString())?.[0]
   const instructions: TransactionInstruction[] = []
-
+  console.log(borrowBank, stakeBank, mangoAccount)
   if (!borrowBank || !stakeBank || !mangoAccount) {
     throw Error('Unable to find USDC bank or stake bank or mango account')
   }
@@ -117,7 +120,9 @@ export const unstakeAndSwap = async (
   console.log('unstake and swap')
 
   const payer = (client.program.provider as AnchorProvider).wallet.publicKey
-  const borrowBank = group?.banksMapByName.get('USDC')?.[0]
+  const borrowBank = group?.banksMapByName.get(
+    getStakableTokensDataForMint(stakeMintPk.toBase58()).borrowToken,
+  )?.[0]
   const stakeBank = group?.banksMapByMint.get(stakeMintPk.toString())?.[0]
   const instructions: TransactionInstruction[] = []
 
@@ -208,7 +213,9 @@ export const stakeAndCreate = async (
   name?: string,
 ): Promise<MangoSignatureStatus> => {
   const payer = (client.program.provider as AnchorProvider).wallet.publicKey
-  const borrowBank = group?.banksMapByName.get('USDC')?.[0]
+  const borrowBank = group?.banksMapByName.get(
+    getStakableTokensDataForMint(stakeMintPk.toBase58()).borrowToken,
+  )?.[0]
   const stakeBank = group?.banksMapByMint.get(stakeMintPk.toString())?.[0]
   const instructions: TransactionInstruction[] = []
 

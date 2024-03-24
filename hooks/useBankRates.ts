@@ -87,9 +87,7 @@ export default function useBankRates(selectedToken: string, leverage: number) {
 
     // Total APY, comparing the end value (deposits - borrows) to the starting value (1)
     const APY = (deposits - borrows - 1) * 100
-    console.log(selectedToken, {
-      stakeRates,
-    })
+
     // Comparisons to outside
     const nonMangoAPY = tokenStakeRateAPY * leverage * 100
     const diffToNonMango = APY - nonMangoAPY

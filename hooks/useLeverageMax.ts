@@ -1,11 +1,8 @@
 import { useMemo } from 'react'
 import useMangoGroup from './useMangoGroup'
 import { floorToDecimal } from 'utils/numbers'
-import {
-  JLP_BORROW_TOKEN,
-  LST_BORROW_TOKEN,
-  STAKEABLE_TOKENS_DATA,
-} from 'utils/constants'
+import { JLP_BORROW_TOKEN, LST_BORROW_TOKEN } from 'utils/constants'
+import { getStakableTokensDataForTokenName } from 'utils/tokens'
 
 export default function useLeverageMax(selectedToken: string) {
   const { jlpGroup, lstGroup } = useMangoGroup()
@@ -35,8 +32,7 @@ export default function useLeverageMax(selectedToken: string) {
     const x = stakeInitAssetWeight.toNumber() / borrowInitLiabWeight.toNumber()
 
     if (
-      STAKEABLE_TOKENS_DATA.find((x) => x.name === selectedToken)
-        ?.clientContext === 'jlp'
+      getStakableTokensDataForTokenName(selectedToken).clientContext === 'jlp'
     ) {
       const leverageFactor = 1 / (1 - x)
 

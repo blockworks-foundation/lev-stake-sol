@@ -3,16 +3,12 @@ import mangoStore from '@store/mangoStore'
 import { Keypair } from '@solana/web3.js'
 import useMangoAccount from 'hooks/useMangoAccount'
 import useInterval from './shared/useInterval'
-import {
-  LAST_WALLET_NAME,
-  PRIORITY_FEE_KEY,
-  SECONDS,
-  STAKEABLE_TOKENS_DATA,
-} from 'utils/constants'
+import { LAST_WALLET_NAME, PRIORITY_FEE_KEY, SECONDS } from 'utils/constants'
 import useNetworkSpeed from 'hooks/useNetworkSpeed'
 import { useWallet } from '@solana/wallet-adapter-react'
 import useLocalStorageState from 'hooks/useLocalStorageState'
 import { DEFAULT_PRIORITY_FEE_LEVEL } from './settings/RpcSettings'
+import { getStakableTokensDataForTokenName } from 'utils/tokens'
 
 const set = mangoStore.getState().set
 const actions = mangoStore.getState().actions
@@ -20,9 +16,8 @@ const actions = mangoStore.getState().actions
 const HydrateStore = () => {
   const { mangoAccountPk } = useMangoAccount()
   const selectedToken = mangoStore((s) => s.selectedToken)
-  const clientContext = STAKEABLE_TOKENS_DATA.find(
-    (x) => x.name === selectedToken,
-  )!.clientContext
+  const clientContext =
+    getStakableTokensDataForTokenName(selectedToken).clientContext
 
   const connection = mangoStore((s) => s.connection)
 

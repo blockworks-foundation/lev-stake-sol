@@ -4,8 +4,11 @@ import TabUnderline from './shared/TabUnderline'
 import StakeForm from '@components/StakeForm'
 import UnstakeForm from '@components/UnstakeForm'
 import mangoStore from '@store/mangoStore'
-import { STAKEABLE_TOKENS, STAKEABLE_TOKENS_DATA } from 'utils/constants'
-import { formatTokenSymbol } from 'utils/tokens'
+import { STAKEABLE_TOKENS } from 'utils/constants'
+import {
+  formatTokenSymbol,
+  getStakableTokensDataForTokenName,
+} from 'utils/tokens'
 import { useViewport } from 'hooks/useViewport'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
 import DespositForm from './DepositForm'
@@ -104,7 +107,7 @@ const Stake = () => {
                       <DespositForm
                         token="USDC"
                         clientContext={
-                          STAKEABLE_TOKENS_DATA.find((x) => x.name === 'USDC')!
+                          getStakableTokensDataForTokenName('USDC')
                             .clientContext
                         }
                       />
@@ -113,7 +116,7 @@ const Stake = () => {
                       <UnstakeForm
                         token="USDC"
                         clientContext={
-                          STAKEABLE_TOKENS_DATA.find((x) => x.name === 'USDC')!
+                          getStakableTokensDataForTokenName('USDC')
                             .clientContext
                         }
                       />
@@ -125,9 +128,8 @@ const Stake = () => {
                       <StakeForm
                         token={selectedToken}
                         clientContext={
-                          STAKEABLE_TOKENS_DATA.find(
-                            (x) => x.name === selectedToken,
-                          )!.clientContext
+                          getStakableTokensDataForTokenName(selectedToken)
+                            .clientContext
                         }
                       />
                     ) : null}
@@ -135,9 +137,8 @@ const Stake = () => {
                       <UnstakeForm
                         token={selectedToken}
                         clientContext={
-                          STAKEABLE_TOKENS_DATA.find(
-                            (x) => x.name === selectedToken,
-                          )!.clientContext
+                          getStakableTokensDataForTokenName(selectedToken)
+                            .clientContext
                         }
                       />
                     ) : null}
