@@ -117,7 +117,7 @@ function UnstakeForm({
       console.log(e)
       return 1
     }
-  }, [stakeBankAmount, borrowBankAmount, stakeBank])
+  }, [stakeBankAmount, borrowBankAmount, stakeBank, borrowBank])
 
   const tokenMax = useMemo(() => {
     if (!stakeBank || !mangoAccount) return { maxAmount: 0.0, maxDecimals: 6 }

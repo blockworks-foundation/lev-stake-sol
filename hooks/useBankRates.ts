@@ -109,7 +109,6 @@ export default function useBankRates(selectedToken: string, leverage: number) {
     borrowBankBorrowRate,
     tokenStakeRateAPY,
     leverage,
-    selectedToken,
   ])
 
   const estimatedMaxAPY = useMemo(() => {

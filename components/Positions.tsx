@@ -294,7 +294,7 @@ const PositionItem = ({
             )}
           </span>
         </div>
-        {position.bank.name == 'USDC' ? null : (
+        {position.bank.name == 'JLP' ? (
           <>
             <div>
               <p className="mb-1 text-th-fgd-4">Leverage</p>
@@ -303,9 +303,12 @@ const PositionItem = ({
                   {leverage ? leverage.toFixed(2) : 0.0}x
                 </span>
                 <button
-                  onClick={() =>
+                  onClick={async () => {
+                    await set((state) => {
+                      state.selectedToken = bank.name
+                    })
                     setShowEditLeverageModal(!showEditLeverageModal)
-                  }
+                  }}
                   className="default-transition flex items-center rounded-md border-b-2 border-th-bkg-4 bg-th-bkg-2 px-2.5 py-1 text-th-fgd-1 md:hover:bg-th-bkg-3"
                 >
                   <AdjustmentsHorizontalIcon className="mr-1.5 h-4 w-4" />
@@ -329,13 +332,15 @@ const PositionItem = ({
               ) : null} */}
             </div>
           </>
-        )}
+        ) : null}
       </div>
       {showEditLeverageModal ? (
         <EditLeverageModal
           token={bank.name}
           isOpen={showEditLeverageModal}
-          onClose={() => setShowEditLeverageModal(false)}
+          onClose={() => {
+            setShowEditLeverageModal(false)
+          }}
         />
       ) : null}
     </div>
