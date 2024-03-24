@@ -202,6 +202,80 @@ export const unstakeAndSwap = async (
   })
 }
 
+export const simpleSwap = async (
+  client: MangoClient,
+  group: Group,
+  mangoAccount: MangoAccount,
+  inputMintPk: PublicKey,
+  outputMintPk: PublicKey,
+  amount: number, // Amount of input token to swap
+  slippage = 1, // Slippage tolerance in percentage
+) => {
+  console.log('Performing simple swap')
+  const instructions: TransactionInstruction[] = []
+
+  const inputBank = group?.banksMapByMint.get(inputMintPk.toString())?.[0]
+  const outputBank = group?.banksMapByMint.get(outputMintPk.toString())?.[0]
+
+  if (!inputBank || !outputBank) {
+    throw Error('Unable to find input bank or output bank')
+  }
+
+  const nativeAmount = toNative(amount, inputBank.mintDecimals)
+  const { bestRoute: selectedRoute } = await fetchJupiterRoutes(
+    inputMintPk.toString(),
+    outputMintPk.toString(),
+    nativeAmount.toNumber(),
+    slippage,
+    'ExactIn',
+  )
+
+  if (!selectedRoute) {
+    throw Error('Unable to find a swap route')
+  }
+
+  const payer = (client.program.provider as AnchorProvider).wallet.publicKey
+  const [jupiterIxs, jupiterAlts] = await fetchJupiterTransaction(
+    client.program.provider.connection,
+    selectedRoute,
+    payer,
+    slippage,
+    inputMintPk,
+    outputMintPk,
+  )
+
+  const swapHealthRemainingAccounts: PublicKey[] = mangoAccount
+    ? await client.buildHealthRemainingAccounts(
+        group,
+        [mangoAccount],
+        [],
+        [],
+        [],
+      )
+    : [inputBank?.publicKey, outputBank?.oracle]
+
+  let swapAlts: AddressLookupTableAccount[] = []
+  const [swapIxs, alts] = await createSwapIxs({
+    client: client,
+    group: group,
+    mangoAccountPk: mangoAccount.publicKey,
+    owner: payer,
+    inputMintPk: inputBank?.mint,
+    amountIn: toUiDecimals(selectedRoute.inAmount, inputBank?.mintDecimals),
+    outputMintPk: outputBank?.mint,
+    userDefinedInstructions: jupiterIxs,
+    userDefinedAlts: jupiterAlts,
+    flashLoanType: FlashLoanType.swap,
+    swapHealthRemainingAccounts,
+  })
+  swapAlts = alts
+  instructions.push(...swapIxs)
+
+  return await client.sendAndConfirmTransactionForGroup(group, [...swapIxs], {
+    alts: [...group.addressLookupTablesList, ...swapAlts],
+  })
+}
+
 export const stakeAndCreate = async (
   client: MangoClient,
   group: Group,
@@ -293,6 +367,7 @@ export const stakeAndCreate = async (
       slippage,
     )
 
+    console.log(selectedRoute)
     if (!selectedRoute) {
       throw Error('Unable to find a swap route')
     }
