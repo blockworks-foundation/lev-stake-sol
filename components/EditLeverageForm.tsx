@@ -164,7 +164,8 @@ function EditLeverageForm({
     const stakePrice = stakeBank?.uiPrice
     if (!borrowPrice || !stakePrice || !Number(tokenMax.maxAmount)) return 0
     const borrowAmount =
-      stakeBank?.uiPrice * Number(tokenMax.maxAmount) * (leverage - 1)
+      (stakeBank?.uiPrice * Number(tokenMax.maxAmount) * (leverage - 1)) /
+      borrowBank.uiPrice
     return borrowAmount
   }, [leverage, borrowBank, stakeBank, tokenMax])
 
@@ -180,7 +181,6 @@ function EditLeverageForm({
     return available
   }, [borrowBank])
 
-  //TODO fix for LSTS
   const changeInJLP = useMemo(() => {
     if (stakeBankAmount) {
       return Number(

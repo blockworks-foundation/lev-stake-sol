@@ -294,7 +294,7 @@ const PositionItem = ({
             )}
           </span>
         </div>
-        {position.bank.name == 'JLP' ? (
+        {position.bank.name == 'USDC' ? null : (
           <>
             <div>
               <p className="mb-1 text-th-fgd-4">Leverage</p>
@@ -332,7 +332,7 @@ const PositionItem = ({
               ) : null} */}
             </div>
           </>
-        ) : null}
+        )}
       </div>
       {showEditLeverageModal ? (
         <EditLeverageModal
