@@ -363,7 +363,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                   thousandSeparator=","
                   allowNegative={false}
                   isNumericString={true}
-                  decimalScale={6}
+                  decimalScale={stakeBank?.mintDecimals || 6}
                   className={NUMBERFORMAT_CLASSES}
                   placeholder="0.00"
                   value={inputAmount}
