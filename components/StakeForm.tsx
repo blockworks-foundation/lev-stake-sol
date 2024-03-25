@@ -156,6 +156,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
   const setMax = useCallback(() => {
     const max = floorToDecimal(tokenMax.maxAmount, 6)
     setInputAmount(max.toFixed())
+    setSizePercentage('100')
   }, [tokenMax])
 
   const handleSizePercentage = useCallback(
