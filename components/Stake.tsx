@@ -10,12 +10,13 @@ import {
   getStakableTokensDataForTokenName,
 } from 'utils/tokens'
 import { useViewport } from 'hooks/useViewport'
-import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
+import { ArrowTopRightOnSquareIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import DespositForm from './DepositForm'
 import { EnterBottomExitBottom } from './shared/Transitions'
 import TokenSelect from './TokenSelect'
 import Label from './forms/Label'
 import usePositions from 'hooks/usePositions'
+import { IconButton } from './shared/Button'
 
 const set = mangoStore.getState().set
 
@@ -95,11 +96,21 @@ const Stake = () => {
       <div className="relative overflow-hidden">
         <EnterBottomExitBottom
           className="absolute bottom-0 left-0 z-20 h-full w-full overflow-hidden rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 px-3 py-6 pb-0"
-          show={!!showTokenSelect}
+          show={showTokenSelect}
         >
-          <h2 className="mb-4 text-center">
-            Select token to {activeFormTab === 'Add' ? 'Boost!' : 'Unboost'}
-          </h2>
+          <div className="mb-4 flex items-center justify-between">
+            <div className="h-10 w-10" />
+            <h2>
+              Select token to {activeFormTab === 'Add' ? 'Boost!' : 'Unboost'}
+            </h2>
+            <IconButton
+              onClick={() => setShowTokenSelect(false)}
+              hideBg
+              size="medium"
+            >
+              <XMarkIcon className="h-6 w-6" />
+            </IconButton>
+          </div>
           <div className="mb-2 flex justify-between px-3">
             <p className="text-sm text-th-fgd-4">Token</p>
             <p className="text-sm text-th-fgd-4">
