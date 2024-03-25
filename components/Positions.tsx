@@ -21,7 +21,7 @@ import Tooltip from './shared/Tooltip'
 
 const set = mangoStore.getState().set
 
-type Position = {
+export type Position = {
   borrowBalance: number
   stakeBalance: number
   pnl: number

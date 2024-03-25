@@ -6,7 +6,7 @@ import TransactionHistory from './TransactionHistory'
 import mangoStore, { ActiveTab } from '@store/mangoStore'
 import { useCallback, useEffect } from 'react'
 import { BOOST_ACCOUNT_PREFIX } from 'utils/constants'
-import HowItWorks from './HowItWorks'
+// import HowItWorks from './HowItWorks'
 
 const set = mangoStore.getState().set
 
@@ -48,7 +48,7 @@ const HomePage = () => {
         />
       </div>
       <TabContent activeTab={activeTab} setActiveTab={setActiveTab} />
-      <HowItWorks />
+      {/* <HowItWorks /> */}
     </>
   )
 }

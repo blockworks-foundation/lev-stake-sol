@@ -130,6 +130,7 @@ function UnstakeForm({
   const setMax = useCallback(() => {
     const max = floorToDecimal(tokenMax.maxAmount, tokenMax.maxDecimals)
     setInputAmount(max.toFixed())
+    setSizePercentage('100')
   }, [tokenMax])
 
   const handleSizePercentage = useCallback(
@@ -144,11 +145,6 @@ function UnstakeForm({
     },
     [tokenMax, stakeBank],
   )
-
-  // const handleSelectToken = (token: string) => {
-  //   setSelectedToken(token)
-  //   setShowTokenList(false)
-  // }
 
   const handleRefreshWalletBalances = useCallback(async () => {
     if (!publicKey) return
