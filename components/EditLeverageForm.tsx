@@ -120,10 +120,6 @@ function EditLeverageForm({
 
   const [leverage, setLeverage] = useState(current_leverage)
 
-  useEffect(() => {
-    setLeverage(current_leverage)
-  }, [current_leverage])
-
   const { financialMetrics, borrowBankBorrowRate } = useBankRates(
     selectedToken,
     leverage,

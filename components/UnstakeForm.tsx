@@ -6,7 +6,10 @@ import {
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useTranslation } from 'next-i18next'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import NumberFormat, { NumberFormatValues } from 'react-number-format'
+import NumberFormat, {
+  NumberFormatValues,
+  SourceInfo,
+} from 'react-number-format'
 import mangoStore from '@store/mangoStore'
 import { notify } from '../utils/notifications'
 import { formatTokenSymbol } from '../utils/tokens'
@@ -222,6 +225,7 @@ function UnstakeForm({
       })
       setSubmitting(false)
       setInputAmount('')
+      setSizePercentage('')
       await sleep(100)
       await actions.fetchMangoAccounts(publicKey)
       await actions.reloadMangoAccount(clientContext)
@@ -266,14 +270,27 @@ function UnstakeForm({
     }
   }, [jlpGroup, lstGroup, mangoAccount, stakeBank, clientContext])
 
+  const availableVaultBalance = useMemo(() => {
+    if (!stakeBank) return 0
+    const group = clientContext === 'jlp' ? jlpGroup : lstGroup
+    if (!group) return 0
+    const vaultBalance = group.getTokenVaultBalanceByMintUi(stakeBank.mint)
+    const vaultDeposits = stakeBank.uiDeposits()
+    const available =
+      vaultBalance - vaultDeposits * stakeBank.minVaultToDepositsRatio
+    return available
+  }, [stakeBank, jlpGroup, lstGroup, clientContext])
+
   const showInsufficientBalance =
     tokenMax.maxAmount < Number(inputAmount) ||
     (selectedToken === 'USDC' && maxSolDeposit <= 0)
 
-  const lowVaultBalance =
-    Math.floor(tokenMax.maxAmount * 100000) <
-      Math.floor(Number(inputAmount) * 100000) &&
-    Number(inputAmount) > maxWithdraw
+  const lowVaultBalance = maxWithdraw > availableVaultBalance
+
+  // const lowVaultBalance =
+  //   Math.floor(tokenMax.maxAmount * 100000) <
+  //     Math.floor(Number(inputAmount) * 100000) &&
+  //   Number(inputAmount) > maxWithdraw
 
   useEffect(() => {
     const group = mangoStore.getState().group[clientContext]
@@ -326,10 +343,13 @@ function UnstakeForm({
                   className={NUMBERFORMAT_CLASSES}
                   placeholder="0.00"
                   value={inputAmount}
-                  onValueChange={(e: NumberFormatValues) => {
+                  onValueChange={(e: NumberFormatValues, info: SourceInfo) => {
                     setInputAmount(
                       !Number.isNaN(Number(e.value)) ? e.value : '',
                     )
+                    if (info.source === 'event') {
+                      setSizePercentage('')
+                    }
                   }}
                   isAllowed={withValueLimit}
                 />
@@ -485,7 +505,7 @@ function UnstakeForm({
           <div className="mt-4">
             <InlineNotification
               type="error"
-              desc={`The ${selectedToken} vault balance is too low. ${selectedToken} deposits are required to unboost.`}
+              desc={`The available ${selectedToken} vault balance is low. ${selectedToken} deposits are required to unboost your full position.`}
             />
           </div>
         ) : null}

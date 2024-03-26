@@ -2,7 +2,10 @@ import { ArrowPathIcon, ExclamationCircleIcon } from '@heroicons/react/20/solid'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useTranslation } from 'next-i18next'
 import React, { useCallback, useMemo, useState } from 'react'
-import NumberFormat, { NumberFormatValues } from 'react-number-format'
+import NumberFormat, {
+  NumberFormatValues,
+  SourceInfo,
+} from 'react-number-format'
 import mangoStore from '@store/mangoStore'
 import { notify } from '../utils/notifications'
 import { formatTokenSymbol } from '../utils/tokens'
@@ -135,6 +138,7 @@ function DespositForm({ token: selectedToken, clientContext }: StakeFormProps) {
         state.submittingBoost = false
       })
       setInputAmount('')
+      setSizePercentage('')
       await sleep(500)
       if (!mangoAccount) {
         await actions.fetchMangoAccounts(publicKey)
@@ -217,10 +221,13 @@ function DespositForm({ token: selectedToken, clientContext }: StakeFormProps) {
                   className={NUMBERFORMAT_CLASSES}
                   placeholder="0.00"
                   value={inputAmount}
-                  onValueChange={(e: NumberFormatValues) => {
+                  onValueChange={(e: NumberFormatValues, info: SourceInfo) => {
                     setInputAmount(
                       !Number.isNaN(Number(e.value)) ? e.value : '',
                     )
+                    if (info.source === 'event') {
+                      setSizePercentage('')
+                    }
                   }}
                   isAllowed={withValueLimit}
                 />
