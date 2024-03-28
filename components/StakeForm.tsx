@@ -6,7 +6,10 @@ import {
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useTranslation } from 'next-i18next'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import NumberFormat, { NumberFormatValues } from 'react-number-format'
+import NumberFormat, {
+  NumberFormatValues,
+  SourceInfo,
+} from 'react-number-format'
 import mangoStore from '@store/mangoStore'
 import { notify } from '../utils/notifications'
 import { TokenAccount, formatTokenSymbol } from '../utils/tokens'
@@ -33,7 +36,6 @@ import useMangoGroup from 'hooks/useMangoGroup'
 import FormatNumericValue from './shared/FormatNumericValue'
 import { getNextAccountNumber, stakeAndCreate } from 'utils/transactions'
 // import { MangoAccount } from '@blockworks-foundation/mango-v4'
-import { AnchorProvider } from '@project-serum/anchor'
 import useBankRates from 'hooks/useBankRates'
 import { Disclosure } from '@headlessui/react'
 import SheenLoader from './shared/SheenLoader'
@@ -43,6 +45,11 @@ import ButtonGroup from './forms/ButtonGroup'
 import Decimal from 'decimal.js'
 import { toUiDecimals } from '@blockworks-foundation/mango-v4'
 import useIpAddress from 'hooks/useIpAddress'
+import {
+  ClientContextKeys,
+  JLP_BORROW_TOKEN,
+  LST_BORROW_TOKEN,
+} from 'utils/constants'
 
 const set = mangoStore.getState().set
 
@@ -51,13 +58,15 @@ export const NUMBERFORMAT_CLASSES =
 
 interface StakeFormProps {
   token: string
+  clientContext: ClientContextKeys
 }
 
 export const walletBalanceForToken = (
   walletTokens: TokenAccount[],
   token: string,
+  clientContext: ClientContextKeys,
 ): { maxAmount: number; maxDecimals: number } => {
-  const group = mangoStore.getState().group
+  const group = mangoStore.getState().group[clientContext]
   const bank = group?.banksMapByName.get(token)?.[0]
 
   let walletToken
@@ -87,7 +96,7 @@ export const walletBalanceForToken = (
 //   return 0
 // }
 
-function StakeForm({ token: selectedToken }: StakeFormProps) {
+function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
   const { t } = useTranslation(['common', 'account'])
   const [inputAmount, setInputAmount] = useState('')
   const [sizePercentage, setSizePercentage] = useState('')
@@ -99,21 +108,25 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
 
   const storedLeverage = mangoStore((s) => s.leverage)
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
-  const { group } = useMangoGroup()
+  const { jlpGroup, lstGroup } = useMangoGroup()
   const groupLoaded = mangoStore((s) => s.groupLoaded)
   const { financialMetrics, borrowBankBorrowRate } = useBankRates(
     selectedToken,
     leverage,
   )
-  const leverageMax = useLeverageMax(selectedToken) * 0.9 // Multiplied by 0.975 becuase you cant actually get to the end of the inifinite geometric series?
+  const leverageMax = useLeverageMax(selectedToken)
 
-  const stakeBank = useMemo(() => {
-    return group?.banksMapByName.get(selectedToken)?.[0]
-  }, [selectedToken, group])
-
-  const borrowBank = useMemo(() => {
-    return group?.banksMapByName.get('USDC')?.[0]
-  }, [group])
+  const [stakeBank, borrowBank] = useMemo(() => {
+    const stakeBank =
+      clientContext === 'jlp'
+        ? jlpGroup?.banksMapByName.get(selectedToken)?.[0]
+        : lstGroup?.banksMapByName.get(selectedToken)?.[0]
+    const borrowBank =
+      clientContext === 'jlp'
+        ? jlpGroup?.banksMapByName.get(JLP_BORROW_TOKEN)?.[0]
+        : lstGroup?.banksMapByName.get(LST_BORROW_TOKEN)?.[0]
+    return [stakeBank, borrowBank]
+  }, [selectedToken, jlpGroup, lstGroup, clientContext])
 
   const liquidationPrice = useMemo(() => {
     const price = Number(stakeBank?.uiPrice)
@@ -140,12 +153,13 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   const walletTokens = mangoStore((s) => s.wallet.tokens)
 
   const tokenMax = useMemo(() => {
-    return walletBalanceForToken(walletTokens, selectedToken)
-  }, [walletTokens, selectedToken])
+    return walletBalanceForToken(walletTokens, selectedToken, clientContext)
+  }, [walletTokens, selectedToken, clientContext])
 
   const setMax = useCallback(() => {
     const max = floorToDecimal(tokenMax.maxAmount, 6)
     setInputAmount(max.toFixed())
+    setSizePercentage('100')
   }, [tokenMax])
 
   const handleSizePercentage = useCallback(
@@ -165,13 +179,21 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     const borrowPrice = borrowBank?.uiPrice
     const stakePrice = stakeBank?.uiPrice
     if (!borrowPrice || !stakePrice || !Number(inputAmount)) return 0
-    const borrowAmount =
-      stakeBank?.uiPrice * Number(inputAmount) * (leverage - 1)
-    return borrowAmount
+    if (clientContext === 'jlp') {
+      const borrowAmount =
+        stakeBank?.uiPrice * Number(inputAmount) * (leverage - 1)
+      return borrowAmount
+    } else {
+      const priceDifference = (stakePrice - borrowPrice) / borrowPrice
+      const borrowAmount =
+        (1 + priceDifference) * Number(inputAmount) * Math.min(leverage - 1, 1)
+
+      return borrowAmount
+    }
   }, [leverage, borrowBank, stakeBank, inputAmount])
 
   const availableVaultBalance = useMemo(() => {
-    if (!borrowBank || !group) return 0
+    if (!borrowBank) return 0
     const maxUtilization = 1 - borrowBank.minVaultToDepositsRatio
     const vaultBorrows = borrowBank.uiBorrows()
     const vaultDeposits = borrowBank.uiDeposits()
@@ -180,7 +202,7 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
     const available =
       (maxUtilization * vaultDeposits - vaultBorrows) * loanOriginationFeeFactor
     return available
-  }, [borrowBank, group])
+  }, [borrowBank])
 
   const handleRefreshWalletBalances = useCallback(async () => {
     if (!publicKey) return
@@ -191,18 +213,19 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   }, [publicKey])
 
   const handleDeposit = useCallback(async () => {
-    if (!ipAllowed) {
+    if (!ipAllowed || !stakeBank || !publicKey) {
       return
     }
-    const client = mangoStore.getState().client
-    const group = mangoStore.getState().group
+    const group = mangoStore.getState().group[clientContext]
+    const client = mangoStore.getState().client[clientContext]
+
     const actions = mangoStore.getState().actions
     const mangoAccount = mangoStore.getState().mangoAccount.current
     const mangoAccounts = mangoStore.getState().mangoAccounts
     const accNumber = getNextAccountNumber(mangoAccounts)
 
-    if (!group || !stakeBank || !publicKey) return
-    console.log(mangoAccounts)
+    if (!group) return
+
     set((state) => {
       state.submittingBoost = true
     })
@@ -230,13 +253,12 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
         state.submittingBoost = false
       })
       setInputAmount('')
+      setSizePercentage('')
       await sleep(500)
       if (!mangoAccount) {
-        await actions.fetchMangoAccounts(
-          (client.program.provider as AnchorProvider).wallet.publicKey,
-        )
+        await actions.fetchMangoAccounts(publicKey)
       }
-      await actions.reloadMangoAccount(slot)
+      await actions.reloadMangoAccount(clientContext, slot)
       await actions.fetchWalletTokens(publicKey)
     } catch (e) {
       console.error('Error depositing:', e)
@@ -251,7 +273,14 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
         type: 'error',
       })
     }
-  }, [ipAllowed, stakeBank, publicKey, amountToBorrow, inputAmount])
+  }, [
+    ipAllowed,
+    stakeBank,
+    publicKey,
+    amountToBorrow,
+    inputAmount,
+    clientContext,
+  ])
 
   const showInsufficientBalance =
     tokenMax.maxAmount < Number(inputAmount) ||
@@ -279,11 +308,11 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
   }
 
   useEffect(() => {
-    const group = mangoStore.getState().group
+    const group = mangoStore.getState().group[clientContext]
     set((state) => {
       state.swap.outputBank = group?.banksMapByName.get(selectedToken)?.[0]
     })
-  }, [selectedToken])
+  }, [selectedToken, clientContext])
 
   return (
     <>
@@ -338,14 +367,17 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
                   thousandSeparator=","
                   allowNegative={false}
                   isNumericString={true}
-                  decimalScale={6}
+                  decimalScale={stakeBank?.mintDecimals || 6}
                   className={NUMBERFORMAT_CLASSES}
                   placeholder="0.00"
                   value={inputAmount}
-                  onValueChange={(e: NumberFormatValues) => {
+                  onValueChange={(e: NumberFormatValues, info: SourceInfo) => {
                     setInputAmount(
                       !Number.isNaN(Number(e.value)) ? e.value : '',
                     )
+                    if (info.source === 'event') {
+                      setSizePercentage('')
+                    }
                   }}
                   isAllowed={withValueLimit}
                 />
@@ -360,12 +392,33 @@ function StakeForm({ token: selectedToken }: StakeFormProps) {
               </div>
             </div>
             <div className="col-span-2 mt-2">
-              <ButtonGroup
-                activeValue={sizePercentage}
-                onChange={(p) => handleSizePercentage(p)}
-                values={['10', '25', '50', '75', '100']}
-                unit="%"
-              />
+              {connected && groupLoaded && tokenMax.maxAmount === 0 ? (
+                <InlineNotification
+                  type="warning"
+                  desc={
+                    <div>
+                      <p>
+                        No {formatTokenSymbol(selectedToken)} balance to Boost!{' '}
+                        <a
+                          className="font-bold"
+                          href={`https://app.mango.markets/swap?in=USDC&out=${selectedToken}&walletSwap=true`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Get {formatTokenSymbol(selectedToken)} Now
+                        </a>
+                      </p>
+                    </div>
+                  }
+                />
+              ) : (
+                <ButtonGroup
+                  activeValue={sizePercentage}
+                  onChange={(p) => handleSizePercentage(p)}
+                  values={['10', '25', '50', '75', '100']}
+                  unit="%"
+                />
+              )}
             </div>
             {depositLimitExceeded ? (
               <div className="col-span-2 mt-2">

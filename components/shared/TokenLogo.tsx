@@ -13,7 +13,6 @@ const TokenLogo = ({
   size?: number
 }) => {
   const { mangoTokens } = useJupiterMints()
-
   const logoUri = useMemo(() => {
     if (!bank) return ''
     const tokenSymbol = bank.name.toLowerCase()

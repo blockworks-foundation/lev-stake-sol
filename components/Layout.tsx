@@ -1,8 +1,5 @@
 import { Fragment, ReactNode, useEffect, useMemo, useState } from 'react'
-import {
-  ArrowPathIcon,
-  ArrowTopRightOnSquareIcon,
-} from '@heroicons/react/20/solid'
+import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import mangoStore from '@store/mangoStore'
 import TopBar from './TopBar'
 import useLocalStorageState from '../hooks/useLocalStorageState'
@@ -43,7 +40,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
             {children}
             <Footer />
           </div>
-          <div className="fixed bottom-8 right-8 hidden lg:block">
+          {/* <div className="fixed bottom-8 right-8 hidden lg:block">
             <a
               className="flex items-center rounded-md border-b-2 border-th-bkg-3 bg-th-bkg-1 px-2 py-0.5 text-th-fgd-1"
               target="_blank"
@@ -53,7 +50,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
               <span className="mr-1.5 block font-bold">Boost! v1</span>
               <ArrowTopRightOnSquareIcon className="h-5 w-5" />
             </a>
-          </div>
+          </div> */}
           <DeployRefreshManager />
           <TermsOfUse />
           <RestrictedCountryCheck

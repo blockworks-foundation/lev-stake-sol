@@ -3,23 +3,27 @@ import useStakeRates from './useStakeRates'
 import useMangoGroup from './useMangoGroup'
 // import mangoStore from '@store/mangoStore'
 import useLeverageMax from './useLeverageMax'
+import { JLP_BORROW_TOKEN, LST_BORROW_TOKEN } from 'utils/constants'
 
 // const set = mangoStore.getState().set
 
 export default function useBankRates(selectedToken: string, leverage: number) {
   const { data: stakeRates } = useStakeRates()
-  const { group } = useMangoGroup()
+  const { jlpGroup, lstGroup } = useMangoGroup()
 
   // const estimatedMaxAPY = mangoStore((s) => s.estimatedMaxAPY.current)
   const leverageMax = useLeverageMax(selectedToken)
 
-  const stakeBank = useMemo(() => {
-    return group?.banksMapByName.get(selectedToken)?.[0]
-  }, [selectedToken, group])
-
-  const borrowBank = useMemo(() => {
-    return group?.banksMapByName.get('USDC')?.[0]
-  }, [group])
+  const [stakeBank, borrowBank] = useMemo(() => {
+    const isJlpGroup = selectedToken === 'JLP' || selectedToken === 'USDC'
+    const stakeBank = isJlpGroup
+      ? jlpGroup?.banksMapByName.get(selectedToken)?.[0]
+      : lstGroup?.banksMapByName.get(selectedToken)?.[0]
+    const borrowBank = isJlpGroup
+      ? jlpGroup?.banksMapByName.get(JLP_BORROW_TOKEN)?.[0]
+      : lstGroup?.banksMapByName.get(LST_BORROW_TOKEN)?.[0]
+    return [stakeBank, borrowBank]
+  }, [selectedToken, jlpGroup, lstGroup])
 
   const stakeBankDepositRate = useMemo(() => {
     return stakeBank ? stakeBank.getDepositRate() : 0
@@ -29,7 +33,7 @@ export default function useBankRates(selectedToken: string, leverage: number) {
     return borrowBank ? Number(borrowBank.getBorrowRate()) : 0
   }, [borrowBank])
 
-  const jlpStakeRateAPY = useMemo(() => {
+  const tokenStakeRateAPY = useMemo(() => {
     return stakeRates ? stakeRates[selectedToken.toLowerCase()] : 0
   }, [stakeRates, selectedToken])
 
@@ -44,7 +48,7 @@ export default function useBankRates(selectedToken: string, leverage: number) {
     const borrowRatePerDay = Number(borrowBankBorrowRate) / 365
 
     // Convert the JLP APY to a daily rate
-    const jlpRatePerDay = (1 + jlpStakeRateAPY) ** (1 / 365) - 1
+    const tokenRatePerDay = (1 + tokenStakeRateAPY) ** (1 / 365) - 1
 
     // Assume the user deposits 1 JLP, then these are the starting deposits and
     // borrows for the desired leverage (in terms of starting-value JLP)
@@ -68,9 +72,9 @@ export default function useBankRates(selectedToken: string, leverage: number) {
       deposits -= collateralFees
       collectedCollateralFees += collateralFees
 
-      const jlpReturns = jlpRatePerDay * deposits
-      deposits += jlpReturns
-      collectedReturns += jlpReturns
+      const tokenReturns = tokenRatePerDay * deposits
+      deposits += tokenReturns
+      collectedReturns += tokenReturns
     }
 
     // APY's for the calculation
@@ -85,9 +89,9 @@ export default function useBankRates(selectedToken: string, leverage: number) {
     const APY = (deposits - borrows - 1) * 100
 
     // Comparisons to outside
-    const nonMangoAPY = jlpStakeRateAPY * leverage * 100
+    const nonMangoAPY = tokenStakeRateAPY * leverage * 100
     const diffToNonMango = APY - nonMangoAPY
-    const diffToNonLeveraged = APY - jlpStakeRateAPY * 100
+    const diffToNonLeveraged = APY - tokenStakeRateAPY * 100
 
     return {
       APY,
@@ -100,25 +104,25 @@ export default function useBankRates(selectedToken: string, leverage: number) {
       diffToNonLeveraged,
     }
   }, [
-    leverage,
-    borrowBankBorrowRate,
-    jlpStakeRateAPY,
     stakeBank?.collateralFeePerDay,
     stakeBank?.maintAssetWeight,
+    borrowBankBorrowRate,
+    tokenStakeRateAPY,
+    leverage,
   ])
 
   const estimatedMaxAPY = useMemo(() => {
     return (
-      jlpStakeRateAPY * leverageMax -
+      tokenStakeRateAPY * leverageMax -
       Number(borrowBankBorrowRate) * (leverageMax - 1)
     )
-  }, [jlpStakeRateAPY, borrowBankBorrowRate, leverageMax])
+  }, [tokenStakeRateAPY, borrowBankBorrowRate, leverageMax])
 
   return {
     financialMetrics,
     stakeBankDepositRate,
     borrowBankBorrowRate,
-    jlpStakeRateAPY,
+    jlpStakeRateAPY: tokenStakeRateAPY,
     estimatedMaxAPY,
   }
 }

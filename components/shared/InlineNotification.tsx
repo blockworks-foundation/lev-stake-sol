@@ -44,7 +44,7 @@ const InlineNotification: FunctionComponent<InlineNotificationProps> = ({
           : type === 'info'
           ? 'text-th-bkg-4'
           : 'text-th-warning'
-      } flex items-center rounded-md ${!hidePadding ? 'p-2' : ''}`}
+      } flex items-center rounded-lg ${!hidePadding ? 'p-3' : ''}`}
     >
       {type === 'error' ? (
         <ExclamationCircleIcon className={`${iconClasses} text-th-error`} />
@@ -60,9 +60,7 @@ const InlineNotification: FunctionComponent<InlineNotificationProps> = ({
       ) : null}
       <div>
         <div className="text-th-fgd-2">{title}</div>
-        <div
-          className={`${title && desc && 'pt-1'} text-left text-xs font-normal`}
-        >
+        <div className={`${title && desc && 'pt-1'} text-left font-normal`}>
           {desc}
         </div>
       </div>

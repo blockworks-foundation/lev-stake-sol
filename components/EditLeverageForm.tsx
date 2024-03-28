@@ -3,7 +3,10 @@ import { useTranslation } from 'next-i18next'
 import React, { useCallback, useMemo, useState } from 'react'
 import mangoStore from '@store/mangoStore'
 import { notify } from '../utils/notifications'
-import { TokenAccount, formatTokenSymbol } from '../utils/tokens'
+import {
+  formatTokenSymbol,
+  getStakableTokensDataForTokenName,
+} from '../utils/tokens'
 import Label from './forms/Label'
 import Button from './shared/Button'
 import Loading from './shared/Loading'
@@ -29,6 +32,7 @@ import { Disclosure } from '@headlessui/react'
 import useLeverageMax from 'hooks/useLeverageMax'
 import { toUiDecimals } from '@blockworks-foundation/mango-v4'
 import { simpleSwap } from 'utils/transactions'
+import { JLP_BORROW_TOKEN, LST_BORROW_TOKEN } from 'utils/constants'
 
 const set = mangoStore.getState().set
 
@@ -38,27 +42,6 @@ export const NUMBERFORMAT_CLASSES =
 interface EditLeverageFormProps {
   token: string
   onSuccess: () => void
-}
-
-export const walletBalanceForToken = (
-  walletTokens: TokenAccount[],
-  token: string,
-): { maxAmount: number; maxDecimals: number } => {
-  const group = mangoStore.getState().group
-  const bank = group?.banksMapByName.get(token)?.[0]
-
-  let walletToken
-  if (bank) {
-    const tokenMint = bank?.mint
-    walletToken = tokenMint
-      ? walletTokens.find((t) => t.mint.toString() === tokenMint.toString())
-      : null
-  }
-
-  return {
-    maxAmount: walletToken ? walletToken.uiAmount : 0,
-    maxDecimals: bank?.mintDecimals || 6,
-  }
 }
 
 // const getNextAccountNumber = (accounts: MangoAccount[]): number => {
@@ -78,21 +61,28 @@ function EditLeverageForm({
   token: selectedToken,
   onSuccess,
 }: EditLeverageFormProps) {
+  const clientContext =
+    getStakableTokensDataForTokenName(selectedToken).clientContext
   const { t } = useTranslation(['common', 'account'])
   const submitting = mangoStore((s) => s.submittingBoost)
   const { ipAllowed } = useIpAddress()
   const storedLeverage = mangoStore((s) => s.leverage)
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
-  const { group } = useMangoGroup()
+  const { jlpGroup, lstGroup } = useMangoGroup()
   const { mangoAccount } = useMangoAccount()
   const groupLoaded = mangoStore((s) => s.groupLoaded)
-  const leverageMax = useLeverageMax(selectedToken) * 0.9 // Multiplied by 0.975 becuase you cant actually get to the end of the inifinite geometric series?
-  const stakeBank = useMemo(() => {
-    return group?.banksMapByName.get(selectedToken)?.[0]
-  }, [selectedToken, group])
-  const borrowBank = useMemo(() => {
-    return group?.banksMapByName.get('USDC')?.[0]
-  }, [group])
+  const leverageMax = useLeverageMax(selectedToken)
+  const [stakeBank, borrowBank] = useMemo(() => {
+    const stakeBank =
+      clientContext === 'jlp'
+        ? jlpGroup?.banksMapByName.get(selectedToken)?.[0]
+        : lstGroup?.banksMapByName.get(selectedToken)?.[0]
+    const borrowBank =
+      clientContext === 'jlp'
+        ? jlpGroup?.banksMapByName.get(JLP_BORROW_TOKEN)?.[0]
+        : lstGroup?.banksMapByName.get(LST_BORROW_TOKEN)?.[0]
+    return [stakeBank, borrowBank]
+  }, [selectedToken, jlpGroup, lstGroup, clientContext])
 
   const stakeBankAmount =
     mangoAccount && stakeBank && mangoAccount?.getTokenBalance(stakeBank)
@@ -100,12 +90,25 @@ function EditLeverageForm({
   const borrowAmount =
     mangoAccount && borrowBank && mangoAccount?.getTokenBalance(borrowBank)
 
+  const borrowBankAmount =
+    mangoAccount && borrowBank && mangoAccount.getTokenBalance(borrowBank)
+
   const current_leverage = useMemo(() => {
     try {
-      if (stakeBankAmount && borrowAmount) {
-        const currentDepositValue = Number(stakeBankAmount) * stakeBank.uiPrice
-        const lev =
-          currentDepositValue / (currentDepositValue + Number(borrowAmount))
+      if (
+        stakeBankAmount &&
+        borrowBankAmount &&
+        borrowBankAmount.toNumber() < 0
+      ) {
+        const stakeAmountValue = stakeBankAmount.mul(stakeBank.getAssetPrice())
+        const lev = stakeAmountValue
+          .div(
+            stakeAmountValue.sub(
+              borrowBankAmount.abs().mul(borrowBank.getAssetPrice()),
+            ),
+          )
+          .toNumber()
+
         return Math.sign(lev) !== -1 ? lev : 1
       }
       return 1
@@ -113,7 +116,7 @@ function EditLeverageForm({
       console.log(e)
       return 1
     }
-  }, [stakeBankAmount, borrowAmount, stakeBank])
+  }, [stakeBankAmount, borrowBankAmount, stakeBank, borrowBank])
 
   const [leverage, setLeverage] = useState(current_leverage)
 
@@ -157,12 +160,13 @@ function EditLeverageForm({
     const stakePrice = stakeBank?.uiPrice
     if (!borrowPrice || !stakePrice || !Number(tokenMax.maxAmount)) return 0
     const borrowAmount =
-      stakeBank?.uiPrice * Number(tokenMax.maxAmount) * (leverage - 1)
+      (stakeBank?.uiPrice * Number(tokenMax.maxAmount) * (leverage - 1)) /
+      borrowBank.uiPrice
     return borrowAmount
   }, [leverage, borrowBank, stakeBank, tokenMax])
 
   const availableVaultBalance = useMemo(() => {
-    if (!borrowBank || !group) return 0
+    if (!borrowBank) return 0
     const maxUtilization = 1 - borrowBank.minVaultToDepositsRatio
     const vaultBorrows = borrowBank.uiBorrows()
     const vaultDeposits = borrowBank.uiDeposits()
@@ -171,7 +175,7 @@ function EditLeverageForm({
     const available =
       (maxUtilization * vaultDeposits - vaultBorrows) * loanOriginationFeeFactor
     return available
-  }, [borrowBank, group])
+  }, [borrowBank])
 
   const changeInJLP = useMemo(() => {
     if (stakeBankAmount) {
@@ -235,8 +239,8 @@ function EditLeverageForm({
       if (changeInJLP > 0) {
         console.log('Swapping From USDC to JLP')
         const { signature: tx, slot } = await simpleSwap(
-          client,
-          group,
+          client[clientContext],
+          group[clientContext]!,
           mangoAccount,
           borrowBank?.mint,
           stakeBank?.mint,
@@ -251,8 +255,8 @@ function EditLeverageForm({
       } else {
         console.log('Swapping From JLP to USDC')
         const { signature: tx, slot } = await simpleSwap(
-          client,
-          group,
+          client[clientContext],
+          group[clientContext]!,
           mangoAccount,
           stakeBank?.mint,
           borrowBank?.mint,
@@ -273,14 +277,15 @@ function EditLeverageForm({
       await sleep(500)
       if (!mangoAccount) {
         await actions.fetchMangoAccounts(
-          (client.program.provider as AnchorProvider).wallet.publicKey,
+          (client[clientContext].program.provider as AnchorProvider).wallet
+            .publicKey,
         )
       }
 
-      await actions.reloadMangoAccount(slot_retrieved)
+      await actions.reloadMangoAccount(clientContext, slot_retrieved)
       await actions.fetchWalletTokens(publicKey)
       await actions.fetchGroup()
-      await actions.reloadMangoAccount()
+      await actions.reloadMangoAccount(clientContext)
       onSuccess()
     } catch (e) {
       console.error('Error depositing:', e)
@@ -295,7 +300,16 @@ function EditLeverageForm({
         type: 'error',
       })
     }
-  }, [ipAllowed, stakeBank, publicKey, amountToBorrow, borrowBank?.mint])
+  }, [
+    ipAllowed,
+    stakeBank,
+    borrowBank,
+    publicKey,
+    changeInJLP,
+    clientContext,
+    onSuccess,
+    changeInUSDC,
+  ])
 
   const tokenDepositLimitLeft = stakeBank?.getRemainingDepositLimit()
   const tokenDepositLimitLeftUi =
@@ -320,9 +334,10 @@ function EditLeverageForm({
   useEffect(() => {
     const group = mangoStore.getState().group
     set((state) => {
-      state.swap.outputBank = group?.banksMapByName.get(selectedToken)?.[0]
+      state.swap.outputBank =
+        group[clientContext]?.banksMapByName.get(selectedToken)?.[0]
     })
-  }, [selectedToken])
+  }, [selectedToken, clientContext])
 
   return (
     <>
@@ -365,6 +380,7 @@ function EditLeverageForm({
                 {leverage.toFixed(2)}x
               </p>
             </div>
+
             <LeverageSlider
               startingValue={current_leverage}
               leverageMax={leverageMax}

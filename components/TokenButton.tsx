@@ -4,17 +4,16 @@ import useBankRates from 'hooks/useBankRates'
 import useLeverageMax from 'hooks/useLeverageMax'
 import mangoStore from '@store/mangoStore'
 import SheenLoader from './shared/SheenLoader'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 const TokenButton = ({
-  handleTokenSelect,
-  selectedToken,
+  onClick,
   tokenName,
 }: {
   tokenName: string
-  selectedToken: string
-  handleTokenSelect: (v: string) => void
+  onClick: () => void
 }) => {
-  const leverage = useLeverageMax(tokenName) * 0.9
+  const leverage = useLeverageMax(tokenName)
   const groupLoaded = mangoStore((s) => s.groupLoaded)
 
   const { stakeBankDepositRate, financialMetrics } = useBankRates(
@@ -36,54 +35,41 @@ const TokenButton = ({
 
   return (
     <button
-      className={`col-span-1 flex items-center justify-center border-r border-th-fgd-1 p-4 first:rounded-tl-[13px] last:rounded-tr-[13px] last:border-r-0 hover:cursor-pointer ${
-        selectedToken === tokenName
-          ? 'inner-shadow-top bg-th-active'
-          : 'inner-shadow-bottom default-transition bg-th-bkg-1 md:hover:bg-th-bkg-2'
-      }`}
-      onClick={() => handleTokenSelect(tokenName)}
+      className={`inner-shadow-bottom-sm w-full rounded-xl border border-th-bkg-3 bg-th-bkg-1 p-3 text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:border-th-bkg-4 md:hover:focus-visible:border-th-fgd-4`}
+      onClick={onClick}
     >
-      <div className="flex flex-col items-center">
-        <div
-          className={`flex h-12 w-12 items-center justify-center rounded-full border ${
-            selectedToken === tokenName
-              ? 'inner-shadow-top-sm border-th-bkg-1 bg-gradient-to-b from-th-active to-th-active-dark'
-              : 'inner-shadow-bottom-sm border-th-bkg-2 bg-gradient-to-b from-th-bkg-1 to-th-bkg-2'
-          }`}
-        >
-          <Image
-            src={`/icons/${tokenName.toLowerCase()}.svg`}
-            width={24}
-            height={24}
-            alt="Select a token"
-          />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div
+            className={`inner-shadow-bottom-sm flex h-12 w-12 items-center justify-center rounded-full border border-th-bkg-2 bg-gradient-to-b from-th-bkg-1 to-th-bkg-2`}
+          >
+            <Image
+              src={`/icons/${tokenName.toLowerCase()}.svg`}
+              width={24}
+              height={24}
+              alt="Select a token"
+            />
+          </div>
+          <div className="text-left">
+            <p className={`text-lg font-bold text-th-fgd-1`}>
+              {formatTokenSymbol(tokenName)}
+            </p>
+            <span className={`font-medium text-th-fgd-4`}>
+              {!groupLoaded ? (
+                <SheenLoader>
+                  <div className={`h-5 w-10 bg-th-bkg-2`} />
+                </SheenLoader>
+              ) : !UiRate || isNaN(UiRate) ? (
+                'Rate Unavailable'
+              ) : tokenName === 'USDC' ? (
+                `${UiRate.toFixed(2)}% APY`
+              ) : (
+                `Up to ${UiRate.toFixed(2)}% APY`
+              )}
+            </span>
+          </div>
         </div>
-        <span className={`mt-1 text-lg font-bold text-th-fgd-1`}>
-          {formatTokenSymbol(tokenName)}
-        </span>
-        <span
-          className={`font-medium ${
-            selectedToken === tokenName ? 'text-th-fgd-1' : 'text-th-fgd-4'
-          }`}
-        >
-          {!groupLoaded ? (
-            <SheenLoader>
-              <div
-                className={`h-5 w-10 ${
-                  selectedToken === tokenName
-                    ? 'bg-th-active-dark'
-                    : 'bg-th-bkg-2'
-                }`}
-              />
-            </SheenLoader>
-          ) : !UiRate || isNaN(UiRate) ? (
-            'Rate Unavailable'
-          ) : tokenName === 'USDC' ? (
-            `${UiRate.toFixed(2)}% APY`
-          ) : (
-            `Up to ${UiRate.toFixed(2)}% APY`
-          )}
-        </span>
+        <ChevronDownIcon className="h-6 w-6" />
       </div>
     </button>
   )

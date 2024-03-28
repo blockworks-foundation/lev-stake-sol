@@ -8,14 +8,19 @@ import useNetworkSpeed from 'hooks/useNetworkSpeed'
 import { useWallet } from '@solana/wallet-adapter-react'
 import useLocalStorageState from 'hooks/useLocalStorageState'
 import { DEFAULT_PRIORITY_FEE_LEVEL } from './settings/RpcSettings'
+import { getStakableTokensDataForTokenName } from 'utils/tokens'
 
 const set = mangoStore.getState().set
 const actions = mangoStore.getState().actions
 
 const HydrateStore = () => {
   const { mangoAccountPk } = useMangoAccount()
+  const selectedToken = mangoStore((s) => s.selectedToken)
+  const clientContext =
+    getStakableTokensDataForTokenName(selectedToken).clientContext
+
   const connection = mangoStore((s) => s.connection)
-  const fee = mangoStore((s) => s.priorityFee)
+
   const slowNetwork = useNetworkSpeed()
   const { wallet } = useWallet()
 
@@ -49,7 +54,7 @@ const HydrateStore = () => {
   useInterval(
     () => {
       actions.fetchGroup()
-      actions.reloadMangoAccount()
+      actions.reloadMangoAccount(clientContext)
     },
     (slowNetwork ? 60 : 20) * SECONDS,
   )
@@ -95,7 +100,6 @@ const HydrateStore = () => {
     },
     (slowNetwork ? 60 : 10) * SECONDS,
   )
-  console.log(fee)
 
   // The websocket library solana/web3.js uses closes its websocket connection when the subscription list
   // is empty after opening its first time, preventing subsequent subscriptions from receiving responses.
@@ -111,7 +115,7 @@ const HydrateStore = () => {
 
   // watch selected Mango Account for changes
   useEffect(() => {
-    const client = mangoStore.getState().client
+    const client = mangoStore.getState().client[clientContext]
     if (!mangoAccountPk) return
     const subscriptionId = connection.onAccountChange(
       mangoAccountPk,
@@ -144,7 +148,7 @@ const HydrateStore = () => {
     return () => {
       connection.removeAccountChangeListener(subscriptionId)
     }
-  }, [connection, mangoAccountPk])
+  }, [connection, mangoAccountPk, clientContext])
 
   return null
 }

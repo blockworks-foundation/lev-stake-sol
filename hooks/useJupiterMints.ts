@@ -1,19 +1,25 @@
-import { Group } from '@blockworks-foundation/mango-v4'
-import { CLUSTER } from '@store/mangoStore'
+import mangoStore, { CLUSTER } from '@store/mangoStore'
 import { useQuery } from '@tanstack/react-query'
 import useMangoGroup from 'hooks/useMangoGroup'
 import { Token } from 'types/jupiter'
 import { JUPITER_API_DEVNET, JUPITER_API_MAINNET } from 'utils/constants'
 
-const fetchJupiterTokens = async (group: Group) => {
+const fetchJupiterTokens = async () => {
+  const { jlp, lst } = mangoStore.getState().group
+  if (!jlp || !lst) return
   const url = CLUSTER === 'devnet' ? JUPITER_API_DEVNET : JUPITER_API_MAINNET
   const response = await fetch(url)
   const data: Token[] = await response.json()
 
-  const bankMints = Array.from(group.banksMapByName.values()).map((b) =>
+  const jlpBankMints = Array.from(jlp.banksMapByName.values()).map((b) =>
     b[0].mint.toString(),
   )
-  const mangoTokens = data.filter((t) => bankMints.includes(t.address))
+  const lstBankMints = Array.from(lst.banksMapByName.values()).map((b) =>
+    b[0].mint.toString(),
+  )
+  const mangoTokens = data.filter(
+    (t) => jlpBankMints.includes(t.address) || lstBankMints.includes(t.address),
+  )
 
   return {
     mangoTokens,
@@ -26,19 +32,15 @@ const useJupiterMints = (): {
   jupiterTokens: Token[]
   isFetching: boolean
 } => {
-  const { group } = useMangoGroup()
+  const { jlpGroup, lstGroup } = useMangoGroup()
 
-  const res = useQuery(
-    ['jupiter-mango-tokens'],
-    () => fetchJupiterTokens(group!),
-    {
-      cacheTime: 1000 * 60 * 10,
-      staleTime: 1000 * 60 * 10,
-      retry: 3,
-      enabled: !!group,
-      refetchOnWindowFocus: false,
-    },
-  )
+  const res = useQuery(['jupiter-mango-tokens'], () => fetchJupiterTokens(), {
+    cacheTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 10,
+    retry: 3,
+    enabled: !!(jlpGroup && lstGroup),
+    refetchOnWindowFocus: false,
+  })
 
   return {
     mangoTokens: res?.data?.mangoTokens || [],

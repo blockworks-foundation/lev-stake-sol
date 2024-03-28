@@ -6,10 +6,13 @@ import {
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useTranslation } from 'next-i18next'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import NumberFormat, { NumberFormatValues } from 'react-number-format'
+import NumberFormat, {
+  NumberFormatValues,
+  SourceInfo,
+} from 'react-number-format'
 import mangoStore from '@store/mangoStore'
 import { notify } from '../utils/notifications'
-import { TokenAccount, formatTokenSymbol } from '../utils/tokens'
+import { formatTokenSymbol } from '../utils/tokens'
 // import ActionTokenList from './account/ActionTokenList'
 import Label from './forms/Label'
 import Button, { IconButton } from './shared/Button'
@@ -38,58 +41,45 @@ import Decimal from 'decimal.js'
 import { Disclosure } from '@headlessui/react'
 import { sleep } from 'utils'
 import useIpAddress from 'hooks/useIpAddress'
-import { AnchorProvider } from '@project-serum/anchor'
+import {
+  ClientContextKeys,
+  JLP_BORROW_TOKEN,
+  LST_BORROW_TOKEN,
+} from 'utils/constants'
 
 const set = mangoStore.getState().set
 
 interface UnstakeFormProps {
   token: string
+  clientContext: ClientContextKeys
 }
 
-export const walletBalanceForToken = (
-  walletTokens: TokenAccount[],
-  token: string,
-): { maxAmount: number; maxDecimals: number } => {
-  const group = mangoStore.getState().group
-  const bank = group?.banksMapByName.get(token)?.[0]
-
-  let walletToken
-  if (bank) {
-    const tokenMint = bank?.mint
-    walletToken = tokenMint
-      ? walletTokens.find((t) => t.mint.toString() === tokenMint.toString())
-      : null
-  }
-
-  return {
-    maxAmount: walletToken ? walletToken.uiAmount : 0,
-    maxDecimals: bank?.mintDecimals || 6,
-  }
-}
-
-function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
+function UnstakeForm({
+  token: selectedToken,
+  clientContext,
+}: UnstakeFormProps) {
   const { t } = useTranslation(['common', 'account'])
   const [inputAmount, setInputAmount] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  // const [selectedToken, setSelectedToken] = useState(
-  //   token || INPUT_TOKEN_DEFAULT,
-  // )
   const [refreshingWalletTokens, setRefreshingWalletTokens] = useState(false)
   const [sizePercentage, setSizePercentage] = useState('')
   const { maxSolDeposit } = useSolBalance()
-  // const banks = useBanksWithBalances('walletBalance')
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
-  const { group } = useMangoGroup()
+  const { jlpGroup, lstGroup } = useMangoGroup()
   const { mangoAccount } = useMangoAccount()
   const { ipAllowed } = useIpAddress()
 
-  const stakeBank = useMemo(() => {
-    return group?.banksMapByName.get(selectedToken)?.[0]
-  }, [selectedToken, group])
-
-  const borrowBank = useMemo(() => {
-    return group?.banksMapByName.get('USDC')?.[0]
-  }, [group])
+  const [stakeBank, borrowBank] = useMemo(() => {
+    const stakeBank =
+      clientContext === 'jlp'
+        ? jlpGroup?.banksMapByName.get(selectedToken)?.[0]
+        : lstGroup?.banksMapByName.get(selectedToken)?.[0]
+    const borrowBank =
+      clientContext === 'jlp'
+        ? jlpGroup?.banksMapByName.get(JLP_BORROW_TOKEN)?.[0]
+        : lstGroup?.banksMapByName.get(LST_BORROW_TOKEN)?.[0]
+    return [stakeBank, borrowBank]
+  }, [selectedToken, jlpGroup, lstGroup, clientContext])
 
   const tokenPositionsFull = useMemo(() => {
     if (!stakeBank || !usedTokens.length || !totalTokens.length) return false
@@ -114,10 +104,11 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
         borrowBankAmount &&
         borrowBankAmount.toNumber() < 0
       ) {
-        const lev = stakeBankAmount
+        const stakeAmountValue = stakeBankAmount.mul(stakeBank.getAssetPrice())
+        const lev = stakeAmountValue
           .div(
-            stakeBankAmount.sub(
-              borrowBankAmount.abs().div(stakeBank.getAssetPrice()),
+            stakeAmountValue.sub(
+              borrowBankAmount.abs().mul(borrowBank.getAssetPrice()),
             ),
           )
           .toNumber()
@@ -129,7 +120,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
       console.log(e)
       return 1
     }
-  }, [stakeBankAmount, borrowBankAmount, stakeBank])
+  }, [stakeBankAmount, borrowBankAmount, stakeBank, borrowBank])
 
   const tokenMax = useMemo(() => {
     if (!stakeBank || !mangoAccount) return { maxAmount: 0.0, maxDecimals: 6 }
@@ -142,6 +133,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
   const setMax = useCallback(() => {
     const max = floorToDecimal(tokenMax.maxAmount, tokenMax.maxDecimals)
     setInputAmount(max.toFixed())
+    setSizePercentage('100')
   }, [tokenMax])
 
   const handleSizePercentage = useCallback(
@@ -157,11 +149,6 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
     [tokenMax, stakeBank],
   )
 
-  // const handleSelectToken = (token: string) => {
-  //   setSelectedToken(token)
-  //   setShowTokenList(false)
-  // }
-
   const handleRefreshWalletBalances = useCallback(async () => {
     if (!publicKey) return
     const actions = mangoStore.getState().actions
@@ -176,16 +163,15 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
   }, [borrowBank, mangoAccount])
 
   const handleWithdraw = useCallback(async () => {
-    if (!ipAllowed) {
+    if (!ipAllowed || !stakeBank || !borrowBank || !publicKey) {
       return
     }
     const client = mangoStore.getState().client
-    const group = mangoStore.getState().group
+    const group = mangoStore.getState().group[clientContext]
     const actions = mangoStore.getState().actions
     let mangoAccount = mangoStore.getState().mangoAccount.current
 
-    if (!group || !stakeBank || !borrowBank || !publicKey || !mangoAccount)
-      return
+    if (!group || !mangoAccount) return
 
     setSubmitting(true)
     try {
@@ -202,7 +188,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
         const stakeAmountToRepay = (leverage - 1) * Number(inputAmount)
 
         const { signature: tx } = await unstakeAndSwap(
-          client,
+          client[clientContext],
           group,
           mangoAccount,
           stakeBank.mint,
@@ -215,10 +201,8 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
           txid: tx,
         })
         await sleep(100)
-        await actions.fetchMangoAccounts(
-          (client.program.provider as AnchorProvider).wallet.publicKey,
-        )
-        await actions.reloadMangoAccount()
+        await actions.fetchMangoAccounts(publicKey)
+        await actions.reloadMangoAccount(clientContext)
         await actions.fetchWalletTokens(publicKey)
         mangoAccount = mangoStore.getState().mangoAccount.current
         notify({
@@ -228,7 +212,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
       }
       if (!mangoAccount) return
       const { signature: tx2 } = await withdrawAndClose(
-        client,
+        client[clientContext],
         group,
         mangoAccount,
         stakeBank.mint,
@@ -241,11 +225,10 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
       })
       setSubmitting(false)
       setInputAmount('')
+      setSizePercentage('')
       await sleep(100)
-      await actions.fetchMangoAccounts(
-        (client.program.provider as AnchorProvider).wallet.publicKey,
-      )
-      await actions.reloadMangoAccount()
+      await actions.fetchMangoAccounts(publicKey)
+      await actions.reloadMangoAccount(clientContext)
       await actions.fetchWalletTokens(publicKey)
     } catch (e) {
       console.error('Error withdrawing:', e)
@@ -263,28 +246,58 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
         type: 'error',
       })
     }
-  }, [ipAllowed, stakeBank, borrowBank, publicKey, inputAmount, leverage])
+  }, [
+    ipAllowed,
+    stakeBank,
+    borrowBank,
+    publicKey,
+    inputAmount,
+    leverage,
+    clientContext,
+  ])
 
-  const maxWithdraw =
-    group && mangoAccount && stakeBank
-      ? mangoAccount.getMaxWithdrawWithBorrowForTokenUi(group, stakeBank.mint)
-      : 0
+  const maxWithdraw = useMemo(() => {
+    if (!mangoAccount || !stakeBank) return 0
+    const group = clientContext === 'jlp' ? jlpGroup : lstGroup
+    if (!group) return 0
+    try {
+      return mangoAccount.getMaxWithdrawWithBorrowForTokenUi(
+        group,
+        stakeBank.mint,
+      )
+    } catch (e) {
+      return 0
+    }
+  }, [jlpGroup, lstGroup, mangoAccount, stakeBank, clientContext])
+
+  const availableVaultBalance = useMemo(() => {
+    if (!stakeBank) return 0
+    const group = clientContext === 'jlp' ? jlpGroup : lstGroup
+    if (!group) return 0
+    const vaultBalance = group.getTokenVaultBalanceByMintUi(stakeBank.mint)
+    const vaultDeposits = stakeBank.uiDeposits()
+    const available =
+      vaultBalance - vaultDeposits * stakeBank.minVaultToDepositsRatio
+    return available
+  }, [stakeBank, jlpGroup, lstGroup, clientContext])
 
   const showInsufficientBalance =
     tokenMax.maxAmount < Number(inputAmount) ||
     (selectedToken === 'USDC' && maxSolDeposit <= 0)
 
-  const lowVaultBalance =
-    Math.floor(tokenMax.maxAmount * 100000) <
-      Math.floor(Number(inputAmount) * 100000) &&
-    Number(inputAmount) > maxWithdraw
+  const lowVaultBalance = maxWithdraw > availableVaultBalance
+
+  // const lowVaultBalance =
+  //   Math.floor(tokenMax.maxAmount * 100000) <
+  //     Math.floor(Number(inputAmount) * 100000) &&
+  //   Number(inputAmount) > maxWithdraw
 
   useEffect(() => {
-    const group = mangoStore.getState().group
+    const group = mangoStore.getState().group[clientContext]
     set((state) => {
       state.swap.outputBank = group?.banksMapByName.get(selectedToken)?.[0]
     })
-  }, [selectedToken])
+  }, [selectedToken, clientContext])
 
   return (
     <>
@@ -330,10 +343,13 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                   className={NUMBERFORMAT_CLASSES}
                   placeholder="0.00"
                   value={inputAmount}
-                  onValueChange={(e: NumberFormatValues) => {
+                  onValueChange={(e: NumberFormatValues, info: SourceInfo) => {
                     setInputAmount(
                       !Number.isNaN(Number(e.value)) ? e.value : '',
                     )
+                    if (info.source === 'event') {
+                      setSizePercentage('')
+                    }
                   }}
                   isAllowed={withValueLimit}
                 />
@@ -419,7 +435,9 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <p className="text-th-fgd-4">USDC borrowed</p>
+                            <p className="text-th-fgd-4">
+                              {borrowBank.name} borrowed
+                            </p>
                             {borrowBank ? (
                               <span
                                 className={`font-bold ${
@@ -487,7 +505,7 @@ function UnstakeForm({ token: selectedToken }: UnstakeFormProps) {
           <div className="mt-4">
             <InlineNotification
               type="error"
-              desc={`The ${selectedToken} vault balance is too low. ${selectedToken} deposits are required to unboost.`}
+              desc={`The available ${selectedToken} vault balance is low. ${selectedToken} deposits are required to unboost your full position.`}
             />
           </div>
         ) : null}

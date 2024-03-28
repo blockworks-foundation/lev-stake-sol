@@ -2,9 +2,11 @@ import { Group } from '@blockworks-foundation/mango-v4'
 import mangoStore from '@store/mangoStore'
 
 export default function useMangoGroup(): {
-  group: Group | undefined
+  jlpGroup: Group | undefined
+  lstGroup: Group | undefined
 } {
-  const group = mangoStore((s) => s.group)
+  const jlpGroup = mangoStore((s) => s.group.jlp)
+  const lstGroup = mangoStore((s) => s.group.lst)
 
-  return { group }
+  return { jlpGroup, lstGroup }
 }

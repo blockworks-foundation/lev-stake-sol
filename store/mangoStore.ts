@@ -24,6 +24,7 @@ import {
   PerpPosition,
   BookSide,
   ParsedFillEvent,
+  MANGO_V4_ID,
 } from '@blockworks-foundation/mango-v4'
 
 import EmptyWallet from '../utils/wallet'
@@ -36,12 +37,10 @@ import {
   BOOST_ACCOUNT_PREFIX,
   BOOST_DATA_API_URL,
   CONNECTION_COMMITMENT,
-  DEFAULT_MARKET_NAME,
   FALLBACK_ORACLES,
-  INPUT_TOKEN_DEFAULT,
+  ClientContextKeys,
   MANGO_DATA_API_URL,
   MAX_PRIORITY_FEE_KEYS,
-  OUTPUT_TOKEN_DEFAULT,
   PAGINATION_PAGE_LENGTH,
   RPC_PROVIDER_KEY,
   STAKEABLE_TOKENS,
@@ -67,9 +66,7 @@ import {
   PositionStat,
   OrderbookTooltip,
 } from 'types'
-import spotBalancesUpdater from './spotBalancesUpdater'
 import { PerpMarket } from '@blockworks-foundation/mango-v4/'
-import perpPositionsUpdater from './perpPositionsUpdater'
 import {
   DEFAULT_PRIORITY_FEE,
   TRITON_DEDICATED_URL,
@@ -85,7 +82,9 @@ import { sleep } from 'utils'
 const MANGO_BOOST_ID = new PublicKey(
   'zF2vSz6V9g1YHGmfrzsY497NJzbRr84QUrPry4bLQ25',
 )
-const GROUP = new PublicKey('AKeMSYiJekyKfwCc3CUfVNDVAiqk9FfbQVMY3G7RUZUf')
+
+const GROUP_JLP = new PublicKey('AKeMSYiJekyKfwCc3CUfVNDVAiqk9FfbQVMY3G7RUZUf')
+const GROUP_V1 = new PublicKey('78b8f4cGCwmZ9ysPFMWLaLTkkaYnUjwMJYStWe5RTSSX')
 
 const ENDPOINTS = [
   {
@@ -117,20 +116,35 @@ const initMangoClient = (
     prioritizationFee: DEFAULT_PRIORITY_FEE,
     fallbackOracleConfig: FALLBACK_ORACLES,
   },
-): MangoClient => {
-  return MangoClient.connect(provider, CLUSTER, MANGO_BOOST_ID, {
-    prioritizationFee: opts.prioritizationFee,
-    fallbackOracleConfig: opts.fallbackOracleConfig,
-    idsSource: 'get-program-accounts',
-    postSendTxCallback: ({ txid }: { txid: string }) => {
-      notify({
-        title: 'Transaction sent',
-        description: 'Waiting for confirmation',
-        type: 'confirm',
-        txid: txid,
-      })
-    },
-  })
+): { lst: MangoClient; jlp: MangoClient } => {
+  return {
+    lst: MangoClient.connect(provider, CLUSTER, MANGO_V4_ID['mainnet-beta'], {
+      prioritizationFee: opts.prioritizationFee,
+      fallbackOracleConfig: opts.fallbackOracleConfig,
+      idsSource: 'api',
+      postSendTxCallback: ({ txid }: { txid: string }) => {
+        notify({
+          title: 'Transaction sent',
+          description: 'Waiting for confirmation',
+          type: 'confirm',
+          txid: txid,
+        })
+      },
+    }),
+    jlp: MangoClient.connect(provider, CLUSTER, MANGO_BOOST_ID, {
+      prioritizationFee: opts.prioritizationFee,
+      fallbackOracleConfig: opts.fallbackOracleConfig,
+      idsSource: 'get-program-accounts',
+      postSendTxCallback: ({ txid }: { txid: string }) => {
+        notify({
+          title: 'Transaction sent',
+          description: 'Waiting for confirmation',
+          type: 'confirm',
+          txid: txid,
+        })
+      },
+    }),
+  }
 }
 
 export const DEFAULT_TRADE_FORM: TradeForm = {
@@ -163,9 +177,9 @@ export type MangoStore = {
   }
   connected: boolean
   connection: Connection
-  group: Group | undefined
+  group: { jlp: Group | undefined; lst: Group | undefined }
   groupLoaded: boolean
-  client: MangoClient
+  client: { jlp: MangoClient; lst: MangoClient }
   showUserSetup: boolean
   leverage: number
   mangoAccount: {
@@ -270,7 +284,10 @@ export type MangoStore = {
       limit?: number,
     ) => Promise<void>
     fetchGroup: () => Promise<void>
-    reloadMangoAccount: (slot?: number) => Promise<void>
+    reloadMangoAccount: (
+      clientContext: ClientContextKeys,
+      slot?: number,
+    ) => Promise<void>
     fetchMangoAccounts: (ownerPk: PublicKey) => Promise<void>
     fetchProfileDetails: (walletPk: string) => void
     fetchSwapHistory: (
@@ -328,7 +345,7 @@ const mangoStore = create<MangoStore>()(
       },
       connected: false,
       connection,
-      group: undefined,
+      group: { jlp: undefined, lst: undefined },
       groupLoaded: false,
       client,
       showUserSetup: false,
@@ -532,64 +549,20 @@ const mangoStore = create<MangoStore>()(
           try {
             const set = get().set
             const client = get().client
-            const group = await client.getGroup(GROUP)
-            let selectedMarketName = get().selectedMarket.name
-
-            if (!selectedMarketName) {
-              selectedMarketName = DEFAULT_MARKET_NAME
-            }
-
-            const inputBank =
-              group?.banksMapByName.get(INPUT_TOKEN_DEFAULT)?.[0]
-            const outputBank =
-              group?.banksMapByName.get(OUTPUT_TOKEN_DEFAULT)?.[0]
-            const serumMarkets = Array.from(
-              group.serum3MarketsMapByExternal.values(),
-            ).map((m) => {
-              // remove this when market name is updated
-              if (m.name === 'MSOL/SOL') {
-                m.name = 'mSOL/SOL'
-              }
-              return m
-            })
-
-            const perpMarkets = Array.from(group.perpMarketsMapByName.values())
-              .filter(
-                (p) =>
-                  p.publicKey.toString() !==
-                  '9Y8paZ5wUpzLFfQuHz8j2RtPrKsDtHx9sbgFmWb5abCw',
-              )
-              .sort((a, b) => a.name.localeCompare(b.name))
-
-            const selectedMarket =
-              serumMarkets.find((m) => m.name === selectedMarketName) ||
-              perpMarkets.find((m) => m.name === selectedMarketName) ||
-              serumMarkets[0]
+            const lstGroup = await client.lst.getGroup(GROUP_V1)
+            const jlpGroup = await client.jlp.getGroup(GROUP_JLP)
 
             set((state) => {
-              state.group = group
+              state.group.jlp = jlpGroup
+              state.group.lst = lstGroup
               state.groupLoaded = true
-              state.serumMarkets = serumMarkets
-              state.perpMarkets = perpMarkets
-              state.selectedMarket.current = selectedMarket
-              if (!state.swap.inputBank && !state.swap.outputBank) {
-                state.swap.inputBank = inputBank
-                state.swap.outputBank = outputBank
-              } else {
-                state.swap.inputBank = group.getFirstBankByMint(
-                  state.swap.inputBank!.mint,
-                )
-                state.swap.outputBank = group.getFirstBankByMint(
-                  state.swap.outputBank!.mint,
-                )
-              }
             })
           } catch (e) {
             notify({ type: 'info', title: 'Unable to refresh data' })
-            console.error('Error fetching group', e)
+            console.error('Error fetching groups', e)
           }
         },
-        reloadMangoAccount: async (confirmationSlot) => {
+        reloadMangoAccount: async (clientContext, confirmationSlot) => {
           const set = get().set
           const actions = get().actions
           try {
@@ -600,7 +573,7 @@ const mangoStore = create<MangoStore>()(
             if (!mangoAccount) return
 
             const { value: reloadedMangoAccount, slot } =
-              await mangoAccount.reloadWithSlot(client)
+              await mangoAccount.reloadWithSlot(client[clientContext])
 
             const lastSlot = get().mangoAccount.lastSlot
             if (
@@ -620,7 +593,7 @@ const mangoStore = create<MangoStore>()(
                 })
               }
             } else if (confirmationSlot && slot < confirmationSlot) {
-              await actions.reloadMangoAccount(confirmationSlot)
+              await actions.reloadMangoAccount(clientContext, confirmationSlot)
               await sleep(100)
             }
           } catch (e) {
@@ -633,20 +606,34 @@ const mangoStore = create<MangoStore>()(
         },
         fetchMangoAccounts: async (ownerPk: PublicKey) => {
           const set = get().set
-          // const actions = get().actions
           try {
-            const group = get().group
-            const client = get().client
-            const selectedMangoAccount = get().mangoAccount.current
+            const jlpGroup = get().group.jlp
+            const lstGroup = get().group.lst
             const selectedToken = get().selectedToken
-            if (!group) throw new Error('Group not loaded')
+            const client = get().client
+
+            const selectedMangoAccount = get().mangoAccount.current
+            if (!jlpGroup) throw new Error('JLP group not loaded')
+            if (!lstGroup) throw new Error('LST group not loaded')
             if (!client) throw new Error('Client not loaded')
 
-            const [ownerMangoAccounts, delegateAccounts] = await Promise.all([
-              client.getMangoAccountsForOwner(group, ownerPk),
-              client.getMangoAccountsForDelegate(group, ownerPk),
+            const [
+              jlpOwnerMangoAccounts,
+              lstOwnerMangoAccounts,
+              jlpDelegateAccounts,
+              lstDelegateAccounts,
+            ] = await Promise.all([
+              client.jlp.getMangoAccountsForOwner(jlpGroup, ownerPk),
+              client.lst.getMangoAccountsForOwner(lstGroup, ownerPk),
+              client.jlp.getMangoAccountsForDelegate(jlpGroup, ownerPk),
+              client.lst.getMangoAccountsForDelegate(lstGroup, ownerPk),
             ])
-            const mangoAccounts = [...ownerMangoAccounts, ...delegateAccounts]
+            const mangoAccounts = [
+              ...jlpOwnerMangoAccounts,
+              ...lstOwnerMangoAccounts,
+              ...jlpDelegateAccounts,
+              ...lstDelegateAccounts,
+            ]
             console.log('mango accounts: ', mangoAccounts)
             const selectedAccountIsNotInAccountsList = mangoAccounts.find(
               (x) =>
@@ -676,16 +663,10 @@ const mangoStore = create<MangoStore>()(
             }
             console.log('newSelectedMangoAccount', newSelectedMangoAccount)
 
-            // await newSelectedMangoAccount.reloadSerum3OpenOrders(client)
             set((state) => {
               state.mangoAccount.current = newSelectedMangoAccount
               state.mangoAccount.initialLoad = false
             })
-            // actions.fetchOpenOrders()
-
-            // await Promise.all(
-            //   mangoAccounts.map((ma) => ma.reloadSerum3OpenOrders(client)),
-            // )
 
             set((state) => {
               state.mangoAccounts = mangoAccounts
@@ -827,7 +808,7 @@ const mangoStore = create<MangoStore>()(
             endpointUrl,
             CONNECTION_COMMITMENT,
           )
-          const oldProvider = client.program.provider as AnchorProvider
+          const oldProvider = client.jlp.program.provider as AnchorProvider
           const newProvider = new AnchorProvider(
             newConnection,
             oldProvider.wallet,
@@ -889,7 +870,8 @@ const mangoStore = create<MangoStore>()(
             LAMPORTS_PER_SOL * 0.01,
           )
 
-          const provider = client.program.provider as AnchorProvider
+          //can use any provider doesn't matter both should be same
+          const provider = client.jlp.program.provider as AnchorProvider
           provider.opts.skipPreflight = true
 
           const newClient = initMangoClient(provider, {
@@ -904,16 +886,6 @@ const mangoStore = create<MangoStore>()(
       },
     }
   }),
-)
-
-mangoStore.subscribe((state) => state.mangoAccount.current, spotBalancesUpdater)
-mangoStore.subscribe(
-  (state) => state.mangoAccount.openOrderAccounts,
-  spotBalancesUpdater,
-)
-mangoStore.subscribe(
-  (state) => state.mangoAccount.current,
-  perpPositionsUpdater,
 )
 
 export default mangoStore
