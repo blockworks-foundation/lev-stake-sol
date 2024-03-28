@@ -29,18 +29,6 @@ export type Position = {
   acct: MangoAccount | undefined
 }
 
-const getLiquidationRatio = (
-  borrowBalance: number,
-  stakeBalance: number,
-  stakeBank: Bank,
-  borrowBank: Bank,
-) => {
-  return (
-    (Math.abs(borrowBalance) * borrowBank.maintLiabWeight.toNumber()) /
-    (stakeBalance * stakeBank.maintAssetWeight.toNumber())
-  ).toFixed(3)
-}
-
 const Positions = ({
   setActiveTab,
 }: {
@@ -104,7 +92,7 @@ const PositionItem = ({
   borrowBank: Bank | undefined
 }) => {
   const { jlpGroup, lstGroup } = useMangoGroup()
-  const { stakeBalance, borrowBalance, bank, pnl, acct } = position
+  const { stakeBalance, bank, pnl, acct } = position
 
   const handleAddOrManagePosition = (token: string) => {
     setActiveTab('Boost!')
@@ -132,20 +120,18 @@ const PositionItem = ({
     }
   }, [acct, bank, jlpGroup, lstGroup])
 
-  const [liqRatio] = useMemo(() => {
-    if (!borrowBalance || !borrowBank) return ['0.00', '']
-    const liqRatio = getLiquidationRatio(
-      borrowBalance,
-      stakeBalance,
-      bank,
-      borrowBank,
-    )
-    const currentPriceRatio = bank.uiPrice / borrowBank.uiPrice
-    const liqPriceChangePercentage =
-      ((parseFloat(liqRatio) - currentPriceRatio) / currentPriceRatio) * 100
-
-    return [liqRatio, liqPriceChangePercentage.toFixed(2)]
-  }, [bank, borrowBalance, borrowBank, stakeBalance])
+  const liqRatio = useMemo(() => {
+    const price = Number(bank?.uiPrice)
+    const borrowMaintLiabWeight = Number(borrowBank?.maintLiabWeight)
+    const stakeMaintAssetWeight = Number(bank?.maintAssetWeight)
+    const loanOriginationFee = Number(borrowBank?.loanOriginationFeeRate)
+    const liqPrice =
+      price *
+      ((borrowMaintLiabWeight * (1 + loanOriginationFee)) /
+        stakeMaintAssetWeight) *
+      (1 - 1 / leverage)
+    return liqPrice.toFixed(3)
+  }, [bank, borrowBank, leverage])
 
   const { financialMetrics, stakeBankDepositRate, borrowBankBorrowRate } =
     useBankRates(bank.name, leverage)
