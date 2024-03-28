@@ -120,6 +120,7 @@ const initMangoClient = (
   return {
     lst: MangoClient.connect(provider, CLUSTER, MANGO_V4_ID['mainnet-beta'], {
       prioritizationFee: opts.prioritizationFee,
+      fallbackOracleConfig: opts.fallbackOracleConfig,
       idsSource: 'api',
       postSendTxCallback: ({ txid }: { txid: string }) => {
         notify({
@@ -132,6 +133,7 @@ const initMangoClient = (
     }),
     jlp: MangoClient.connect(provider, CLUSTER, MANGO_BOOST_ID, {
       prioritizationFee: opts.prioritizationFee,
+      fallbackOracleConfig: opts.fallbackOracleConfig,
       idsSource: 'get-program-accounts',
       postSendTxCallback: ({ txid }: { txid: string }) => {
         notify({
