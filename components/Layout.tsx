@@ -4,7 +4,6 @@ import mangoStore from '@store/mangoStore'
 import TopBar from './TopBar'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { ACCEPT_TERMS_KEY, SECONDS } from '../utils/constants'
-import { useWallet } from '@solana/wallet-adapter-react'
 import useInterval from './shared/useInterval'
 import { Transition } from '@headlessui/react'
 import { useTranslation } from 'next-i18next'
@@ -13,6 +12,7 @@ import SunburstBackground from './SunburstBackground'
 import Footer from './Footer'
 import useIpAddress from 'hooks/useIpAddress'
 import RestrictedCountryModal from './shared/RestrictedCountryModal'
+import { useRouter } from 'next/router'
 
 export const NON_RESTRICTED_JURISDICTION_KEY = 'non-restricted-jurisdiction-0.1'
 
@@ -66,15 +66,17 @@ const Layout = ({ children }: { children: ReactNode }) => {
 export default Layout
 
 const TermsOfUse = () => {
-  const { connected } = useWallet()
+  const { asPath } = useRouter()
   const [acceptTerms, setAcceptTerms] = useLocalStorageState(
     ACCEPT_TERMS_KEY,
     '',
   )
 
   const showTermsOfUse = useMemo(() => {
-    return (!acceptTerms || acceptTerms < termsLastUpdated) && connected
-  }, [acceptTerms, connected])
+    return (
+      (!acceptTerms || acceptTerms < termsLastUpdated) && asPath !== '/risks'
+    )
+  }, [acceptTerms, asPath])
 
   return (
     <>
