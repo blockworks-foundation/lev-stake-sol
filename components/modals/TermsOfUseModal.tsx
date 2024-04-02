@@ -56,7 +56,7 @@ const TermsOfUseModal = ({ isOpen, onClose }: ModalProps) => {
               >
                 Mango v4&apos;s
               </a>{' '}
-              extensively audited contracts.
+              open source and extensively audited contracts.
             </span>
           </li>
         </ul>
