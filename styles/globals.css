@@ -386,27 +386,27 @@ table p {
 /* shadows */
 
 .inner-shadow-top {
-  @apply shadow-[inset_0_4px_0px_var(--bkg-3)];
+  @apply shadow-[inset_0_4px_0px_rgba(0,0,0,0.2)];
 }
 
 .inner-shadow-bottom {
-  @apply shadow-[inset_0_-4px_0px_var(--bkg-3)];
+  @apply shadow-[inset_0_-4px_0px_rgba(0,0,0,0.2)];
 }
 
 .inner-shadow-top-sm {
-  @apply shadow-[inset_0_2px_0px_var(--bkg-3)];
+  @apply shadow-[inset_0_2px_0px_rgba(0,0,0,0.2)];
 }
 
 .inner-shadow-bottom-sm {
-  @apply shadow-[inset_0_-2px_0px_var(--bkg-3)];
+  @apply shadow-[inset_0_-2px_0px_rgba(0,0,0,0.2)];
 }
 
 .inner-shadow-top-xs {
-  @apply shadow-[inset_0_1px_0px_var(--bkg-3)];
+  @apply shadow-[inset_0_1px_0px_rgba(0,0,0,0.2)];
 }
 
 .inner-shadow-bottom-xs {
-  @apply shadow-[inset_0_-1px_0px_var(--bkg-3)];
+  @apply shadow-[inset_0_-1px_0px_rgba(0,0,0,0.2)];
 }
 
 .text-shadow {
