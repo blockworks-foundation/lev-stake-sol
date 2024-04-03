@@ -18,6 +18,7 @@ import usePositions from 'hooks/usePositions'
 import { AdjustmentsHorizontalIcon } from '@heroicons/react/20/solid'
 import EditLeverageModal from './modals/EditLeverageModal'
 import Tooltip from './shared/Tooltip'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const set = mangoStore.getState().set
 
@@ -91,6 +92,7 @@ const PositionItem = ({
   setActiveTab: (v: ActiveTab) => void
   borrowBank: Bank | undefined
 }) => {
+  const { connected } = useWallet()
   const { jlpGroup, lstGroup } = useMangoGroup()
   const { stakeBalance, bank, pnl, acct } = position
 
@@ -286,20 +288,24 @@ const PositionItem = ({
               <p className="mb-1 text-th-fgd-4">Leverage</p>
               <div className="flex items-center">
                 <span className="mr-3 text-xl font-bold text-th-fgd-1">
-                  {leverage ? leverage.toFixed(2) : 0.0}x
+                  {connected && stakeBalance && leverage
+                    ? `${leverage.toFixed(2)}x`
+                    : '–'}
                 </span>
-                <button
-                  onClick={async () => {
-                    await set((state) => {
-                      state.selectedToken = bank.name
-                    })
-                    setShowEditLeverageModal(!showEditLeverageModal)
-                  }}
-                  className="default-transition flex items-center rounded-md border-b-2 border-th-bkg-4 bg-th-bkg-2 px-2.5 py-1 text-th-fgd-1 md:hover:bg-th-bkg-3"
-                >
-                  <AdjustmentsHorizontalIcon className="mr-1.5 h-4 w-4" />
-                  <span className="font-bold">Edit</span>
-                </button>
+                {connected && stakeBalance ? (
+                  <button
+                    onClick={async () => {
+                      await set((state) => {
+                        state.selectedToken = bank.name
+                      })
+                      setShowEditLeverageModal(!showEditLeverageModal)
+                    }}
+                    className="default-transition flex items-center rounded-md border-b-2 border-th-bkg-4 bg-th-bkg-2 px-2.5 py-1 text-th-fgd-1 md:hover:bg-th-bkg-3"
+                  >
+                    <AdjustmentsHorizontalIcon className="mr-1.5 h-4 w-4" />
+                    <span className="font-bold">Edit</span>
+                  </button>
+                ) : null}
               </div>
             </div>
             <div>
