@@ -23,7 +23,7 @@ const TermsOfUseModal = ({ isOpen, onClose }: ModalProps) => {
         <div className="mb-4 border-b border-th-bkg-3 pb-4">
           <div className="group mb-2 flex items-center justify-center">
             <BoostLogo className="h-auto w-12 shrink-0 cursor-pointer group-hover:animate-shake" />
-            <span className="text-shadow ml-2 hidden text-[32px] font-black text-th-bkg-1 md:block">
+            <span className="text-shadow ml-2 block text-[32px] font-black text-th-bkg-1">
               Boost!
             </span>
             <div className="ml-2.5 hidden rounded border border-th-fgd-1 bg-th-active px-1.5 py-1 md:block">
@@ -38,15 +38,15 @@ const TermsOfUseModal = ({ isOpen, onClose }: ModalProps) => {
         </div>
         <ul className="space-y-2 border-b border-th-bkg-3 pb-4">
           <li className="flex items-center">
-            <CheckCircleIcon className="mr-2 h-5 w-5 text-th-success" />
+            <CheckCircleIcon className="mr-2 h-5 w-5 shrink-0 text-th-success" />
             <span>Easily add leverage to boost your yield.</span>
           </li>
           <li className="flex items-center">
-            <CheckCircleIcon className="mr-2 h-5 w-5 text-th-success" />
+            <CheckCircleIcon className="mr-2 h-5 w-5 shrink-0 text-th-success" />
             <span>No lockup. Remove your assets when you want.</span>
           </li>
           <li className="flex items-center">
-            <CheckCircleIcon className="mr-2 h-5 w-5 text-th-success" />
+            <CheckCircleIcon className="mr-2 h-5 w-5 shrink-0 text-th-success" />
             <span>
               Powered by{' '}
               <a
