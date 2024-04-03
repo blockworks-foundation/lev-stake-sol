@@ -70,10 +70,12 @@ const TokenSelect = ({
             />
           </div>
           <div className="text-left">
-            <p className={`text-sm font-bold text-th-fgd-1 sm:text-lg`}>
+            <p className={`text-sm text-th-fgd-1 lg:text-base`}>
               {formatTokenSymbol(tokenName)}
             </p>
-            <span className={`text-sm text-th-fgd-4`}>
+            <span
+              className={`text-sm font-bold leading-none text-th-fgd-1 sm:text-lg`}
+            >
               {!groupLoaded ? (
                 <SheenLoader>
                   <div className={`h-5 w-10 bg-th-bkg-2`} />
@@ -81,9 +83,17 @@ const TokenSelect = ({
               ) : !UiRate || isNaN(UiRate) ? (
                 'Rate Unavailable'
               ) : tokenName === 'USDC' ? (
-                `${UiRate.toFixed(2)}% APY`
+                <>
+                  {`${UiRate.toFixed(2)}%`}{' '}
+                  <span className="text-sm font-normal text-th-fgd-4">APY</span>
+                </>
               ) : (
-                `Up to ${UiRate.toFixed(2)}% APY`
+                <>
+                  {`${UiRate.toFixed(2)}%`}{' '}
+                  <span className="text-sm font-normal text-th-fgd-4">
+                    Max APY
+                  </span>
+                </>
               )}
             </span>
           </div>

@@ -43,7 +43,6 @@ import {
   MAX_PRIORITY_FEE_KEYS,
   PAGINATION_PAGE_LENGTH,
   RPC_PROVIDER_KEY,
-  STAKEABLE_TOKENS,
   SWAP_MARGIN_KEY,
 } from '../utils/constants'
 import {
@@ -332,7 +331,7 @@ const mangoStore = create<MangoStore>()(
     return {
       // leverage stake
       activeTab: 'Boost!',
-      selectedToken: STAKEABLE_TOKENS[0],
+      selectedToken: '',
       estimatedMaxAPY: {
         current: 0,
       },

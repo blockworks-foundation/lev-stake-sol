@@ -17,6 +17,7 @@ import TokenSelect from './TokenSelect'
 import Label from './forms/Label'
 import usePositions from 'hooks/usePositions'
 import { IconButton } from './shared/Button'
+import HeroTokenButton from './HeroTokenButton'
 
 const set = mangoStore.getState().set
 
@@ -48,8 +49,13 @@ const Stake = () => {
           state.selectedToken = positions[0].bank.name
         })
       }
+      if (tab === 'Add' && selectedToken) {
+        set((state) => {
+          state.selectedToken = ''
+        })
+      }
     },
-    [hasPosition, positions],
+    [hasPosition, positions, selectedToken],
   )
 
   const selectableTokens = useMemo(() => {
@@ -143,58 +149,79 @@ const Stake = () => {
               />
             </div>
             {selectableTokens.length ? (
-              <>
-                <div className="pb-6">
-                  <Label text="Token" />
-                  <TokenButton
-                    onClick={() => setShowTokenSelect(true)}
-                    tokenName={selectedToken}
-                  />
-                </div>
-                {selectedToken == 'USDC' ? (
-                  <>
-                    {activeFormTab === 'Add' ? (
-                      <DespositForm
-                        token="USDC"
-                        clientContext={
-                          getStakableTokensDataForTokenName('USDC')
-                            .clientContext
+              !selectedToken ? (
+                <>
+                  <h2 className="mb-3 text-center text-lg font-normal">
+                    Select token to Boost!
+                  </h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    {selectableTokens.map((token) => (
+                      <HeroTokenButton
+                        key={token}
+                        onClick={() =>
+                          set((state) => {
+                            state.selectedToken = token
+                          })
                         }
+                        tokenName={token}
                       />
-                    ) : null}
-                    {activeFormTab === 'Remove' ? (
-                      <UnstakeForm
-                        token="USDC"
-                        clientContext={
-                          getStakableTokensDataForTokenName('USDC')
-                            .clientContext
-                        }
-                      />
-                    ) : null}
-                  </>
-                ) : (
-                  <>
-                    {activeFormTab === 'Add' ? (
-                      <StakeForm
-                        token={selectedToken}
-                        clientContext={
-                          getStakableTokensDataForTokenName(selectedToken)
-                            .clientContext
-                        }
-                      />
-                    ) : null}
-                    {activeFormTab === 'Remove' ? (
-                      <UnstakeForm
-                        token={selectedToken}
-                        clientContext={
-                          getStakableTokensDataForTokenName(selectedToken)
-                            .clientContext
-                        }
-                      />
-                    ) : null}
-                  </>
-                )}
-              </>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="pb-6">
+                    <Label text="Token" />
+                    <TokenButton
+                      onClick={() => setShowTokenSelect(true)}
+                      tokenName={selectedToken}
+                    />
+                  </div>
+                  {selectedToken == 'USDC' ? (
+                    <>
+                      {activeFormTab === 'Add' ? (
+                        <DespositForm
+                          token="USDC"
+                          clientContext={
+                            getStakableTokensDataForTokenName('USDC')
+                              .clientContext
+                          }
+                        />
+                      ) : null}
+                      {activeFormTab === 'Remove' ? (
+                        <UnstakeForm
+                          token="USDC"
+                          clientContext={
+                            getStakableTokensDataForTokenName('USDC')
+                              .clientContext
+                          }
+                        />
+                      ) : null}
+                    </>
+                  ) : (
+                    <>
+                      {activeFormTab === 'Add' ? (
+                        <StakeForm
+                          token={selectedToken}
+                          clientContext={
+                            getStakableTokensDataForTokenName(selectedToken)
+                              ?.clientContext
+                          }
+                        />
+                      ) : null}
+                      {activeFormTab === 'Remove' ? (
+                        <UnstakeForm
+                          token={selectedToken}
+                          clientContext={
+                            getStakableTokensDataForTokenName(selectedToken)
+                              ?.clientContext
+                          }
+                        />
+                      ) : null}
+                    </>
+                  )}
+                </>
+              )
             ) : (
               <div className="p-10">
                 <p className="text-center text-th-fgd-4">
@@ -205,7 +232,7 @@ const Stake = () => {
           </div>
         </div>
       </div>
-      {activeFormTab === 'Add' ? (
+      {activeFormTab === 'Add' && selectedToken ? (
         <div className="fixed bottom-0 left-0 z-20 w-full lg:bottom-8 lg:left-8 lg:w-auto">
           {isDesktop ? (
             <a

@@ -17,7 +17,7 @@ const HydrateStore = () => {
   const { mangoAccountPk } = useMangoAccount()
   const selectedToken = mangoStore((s) => s.selectedToken)
   const clientContext =
-    getStakableTokensDataForTokenName(selectedToken).clientContext
+    getStakableTokensDataForTokenName(selectedToken)?.clientContext
 
   const connection = mangoStore((s) => s.connection)
 
