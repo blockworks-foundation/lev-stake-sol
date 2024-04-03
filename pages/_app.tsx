@@ -47,7 +47,8 @@ import PlausibleProvider from 'next-plausible'
 export const queryClient = new QueryClient()
 
 const metaTitle = 'Boost!'
-const metaDescription = 'Earn boosted yield on JLP and USDC. Powered by Mango'
+const metaDescription =
+  'Earn boosted yield on JLP, mSOL, JitoSOL, bSOL and USDC. Powered by Mango'
 
 // Do not add hooks to this component, that will cause unnecessary rerenders
 // Top level state hydrating/updating should go in MangoProvider
