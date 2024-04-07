@@ -82,6 +82,8 @@ const MANGO_BOOST_ID = new PublicKey(
   'zF2vSz6V9g1YHGmfrzsY497NJzbRr84QUrPry4bLQ25',
 )
 
+export const LITE_RPC_URL = 'https://api.mngo.cloud/lite-rpc/v1/'
+
 const GROUP_JLP = new PublicKey('AKeMSYiJekyKfwCc3CUfVNDVAiqk9FfbQVMY3G7RUZUf')
 const GROUP_V1 = new PublicKey('78b8f4cGCwmZ9ysPFMWLaLTkkaYnUjwMJYStWe5RTSSX')
 
@@ -114,12 +116,14 @@ const initMangoClient = (
   opts = {
     prioritizationFee: DEFAULT_PRIORITY_FEE,
     fallbackOracleConfig: FALLBACK_ORACLES,
+    multipleConnections: [new Connection(LITE_RPC_URL)],
   },
 ): { lst: MangoClient; jlp: MangoClient } => {
   return {
     lst: MangoClient.connect(provider, CLUSTER, MANGO_V4_ID['mainnet-beta'], {
       prioritizationFee: opts.prioritizationFee,
       fallbackOracleConfig: opts.fallbackOracleConfig,
+      multipleConnections: opts.multipleConnections,
       idsSource: 'api',
       postSendTxCallback: ({ txid }: { txid: string }) => {
         notify({
@@ -133,6 +137,7 @@ const initMangoClient = (
     jlp: MangoClient.connect(provider, CLUSTER, MANGO_BOOST_ID, {
       prioritizationFee: opts.prioritizationFee,
       fallbackOracleConfig: opts.fallbackOracleConfig,
+      multipleConnections: opts.multipleConnections,
       idsSource: 'get-program-accounts',
       postSendTxCallback: ({ txid }: { txid: string }) => {
         notify({
@@ -326,7 +331,12 @@ const mangoStore = create<MangoStore>()(
     }
     const provider = new AnchorProvider(connection, emptyWallet, options)
     provider.opts.skipPreflight = true
-    const client = initMangoClient(provider)
+    const priorityFee = get()?.priorityFee ?? DEFAULT_PRIORITY_FEE
+    const client = initMangoClient(provider, {
+      prioritizationFee: priorityFee,
+      fallbackOracleConfig: FALLBACK_ORACLES,
+      multipleConnections: [new Connection(LITE_RPC_URL)],
+    })
 
     return {
       // leverage stake
@@ -760,10 +770,11 @@ const mangoStore = create<MangoStore>()(
               options,
             )
             provider.opts.skipPreflight = true
-            const priorityFee = get().priorityFee ?? DEFAULT_PRIORITY_FEE
+            const priorityFee = get()?.priorityFee ?? DEFAULT_PRIORITY_FEE
             const client = initMangoClient(provider, {
               prioritizationFee: priorityFee,
               fallbackOracleConfig: FALLBACK_ORACLES,
+              multipleConnections: [new Connection(LITE_RPC_URL)],
             })
 
             set((s) => {
@@ -814,10 +825,11 @@ const mangoStore = create<MangoStore>()(
             options,
           )
           newProvider.opts.skipPreflight = true
-          const priorityFee = get().priorityFee ?? DEFAULT_PRIORITY_FEE
+          const priorityFee = get()?.priorityFee ?? DEFAULT_PRIORITY_FEE
           const newClient = initMangoClient(newProvider, {
             prioritizationFee: priorityFee,
             fallbackOracleConfig: FALLBACK_ORACLES,
+            multipleConnections: [new Connection(LITE_RPC_URL)],
           })
           set((state) => {
             state.connection = newConnection
@@ -873,9 +885,11 @@ const mangoStore = create<MangoStore>()(
           const provider = client.jlp.program.provider as AnchorProvider
           provider.opts.skipPreflight = true
 
+          const priorityFee = get()?.priorityFee ?? DEFAULT_PRIORITY_FEE
           const newClient = initMangoClient(provider, {
-            prioritizationFee: feeEstimate,
+            prioritizationFee: priorityFee,
             fallbackOracleConfig: FALLBACK_ORACLES,
+            multipleConnections: [new Connection(LITE_RPC_URL)],
           })
           set((state) => {
             state.priorityFee = feeEstimate
