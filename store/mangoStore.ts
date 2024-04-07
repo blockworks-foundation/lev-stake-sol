@@ -83,6 +83,7 @@ const MANGO_BOOST_ID = new PublicKey(
 )
 
 export const LITE_RPC_URL = 'https://api.mngo.cloud/lite-rpc/v1/'
+const backupConnections = [new Connection(LITE_RPC_URL, 'recent')]
 
 const GROUP_JLP = new PublicKey('AKeMSYiJekyKfwCc3CUfVNDVAiqk9FfbQVMY3G7RUZUf')
 const GROUP_V1 = new PublicKey('78b8f4cGCwmZ9ysPFMWLaLTkkaYnUjwMJYStWe5RTSSX')
@@ -116,7 +117,7 @@ const initMangoClient = (
   opts = {
     prioritizationFee: DEFAULT_PRIORITY_FEE,
     fallbackOracleConfig: FALLBACK_ORACLES,
-    multipleConnections: [new Connection(LITE_RPC_URL)],
+    multipleConnections: backupConnections,
   },
 ): { lst: MangoClient; jlp: MangoClient } => {
   return {
@@ -335,7 +336,7 @@ const mangoStore = create<MangoStore>()(
     const client = initMangoClient(provider, {
       prioritizationFee: priorityFee,
       fallbackOracleConfig: FALLBACK_ORACLES,
-      multipleConnections: [new Connection(LITE_RPC_URL)],
+      multipleConnections: backupConnections,
     })
 
     return {
@@ -774,7 +775,7 @@ const mangoStore = create<MangoStore>()(
             const client = initMangoClient(provider, {
               prioritizationFee: priorityFee,
               fallbackOracleConfig: FALLBACK_ORACLES,
-              multipleConnections: [new Connection(LITE_RPC_URL)],
+              multipleConnections: backupConnections,
             })
 
             set((s) => {
@@ -829,7 +830,7 @@ const mangoStore = create<MangoStore>()(
           const newClient = initMangoClient(newProvider, {
             prioritizationFee: priorityFee,
             fallbackOracleConfig: FALLBACK_ORACLES,
-            multipleConnections: [new Connection(LITE_RPC_URL)],
+            multipleConnections: backupConnections,
           })
           set((state) => {
             state.connection = newConnection
@@ -889,7 +890,7 @@ const mangoStore = create<MangoStore>()(
           const newClient = initMangoClient(provider, {
             prioritizationFee: priorityFee,
             fallbackOracleConfig: FALLBACK_ORACLES,
-            multipleConnections: [new Connection(LITE_RPC_URL)],
+            multipleConnections: backupConnections,
           })
           set((state) => {
             state.priorityFee = feeEstimate
