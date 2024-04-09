@@ -154,7 +154,7 @@ export const fetchSwapChartPrices = async (
   daysToShow: string,
 ) => {
   if (!inputMint || !outputMint) return []
-  const interval = daysToShow === '1' ? '30m' : daysToShow === '7' ? '1H' : '4H'
+  const interval = daysToShow === '1' ? '30m' : daysToShow === '7' ? '1H' : '1D'
   const queryEnd = Math.floor(Date.now() / 1000)
   const queryStart = queryEnd - parseInt(daysToShow) * DAILY_SECONDS
   const inputQuery = `defi/history_price?address=${inputMint}&address_type=token&type=${interval}&time_from=${queryStart}&time_to=${queryEnd}`

@@ -9,7 +9,7 @@ const fetchRates = async () => {
     ).map((t) => {
       const isUsdcBorrow = t.name === 'JLP' || t.name === 'USDC'
       const outputMint = isUsdcBorrow ? USDC_MINT : SOL_MINT
-      return fetchSwapChartPrices(t.mint_address, outputMint, '30')
+      return fetchSwapChartPrices(t.mint_address, outputMint, '90')
     })
     const [jlpPrices, msolPrices, jitoPrices, bsolPrices] =
       await Promise.all(promises)
@@ -27,22 +27,22 @@ const fetchRates = async () => {
     const rateData: Record<string, number> = {}
     if (jlpPrices && jlpPrices?.length > 1) {
       rateData.jlp =
-        (12 * (jlpPrices[jlpPrices.length - 2].price - jlpPrices[0].price)) /
+        (4 * (jlpPrices[jlpPrices.length - 2].price - jlpPrices[0].price)) /
         jlpPrices[0].price
     }
     if (msolPrices && msolPrices?.length > 1) {
       rateData.msol =
-        (12 * (msolPrices[msolPrices.length - 2].price - msolPrices[0].price)) /
+        (4 * (msolPrices[msolPrices.length - 2].price - msolPrices[0].price)) /
         msolPrices[0].price
     }
     if (jitoPrices && jitoPrices?.length > 1) {
       rateData.jitosol =
-        (12 * (jitoPrices[jitoPrices.length - 2].price - jitoPrices[0].price)) /
+        (4 * (jitoPrices[jitoPrices.length - 2].price - jitoPrices[0].price)) /
         jitoPrices[0].price
     }
     if (bsolPrices && bsolPrices?.length > 1) {
       rateData.bsol =
-        (12 * (bsolPrices[bsolPrices.length - 2].price - bsolPrices[0].price)) /
+        (4 * (bsolPrices[bsolPrices.length - 2].price - bsolPrices[0].price)) /
         bsolPrices[0].price
     }
 
