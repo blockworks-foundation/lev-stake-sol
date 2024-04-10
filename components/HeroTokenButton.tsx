@@ -32,9 +32,35 @@ const HeroTokenButton = ({
       ? APY_Daily_Compound * 100
       : Math.max(estimatedNetAPYFor1xLev.APY, financialMetrics.APY)
 
+  const renderRateEmoji = (token: string, rate: number) => {
+    if (token.toLowerCase().includes('sol')) {
+      if (rate > 10 && rate < 20) {
+        return '🙂'
+      } else if (rate >= 20) {
+        return '🔥'
+      } else return '💀'
+    }
+    if (token === 'JLP') {
+      if (rate > 70 && rate < 200) {
+        return '🙂'
+      } else if (rate >= 200) {
+        return '🔥'
+      } else return '💀'
+    }
+    if (token === 'USDC') {
+      if (rate > 5 && rate < 10) {
+        return '😐'
+      } else if (rate >= 10 && rate < 20) {
+        return '🙂'
+      } else if (rate >= 20) {
+        return '🔥'
+      } else return '💀'
+    }
+  }
+
   return (
     <button
-      className={`inner-shadow-bottom default-transition w-full rounded-xl border border-th-bkg-3 bg-th-bkg-1 p-6 text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:bg-th-bkg-2 md:hover:focus-visible:border-th-fgd-4`}
+      className={`inner-shadow-bottom default-transition relative w-full rounded-xl border border-th-bkg-3 bg-th-bkg-1 p-6 text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:bg-th-bkg-2 md:hover:focus-visible:border-th-fgd-4`}
       onClick={onClick}
     >
       <div>
@@ -51,7 +77,7 @@ const HeroTokenButton = ({
           </div>
           <div className="flex flex-col items-center">
             <p className={`text-th-fgd-1`}>{formatTokenSymbol(tokenName)}</p>
-            <span className={`text-xl font-bold`}>
+            <span className={`text-2xl font-bold`}>
               {!groupLoaded ? (
                 <SheenLoader>
                   <div className={`h-6 w-10 bg-th-bkg-2`} />
@@ -71,6 +97,19 @@ const HeroTokenButton = ({
             ) : null}
           </div>
         </div>
+      </div>
+      <div
+        className="absolute left-0 top-0 h-0 w-0 rounded-tl-xl"
+        style={{
+          borderTopWidth: '100px',
+          borderRightWidth: '100px',
+          borderTopColor: 'var(--bkg-2)',
+          borderRightColor: 'transparent',
+        }}
+      >
+        <span className="absolute bottom-12 left-4 text-3xl">
+          {renderRateEmoji(tokenName, UiRate)}
+        </span>
       </div>
     </button>
   )
