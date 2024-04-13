@@ -126,7 +126,12 @@ function EditLeverageForm({
   )
 
   const liquidationPrice = useMemo(() => {
-    const price = Number(stakeBank?.uiPrice)
+    let price
+    if (borrowBank?.name == 'SOL') {
+      price = Number(stakeBank?.uiPrice) / Number(borrowBank?.uiPrice)
+    } else {
+      price = Number(stakeBank?.uiPrice)
+    }
     const borrowMaintLiabWeight = Number(borrowBank?.maintLiabWeight)
     const stakeMaintAssetWeight = Number(stakeBank?.maintAssetWeight)
     const loanOriginationFee = Number(borrowBank?.loanOriginationFeeRate)

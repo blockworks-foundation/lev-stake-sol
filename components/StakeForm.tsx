@@ -43,7 +43,7 @@ import useLeverageMax from 'hooks/useLeverageMax'
 import { sleep } from 'utils'
 import ButtonGroup from './forms/ButtonGroup'
 import Decimal from 'decimal.js'
-import { toUiDecimals } from '@blockworks-foundation/mango-v4'
+import { Bank, toUiDecimals } from '@blockworks-foundation/mango-v4'
 import useIpAddress from 'hooks/useIpAddress'
 import {
   ClientContextKeys,
@@ -129,7 +129,12 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
   }, [selectedToken, jlpGroup, lstGroup, clientContext])
 
   const liquidationPrice = useMemo(() => {
-    const price = Number(stakeBank?.uiPrice)
+    let price
+    if (borrowBank?.name == 'SOL') {
+      price = Number(stakeBank?.uiPrice) / Number(borrowBank?.uiPrice)
+    } else {
+      price = Number(stakeBank?.uiPrice)
+    }
     const borrowMaintLiabWeight = Number(borrowBank?.maintLiabWeight)
     const stakeMaintAssetWeight = Number(stakeBank?.maintAssetWeight)
     const loanOriginationFee = Number(borrowBank?.loanOriginationFeeRate)
@@ -189,7 +194,6 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
         (1 + priceDifference) * Number(inputAmount) * (leverage - 1)
       return borrowAmount
     }
-
   }, [leverage, borrowBank, stakeBank, inputAmount])
 
   const availableVaultBalance = useMemo(() => {
@@ -543,11 +547,13 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                                 : 'text-th-bkg-4'
                             }`}
                           >
-                            $
                             <FormatNumericValue
                               value={liquidationPrice}
                               decimals={3}
                             />
+                            {borrowBank?.name == ' USDC'
+                              ? ' USDC'
+                              : ` ${stakeBank?.name}/${borrowBank?.name}`}
                           </span>
                         </div>
                       </div>
