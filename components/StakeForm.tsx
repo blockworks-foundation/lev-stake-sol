@@ -43,7 +43,7 @@ import useLeverageMax from 'hooks/useLeverageMax'
 import { sleep } from 'utils'
 import ButtonGroup from './forms/ButtonGroup'
 import Decimal from 'decimal.js'
-import { Bank, toUiDecimals } from '@blockworks-foundation/mango-v4'
+import { toUiDecimals } from '@blockworks-foundation/mango-v4'
 import useIpAddress from 'hooks/useIpAddress'
 import {
   ClientContextKeys,
