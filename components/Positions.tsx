@@ -122,8 +122,13 @@ const PositionItem = ({
     }
   }, [acct, bank, jlpGroup, lstGroup])
 
-  const liqRatio = useMemo(() => {
-    const price = Number(bank?.uiPrice)
+  const liquidationPrice = useMemo(() => {
+    let price
+    if (borrowBank?.name == 'SOL') {
+      price = Number(bank?.uiPrice) / Number(borrowBank?.uiPrice)
+    } else {
+      price = Number(bank?.uiPrice)
+    }
     const borrowMaintLiabWeight = Number(borrowBank?.maintLiabWeight)
     const stakeMaintAssetWeight = Number(bank?.maintAssetWeight)
     const loanOriginationFee = Number(borrowBank?.loanOriginationFeeRate)
@@ -132,7 +137,7 @@ const PositionItem = ({
       ((borrowMaintLiabWeight * (1 + loanOriginationFee)) /
         stakeMaintAssetWeight) *
       (1 - 1 / leverage)
-    return liqPrice.toFixed(3)
+    return liqPrice.toFixed(2)
   }, [bank, borrowBank, leverage])
 
   const { financialMetrics, stakeBankDepositRate, borrowBankBorrowRate } =
@@ -312,7 +317,10 @@ const PositionItem = ({
               <p className="mb-1 text-th-fgd-4">Est. Liquidation Price</p>
               <div className="flex flex-wrap items-end">
                 <span className="mr-2 whitespace-nowrap text-xl font-bold text-th-fgd-1">
-                  ${liqRatio}
+                  {liquidationPrice}
+                  {borrowBank?.name == ' USDC'
+                    ? ' USDC'
+                    : ` ${bank?.name}/${borrowBank?.name}`}
                 </span>
               </div>
               {/* {liqPriceChangePercentage ? (
