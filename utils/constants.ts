@@ -52,6 +52,14 @@ export const STAKEABLE_TOKENS_DATA: {
     clientContext: 'lst',
     borrowToken: 'SOL',
   },
+  {
+    name: 'JSOL',
+    id: 1063,
+    active: true,
+    mint_address: '7Q2afV64in6N6SeZsAAB81TJzwDoD6zpqmHkzi9Dcavn',
+    clientContext: 'lst',
+    borrowToken: 'SOL',
+  },
 ]
 
 export type ClientContextKeys = 'lst' | 'jlp'
