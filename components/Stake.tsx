@@ -18,11 +18,16 @@ import Label from './forms/Label'
 import usePositions from 'hooks/usePositions'
 import { IconButton } from './shared/Button'
 import HeroTokenButton from './HeroTokenButton'
+import ButtonGroup from './forms/ButtonGroup'
 
 const set = mangoStore.getState().set
 
+export const SOL_YIELD = ['bSOL', 'MSOL', 'JitoSOL', 'JSOL']
+const USDC_YIELD = ['JLP', 'USDC']
+
 const Stake = () => {
   const [activeFormTab, setActiveFormTab] = useState('Add')
+  const [tokensToShow, setTokensToShow] = useState('All')
   const [showTokenSelect, setShowTokenSelect] = useState(false)
   const selectedToken = mangoStore((s) => s.selectedToken)
   const walletTokens = mangoStore((s) => s.wallet.tokens)
@@ -151,21 +156,36 @@ const Stake = () => {
             {selectableTokens.length ? (
               !selectedToken ? (
                 <>
-                  <h2 className="mb-3 text-center text-lg font-normal">
-                    Select token to Boost!
-                  </h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    {selectableTokens.map((token) => (
-                      <HeroTokenButton
-                        key={token}
-                        onClick={() =>
-                          set((state) => {
-                            state.selectedToken = token
-                          })
-                        }
-                        tokenName={token}
+                  <div className="mb-6 flex flex-col items-center">
+                    <h2 className="mb-1 text-lg font-normal">Earn yield in</h2>
+                    <div className="w-full">
+                      <ButtonGroup
+                        activeValue={tokensToShow}
+                        onChange={(p) => setTokensToShow(p)}
+                        values={['All', 'SOL', 'USDC']}
                       />
-                    ))}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {selectableTokens
+                      .filter((t) => {
+                        if (tokensToShow === 'SOL') {
+                          return SOL_YIELD.includes(t)
+                        } else if (tokensToShow === 'USDC') {
+                          return USDC_YIELD.includes(t)
+                        } else return t
+                      })
+                      .map((token) => (
+                        <HeroTokenButton
+                          key={token}
+                          onClick={() =>
+                            set((state) => {
+                              state.selectedToken = token
+                            })
+                          }
+                          tokenName={token}
+                        />
+                      ))}
                   </div>
                 </>
               ) : (
