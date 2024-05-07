@@ -109,7 +109,8 @@
   "resolutions": {
     "@coral-xyz/anchor": "^0.27.0",
     "eslint-config-next/eslint-import-resolver-typescript/tsconfig-paths/json5": "1.0.2",
-    "crypto-js": ">=4.1.1"
+    "crypto-js": ">=4.1.1",
+    "protobufjs": ">=7.2.5"
   },
   "lavamoat": {
     "allowScripts": {

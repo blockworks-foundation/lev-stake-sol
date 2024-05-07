@@ -14,6 +14,6 @@ export const DownTriangle = ({ size }: { size?: 'small' | 'large' }) => (
       size === 'small'
         ? 'border-l-[4px] border-r-[4px] border-t-[6.92px]'
         : 'border-l-[5px] border-r-[5px] border-t-[8.65px]'
-    } border-l-transparent border-r-transparent border-t-th-down`}
+    } border-t-th-down border-l-transparent border-r-transparent`}
   />
 )

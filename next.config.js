@@ -8,7 +8,12 @@ const nextConfig = {
     appDir: false,
   },
   images: {
-    domains: ['raw.githubusercontent.com', 'arweave.net', 'www.dual.finance', 'static.jup.ag'],
+    domains: [
+      'raw.githubusercontent.com',
+      'arweave.net',
+      'www.dual.finance',
+      'static.jup.ag',
+    ],
   },
   reactStrictMode: true,
   //proxy for openserum api cors
