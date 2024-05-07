@@ -18,6 +18,13 @@ const HomePage = () => {
   const setActiveTab = useCallback((tab: ActiveTab) => {
     return set((s) => {
       s.activeTab = tab
+      s.selectedToken = ''
+    })
+  }, [])
+
+  useEffect(() => {
+    set((s) => {
+      s.selectedToken = ''
     })
   }, [])
 
