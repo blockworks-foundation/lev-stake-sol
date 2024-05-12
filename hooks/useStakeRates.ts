@@ -11,8 +11,14 @@ const fetchRates = async () => {
       const outputMint = isUsdcBorrow ? USDC_MINT : SOL_MINT
       return fetchSwapChartPrices(t.mint_address, outputMint, '90')
     })
-    const [jlpPrices, msolPrices, jitoPrices, bsolPrices, jsolPrices] =
-      await Promise.all(promises)
+    const [
+      jlpPrices,
+      msolPrices,
+      jitoPrices,
+      bsolPrices,
+      jsolPrices,
+      infPrices,
+    ] = await Promise.all(promises)
 
     // may be null if the price range cannot be calculated
     /*
@@ -50,6 +56,11 @@ const fetchRates = async () => {
       rateData.jsol =
         (4 * (jsolPrices[jsolPrices.length - 2].price - jsolPrices[0].price)) /
         jsolPrices[0].price
+    }
+    if (infPrices && infPrices?.length > 1) {
+      rateData.inf =
+        (4 * (infPrices[infPrices.length - 2].price - infPrices[0].price)) /
+        infPrices[0].price
     }
     /*
     
