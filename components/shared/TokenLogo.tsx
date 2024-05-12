@@ -17,6 +17,7 @@ const TokenLogo = ({
     if (!bank) return ''
     const tokenSymbol = bank.name.toLowerCase()
     const hasCustomIcon = CUSTOM_TOKEN_ICONS[tokenSymbol]
+    console.log(tokenSymbol)
     if (hasCustomIcon) return `/icons/${tokenSymbol}.svg`
     let jupiterLogoURI
     if (mangoTokens?.length) {

@@ -233,6 +233,7 @@ export const CUSTOM_TOKEN_ICONS: { [key: string]: boolean } = {
   usdt: true,
   wbtcpo: true,
   'wbtc (portal)': true,
+  inf: true,
 }
 
 export const DEFAULT_FAVORITE_MKTS = [
