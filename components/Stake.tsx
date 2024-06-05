@@ -128,7 +128,7 @@ const Stake = () => {
               {activeFormTab === 'Add' ? 'Wallet Balance' : 'Position Size'}
             </p>
           </div>
-          <div>
+          <div className="h-full max-h-[500px] overflow-auto">
             {selectableTokens.map((token) => (
               <TokenSelect
                 key={token}
