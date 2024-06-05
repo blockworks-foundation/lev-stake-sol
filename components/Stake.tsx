@@ -22,7 +22,7 @@ import ButtonGroup from './forms/ButtonGroup'
 
 const set = mangoStore.getState().set
 
-export const SOL_YIELD = ['bSOL', 'MSOL', 'JitoSOL', 'JSOL', 'INF']
+export const SOL_YIELD = ['bSOL', 'MSOL', 'JitoSOL', 'JSOL', 'INF', 'hubSOL']
 const USDC_YIELD = ['JLP', 'USDC']
 
 const Stake = () => {

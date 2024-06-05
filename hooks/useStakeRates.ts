@@ -18,6 +18,7 @@ const fetchRates = async () => {
       bsolPrices,
       jsolPrices,
       infPrices,
+      hubSOLPrices,
     ] = await Promise.all(promises)
 
     // may be null if the price range cannot be calculated
@@ -61,6 +62,13 @@ const fetchRates = async () => {
       rateData.inf =
         (4 * (infPrices[infPrices.length - 2].price - infPrices[0].price)) /
         infPrices[0].price
+    }
+    if (hubSOLPrices && hubSOLPrices?.length > 1) {
+      rateData.hubsol =
+        (4 *
+          (hubSOLPrices[hubSOLPrices.length - 2].price -
+            hubSOLPrices[0].price)) /
+        hubSOLPrices[0].price
     }
     /*
     

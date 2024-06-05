@@ -68,6 +68,14 @@ export const STAKEABLE_TOKENS_DATA: {
     clientContext: 'lst',
     borrowToken: 'SOL',
   },
+  {
+    name: 'hubSOL',
+    id: 1153,
+    active: true,
+    mint_address: 'HUBsveNpjo5pWqNkH57QzxjQASdTVXcSK7bVKTSZtcSX',
+    clientContext: 'lst',
+    borrowToken: 'SOL',
+  },
 ]
 
 export type ClientContextKeys = 'lst' | 'jlp'
@@ -234,6 +242,7 @@ export const CUSTOM_TOKEN_ICONS: { [key: string]: boolean } = {
   wbtcpo: true,
   'wbtc (portal)': true,
   inf: true,
+  hubsol: true,
 }
 
 export const DEFAULT_FAVORITE_MKTS = [
