@@ -130,7 +130,8 @@
       "eslint-config-next>eslint-plugin-jsx-a11y>aria-query>@babel/runtime-corejs3>core-js-pure": false,
       "next-i18next>core-js": false,
       "react-tsparticles": true,
-      "tsparticles>tsparticles-engine": true
+      "tsparticles>tsparticles-engine": true,
+      "@switchboard-xyz/solana.js>@switchboard-xyz/common>helia>@libp2p/webrtc>node-datachannel": false
     }
   }
 }
