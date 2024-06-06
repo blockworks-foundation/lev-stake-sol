@@ -40,13 +40,11 @@ export default function useLeverageMax(selectedToken: string) {
 
       return max * 0.9 // Multiplied by 0.975 because you cant actually get to the end of the infinite geometric series?
     } else {
-      const conversionRate = borrowBank.uiPrice / stakeBank.uiPrice
+      const leverageFactor = 1 / (1 - x)
 
-      const y = 1 - conversionRate * stakeInitAssetWeight.toNumber()
+      const max = floorToDecimal(leverageFactor, 2).toNumber()
 
-      const max = floorToDecimal(1 + (x / y) * 0.9, 1).toNumber()
-
-      return max
+      return max * 0.9 // Multiplied by 0.975 because you cant actually get to the end of the infinite geometric series?
     }
   }, [stakeBank, borrowBank, selectedToken])
 
