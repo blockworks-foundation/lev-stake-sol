@@ -76,6 +76,14 @@ export const STAKEABLE_TOKENS_DATA: {
     clientContext: 'lst',
     borrowToken: 'SOL',
   },
+  {
+    name: 'dualSOL',
+    id: 1158,
+    active: true,
+    mint_address: 'DUAL6T9pATmQUFPYmrWq2BkkGdRxLtERySGScYmbHMER',
+    clientContext: 'lst',
+    borrowToken: 'SOL',
+  },
 ]
 
 export type ClientContextKeys = 'lst' | 'jlp'
@@ -243,6 +251,7 @@ export const CUSTOM_TOKEN_ICONS: { [key: string]: boolean } = {
   'wbtc (portal)': true,
   inf: true,
   hubsol: true,
+  dualsol: true,
 }
 
 export const DEFAULT_FAVORITE_MKTS = [
