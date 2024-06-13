@@ -138,7 +138,7 @@ export const unstakeAndSwap = async (
         (stakeAmountToRepay
           ? toNativeI80F48(stakeAmountToRepay, stakeBank.mintDecimals)
           : borrowed.abs().div(stakeBank.getAssetPrice())
-        ).toNumber() * 1.002,
+        ).toNumber() * 1.01,
       ),
       Math.ceil(toNativeI80F48(0.0001, stakeBank.mintDecimals).toNumber()),
     )
@@ -183,6 +183,7 @@ export const unstakeAndSwap = async (
     const [swapIxs, alts] = await createSwapIxs({
       client: client,
       group: group,
+      mangoAccount: mangoAccount,
       mangoAccountPk: mangoAccount.publicKey,
       owner: payer,
       inputMintPk: stakeBank.mint,
@@ -258,6 +259,7 @@ export const simpleSwap = async (
   const [swapIxs, alts] = await createSwapIxs({
     client: client,
     group: group,
+    mangoAccount: mangoAccount,
     mangoAccountPk: mangoAccount.publicKey,
     owner: payer,
     inputMintPk: inputBank?.mint,
@@ -384,7 +386,8 @@ export const stakeAndCreate = async (
     const [swapIxs, alts] = await createSwapIxs({
       client: client,
       group: group,
-      mangoAccountPk,
+      mangoAccount,
+      mangoAccountPk: mangoAccountPk,
       owner: payer,
       inputMintPk: borrowBank.mint,
       amountIn: borrowAmount,
@@ -566,9 +569,10 @@ const createDepositIx = async (
 const createSwapIxs = async ({
   client,
   group,
-  mangoAccountPk,
+  mangoAccount,
   owner,
   inputMintPk,
+  mangoAccountPk,
   amountIn,
   outputMintPk,
   userDefinedInstructions,
@@ -580,6 +584,7 @@ const createSwapIxs = async ({
 }: {
   client: MangoClient
   group: Group
+  mangoAccount: MangoAccount | undefined
   mangoAccountPk: PublicKey
   owner: PublicKey
   inputMintPk: PublicKey
@@ -591,7 +596,6 @@ const createSwapIxs = async ({
   swapHealthRemainingAccounts?: PublicKey[]
 }): Promise<[TransactionInstruction[], AddressLookupTableAccount[]]> => {
   const swapExecutingWallet = owner
-
   const inputBank: Bank = group.getFirstBankByMint(inputMintPk)
   const outputBank: Bank = group.getFirstBankByMint(outputMintPk)
 
@@ -715,6 +719,15 @@ const createSwapIxs = async ({
     ])
     .instruction()
 
+  const sequenceCheckIx = await client.program.methods
+    .sequenceCheck(mangoAccount?.sequenceNumber || 0)
+    .accounts({
+      group: group.publicKey,
+      account: mangoAccountPk,
+      owner: (client.program.provider as AnchorProvider).wallet.publicKey,
+    })
+    .instruction()
+
   const flashLoanBeginIx = await client.program.methods
     .flashLoanBegin([
       toNative(amountIn, inputBank.mintDecimals),
@@ -741,6 +754,7 @@ const createSwapIxs = async ({
   return [
     [
       ...preInstructions,
+      sequenceCheckIx,
       flashLoanBeginIx,
       ...userDefinedInstructions.filter((ix) => ix.keys.length > 2),
       flashLoanEndIx,
