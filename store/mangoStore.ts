@@ -82,7 +82,7 @@ const MANGO_BOOST_ID = new PublicKey(
   'zF2vSz6V9g1YHGmfrzsY497NJzbRr84QUrPry4bLQ25',
 )
 
-export const LITE_RPC_URL = 'https://api.mngo.cloud/lite-rpc/v1/'
+export const LITE_RPC_URL = `https://rpc.mngo.cloud/${process.env.NEXT_PUBLIC_LITE_RPC_TOKEN}`
 const backupConnections = [new Connection(LITE_RPC_URL, 'recent')]
 
 const GROUP_JLP = new PublicKey('AKeMSYiJekyKfwCc3CUfVNDVAiqk9FfbQVMY3G7RUZUf')
