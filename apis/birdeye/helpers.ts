@@ -159,6 +159,7 @@ export const fetchSwapChartPrices = async (
   const queryStart = queryEnd - parseInt(daysToShow) * DAILY_SECONDS
   const inputQuery = `defi/history_price?address=${inputMint}&address_type=token&type=${interval}&time_from=${queryStart}&time_to=${queryEnd}`
   const outputQuery = `defi/history_price?address=${outputMint}&address_type=token&type=${interval}&time_from=${queryStart}&time_to=${queryEnd}`
+
   try {
     const [inputResponse, outputResponse] = await Promise.all([
       makeApiRequest(inputQuery),
@@ -197,4 +198,45 @@ export const fetchSwapChartPrices = async (
     console.log('failed to fetch swap chart data from birdeye', e)
     return []
   }
+}
+
+export interface OHLCVPairItem {
+  o: number
+  c: number
+  h: number
+  l: number
+  baseAddress: string
+  quoteAddress: string
+  vBase: number
+  vQuote: number
+  type: string
+  unixTime: number
+}
+
+
+export const fetchOHLCPair = async (
+  baseMint: string | undefined,
+  quoteMint: string | undefined,
+  daysToShow: string,
+) => {
+  if (!baseMint || !quoteMint) return []
+  const interval = daysToShow === '1' ? '30m' : daysToShow === '7' ? '1H' : '1D'
+  const queryEnd = Math.floor(Date.now() / 1000)
+  const queryStart = queryEnd - parseInt(daysToShow) * DAILY_SECONDS
+  const query = `defi/ohlcv/base_quote?base_address=${baseMint}&quote_address=${quoteMint}&type=${interval}&time_from=${queryStart}&time_to=${queryEnd}`
+
+  try {
+    const ohlcv = await makeApiRequest(query);
+
+    if (
+      ohlcv.success &&
+      ohlcv?.data?.items?.length
+    ) {
+      return ohlcv.data.items as OHLCVPairItem[];
+    } else return []
+  } catch (e) {
+    console.log('failed to fetch swap chart data from birdeye', e)
+    return []
+  }
+
 }

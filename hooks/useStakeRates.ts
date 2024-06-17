@@ -1,6 +1,33 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchSwapChartPrices } from 'apis/birdeye/helpers'
+import { OHLCVPairItem, fetchOHLCPair } from 'apis/birdeye/helpers'
 import { SOL_MINT, STAKEABLE_TOKENS_DATA, USDC_MINT } from 'utils/constants'
+
+const avgOHCL = (i: OHLCVPairItem) => (i.c + i.o) * .5;
+
+const calculateRate = (ohlcvs: OHLCVPairItem[]) => {
+  if (ohlcvs && ohlcvs?.length > 6) {
+    const startSamples = [
+      avgOHCL(ohlcvs[0]),
+      avgOHCL(ohlcvs[1]),
+      avgOHCL(ohlcvs[2]),
+      avgOHCL(ohlcvs[3]),
+      avgOHCL(ohlcvs[4]),
+      avgOHCL(ohlcvs[5])];
+    // 67th percentile of first 6 days
+    const start = startSamples.sort()[startSamples.length - 3];
+    const endSamples = [
+      avgOHCL(ohlcvs[ohlcvs.length - 1]),
+      avgOHCL(ohlcvs[ohlcvs.length - 2]),
+      avgOHCL(ohlcvs[ohlcvs.length - 3]),
+      avgOHCL(ohlcvs[ohlcvs.length - 4]),
+      avgOHCL(ohlcvs[ohlcvs.length - 5]),
+      avgOHCL(ohlcvs[ohlcvs.length - 6])];
+    // 67th percentile of last 6 days
+    const end = endSamples.sort()[endSamples.length - 3];
+    // 4x bc. of 90 days sample interval, +5% bc. of 6 day percentile window
+    return { rate: 4 * 1.05 * (end - start)/start, start: [start, ...startSamples], end: [end, ...endSamples]};
+  }
+}
 
 const fetchRates = async () => {
   try {
@@ -8,8 +35,8 @@ const fetchRates = async () => {
       (token) => token.mint_address !== USDC_MINT,
     ).map((t) => {
       const isUsdcBorrow = t.name === 'JLP' || t.name === 'USDC'
-      const outputMint = isUsdcBorrow ? USDC_MINT : SOL_MINT
-      return fetchSwapChartPrices(t.mint_address, outputMint, '90')
+      const quoteMint = isUsdcBorrow ? USDC_MINT : SOL_MINT
+      return fetchOHLCPair(t.mint_address, quoteMint, '90')
     })
     const [
       jlpPrices,
@@ -31,61 +58,15 @@ const fetchRates = async () => {
     
     */
 
-    const rateData: Record<string, number> = {}
-    if (jlpPrices && jlpPrices?.length > 1) {
-      rateData.jlp =
-        (4 * (jlpPrices[jlpPrices.length - 2].price - jlpPrices[0].price)) /
-        jlpPrices[0].price
-    }
-    if (msolPrices && msolPrices?.length > 1) {
-      rateData.msol =
-        (4 * (msolPrices[msolPrices.length - 2].price - msolPrices[0].price)) /
-        msolPrices[0].price
-    }
-    if (jitoPrices && jitoPrices?.length > 1) {
-      rateData.jitosol =
-        (4 * (jitoPrices[jitoPrices.length - 2].price - jitoPrices[0].price)) /
-        jitoPrices[0].price
-    }
-    if (bsolPrices && bsolPrices?.length > 1) {
-      rateData.bsol =
-        (4 * (bsolPrices[bsolPrices.length - 2].price - bsolPrices[0].price)) /
-        bsolPrices[0].price
-    }
 
-    if (jsolPrices && jsolPrices?.length > 1) {
-      rateData.jsol =
-        (4 * (jsolPrices[jsolPrices.length - 2].price - jsolPrices[0].price)) /
-        jsolPrices[0].price
-    }
-    if (infPrices && infPrices?.length > 1) {
-      rateData.inf =
-        (4 * (infPrices[infPrices.length - 2].price - infPrices[0].price)) /
-        infPrices[0].price
-    }
-    if (hubSOLPrices && hubSOLPrices?.length > 1) {
-      rateData.hubsol =
-        (4 *
-          (hubSOLPrices[hubSOLPrices.length - 2].price -
-            hubSOLPrices[0].price)) /
-        hubSOLPrices[0].price
-    }
-    /*
-    
-    if (msolRange) {
-      rateData.msol = calcYield(msolRange)?.apy
-    }
-    if (jitoRange) {
-      rateData.jitosol = calcYield(jitoRange)?.apy
-    }
-    if (bsolRange) {
-      rateData.bsol = calcYield(bsolRange)?.apy
-    }
-    if (lidoRange) {
-      rateData.stsol = calcYield(lidoRange)?.apy
-    }
-    
-    */
+    const rateData: Record<string, number> = {}
+    rateData.jlp = calculateRate(jlpPrices)?.rate ?? rateData.jlp;
+    rateData.msol = calculateRate(msolPrices)?.rate ?? rateData.msol;
+    rateData.jitosol = calculateRate(jitoPrices)?.rate ?? rateData.jitosol;
+    rateData.bsol = calculateRate(bsolPrices)?.rate ?? rateData.bsol;
+    rateData.jsol = calculateRate(jsolPrices)?.rate ?? rateData.jsol;
+    rateData.inf = calculateRate(infPrices)?.rate ?? rateData.inf;
+    rateData.hubsol = calculateRate(hubSOLPrices)?.rate ?? rateData.hubsol;
 
     return rateData
   } catch (e) {
@@ -95,8 +76,8 @@ const fetchRates = async () => {
 
 export default function useStakeRates() {
   const response = useQuery(['stake-rates'], () => fetchRates(), {
-    cacheTime: 1000 * 60 * 5,
-    staleTime: 1000 * 60,
+    cacheTime: 0*1000 * 60 * 5,
+    staleTime: 0*1000 * 60,
     retry: 3,
     refetchOnWindowFocus: true,
   })
