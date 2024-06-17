@@ -24,8 +24,10 @@ const calculateRate = (ohlcvs: OHLCVPairItem[]) => {
       avgOHCL(ohlcvs[ohlcvs.length - 6])];
     // 67th percentile of last 6 days
     const end = endSamples.sort()[endSamples.length - 3];
-    // 4x bc. of 90 days sample interval, +5% bc. of 6 day percentile window
-    return { rate: 4 * 1.05 * (end - start)/start, start: [start, ...startSamples], end: [end, ...endSamples]};
+
+    // percentiles cut off 3 samples at the start and 2 at the end
+    const annualized = (365/(ohlcvs.length - 5));
+    return { rate: annualized * (end - start)/start, start: [start, ...startSamples], end: [end, ...endSamples]};
   }
 }
 
@@ -76,8 +78,8 @@ const fetchRates = async () => {
 
 export default function useStakeRates() {
   const response = useQuery(['stake-rates'], () => fetchRates(), {
-    cacheTime: 0*1000 * 60 * 5,
-    staleTime: 0*1000 * 60,
+    cacheTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60,
     retry: 3,
     refetchOnWindowFocus: true,
   })
