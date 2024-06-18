@@ -2,38 +2,33 @@ import { useQuery } from '@tanstack/react-query'
 import { OHLCVPairItem, fetchOHLCPair } from 'apis/birdeye/helpers'
 import { SOL_MINT, STAKEABLE_TOKENS_DATA, USDC_MINT } from 'utils/constants'
 
-const avgOHCL = (i: OHLCVPairItem) => (i.c + i.o) * 0.5
+const avgOpenClose = (i: OHLCVPairItem) => (i.c + i.o) * .5;
+const sum = (x: number, y: number) => x + y;
+const ANNUAL_SECONDS = 60 * 60 * 24 * 365;
 
 const calculateRate = (ohlcvs: OHLCVPairItem[]) => {
-  if (ohlcvs && ohlcvs?.length > 6) {
-    const startSamples = [
-      avgOHCL(ohlcvs[0]),
-      avgOHCL(ohlcvs[1]),
-      avgOHCL(ohlcvs[2]),
-      avgOHCL(ohlcvs[3]),
-      avgOHCL(ohlcvs[4]),
-      avgOHCL(ohlcvs[5]),
-    ]
-    // 67th percentile of first 6 days
-    const start = startSamples.sort()[startSamples.length - 3]
-    const endSamples = [
-      avgOHCL(ohlcvs[ohlcvs.length - 1]),
-      avgOHCL(ohlcvs[ohlcvs.length - 2]),
-      avgOHCL(ohlcvs[ohlcvs.length - 3]),
-      avgOHCL(ohlcvs[ohlcvs.length - 4]),
-      avgOHCL(ohlcvs[ohlcvs.length - 5]),
-      avgOHCL(ohlcvs[ohlcvs.length - 6]),
-    ]
-    // 67th percentile of last 6 days
-    const end = endSamples.sort()[endSamples.length - 3]
 
-    // percentiles cut off 3 samples at the start and 2 at the end
-    const annualized = 365 / (ohlcvs.length - 5)
-    return {
-      rate: (annualized * (end - start)) / start,
-      start: [start, ...startSamples],
-      end: [end, ...endSamples],
-    }
+
+  if (ohlcvs && ohlcvs?.length > 30) {
+
+    // basic least squares regression:
+    // https://www.ncl.ac.uk/webtemplate/ask-assets/external/maths-resources/statistics/regression-and-correlation/simple-linear-regression.html
+    const xs = ohlcvs.map(o => o.unixTime);
+    const ys = ohlcvs.map(avgOpenClose);
+    const x_sum = xs.reduce(sum, 0);
+    const y_sum = ys.reduce(sum, 0);
+    const x_mean = x_sum / xs.length;
+    const y_mean = y_sum / ys.length;
+    const S_xy = xs.map((xi, i) => (xi - x_mean) * (ys[i] - y_mean)).reduce(sum, 0);
+    const S_xx = xs.map((xi) => (xi - x_mean) ** 2).reduce(sum, 0);
+    const b = S_xy / S_xx;
+    const a = y_mean - b * x_mean;
+
+    const start = a + b * xs[0];
+    const end = a + b * (xs[0] + ANNUAL_SECONDS);
+    return { rate: (end - start)/start, start, end, a, b, S_xx, S_xy};
+  } else {
+    return { rate: 0.082 }; // fixed rate to avoid outliers
   }
 }
 
@@ -41,10 +36,11 @@ const fetchRates = async () => {
   try {
     const promises = STAKEABLE_TOKENS_DATA.filter(
       (token) => token.mint_address !== USDC_MINT,
-    ).map((t) => {
+    ).map(async (t) => {
       const isUsdcBorrow = t.name === 'JLP' || t.name === 'USDC'
       const quoteMint = isUsdcBorrow ? USDC_MINT : SOL_MINT
-      return fetchOHLCPair(t.mint_address, quoteMint, '90')
+      const dailyCandles = await fetchOHLCPair(t.mint_address, quoteMint, '90');
+      return dailyCandles;
     })
     const [
       jlpPrices,
