@@ -76,6 +76,38 @@ export const STAKEABLE_TOKENS_DATA: {
     clientContext: 'lst',
     borrowToken: 'SOL',
   },
+  {
+    name: 'digitSOL',
+    id: 1161,
+    active: true,
+    mint_address: 'D1gittVxgtszzY4fMwiTfM4Hp7uL5Tdi1S9LYaepAUUm',
+    clientContext: 'lst',
+    borrowToken: 'SOL',
+  },
+  {
+    name: 'dualSOL',
+    id: 1158,
+    active: true,
+    mint_address: 'DUAL6T9pATmQUFPYmrWq2BkkGdRxLtERySGScYmbHMER',
+    clientContext: 'lst',
+    borrowToken: 'SOL',
+  },
+  {
+    name: 'mangoSOL',
+    id: 1162,
+    active: true,
+    mint_address: 'MangmsBgFqJhW4cLUR9LxfVgMboY1xAoP8UUBiWwwuY',
+    clientContext: 'lst',
+    borrowToken: 'SOL',
+  },
+  {
+    name: 'compassSOL',
+    id: 1163,
+    active: true,
+    mint_address: 'Comp4ssDzXcLeu2MnLuGNNFC4cmLPMng8qWHPvzAMU1h',
+    clientContext: 'lst',
+    borrowToken: 'SOL',
+  },
 ]
 
 export type ClientContextKeys = 'lst' | 'jlp'
@@ -243,6 +275,10 @@ export const CUSTOM_TOKEN_ICONS: { [key: string]: boolean } = {
   'wbtc (portal)': true,
   inf: true,
   hubsol: true,
+  mangosol: true,
+  dualsol: true,
+  digitsol: true,
+  compasssol: true,
 }
 
 export const DEFAULT_FAVORITE_MKTS = [
