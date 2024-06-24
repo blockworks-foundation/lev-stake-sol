@@ -1,10 +1,11 @@
 import Image from 'next/image'
 import { formatTokenSymbol } from 'utils/tokens'
-import useBankRates from 'hooks/useBankRates'
-import useLeverageMax from 'hooks/useLeverageMax'
 import mangoStore from '@store/mangoStore'
 import SheenLoader from './shared/SheenLoader'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { SOL_YIELD } from './Stake'
+import useStakeableTokens, { StakeableToken } from 'hooks/useStakeableTokens'
+import { useMemo } from 'react'
 
 const TokenButton = ({
   onClick,
@@ -13,25 +14,15 @@ const TokenButton = ({
   tokenName: string
   onClick: () => void
 }) => {
-  const leverage = useLeverageMax(tokenName)
   const groupLoaded = mangoStore((s) => s.groupLoaded)
+  const { stakeableTokens } = useStakeableTokens()
 
-  const { stakeBankDepositRate, financialMetrics } = useBankRates(
-    tokenName,
-    leverage,
-  )
+  const tokenInfo: StakeableToken | undefined = useMemo(() => {
+    if (!tokenName || !stakeableTokens?.length) return
+    return stakeableTokens.find((token) => token.token.symbol === tokenName)
+  }, [tokenName, stakeableTokens])
 
-  const { financialMetrics: estimatedNetAPYFor1xLev } = useBankRates(
-    tokenName,
-    1,
-  )
-
-  const APY_Daily_Compound =
-    Math.pow(1 + Number(stakeBankDepositRate) / 365, 365) - 1
-  const UiRate =
-    tokenName === 'USDC'
-      ? APY_Daily_Compound * 100
-      : Math.max(estimatedNetAPYFor1xLev.APY, financialMetrics.APY)
+  const apy = tokenInfo?.financialMetrics?.APY
 
   return (
     <button
@@ -59,21 +50,58 @@ const TokenButton = ({
                 <SheenLoader>
                   <div className={`h-5 w-10 bg-th-bkg-2`} />
                 </SheenLoader>
-              ) : !UiRate || isNaN(UiRate) ? (
+              ) : !apy || isNaN(apy) ? (
                 <span className="text-base font-normal text-th-fgd-4">
                   Rate Unavailable
                 </span>
               ) : tokenName === 'USDC' ? (
                 <>
-                  {`${UiRate.toFixed(2)}%`}{' '}
-                  <span className="text-sm font-normal text-th-fgd-4">APY</span>
+                  {`${apy.toFixed(2)}%`}
+                  <div className="mt-1 flex items-center">
+                    <Image
+                      className="mr-1"
+                      src={`/icons/usdc.svg`}
+                      width={14}
+                      height={14}
+                      alt="USDC Logo"
+                    />
+                    <span className="text-sm font-normal text-th-fgd-4">
+                      Earn USDC
+                    </span>
+                  </div>
                 </>
               ) : (
                 <>
-                  {`${UiRate.toFixed(2)}%`}{' '}
-                  <span className="text-sm font-normal text-th-fgd-4">
-                    Max APY
-                  </span>
+                  {`${apy.toFixed(2)}%`}
+                  <div className="mt-1">
+                    {SOL_YIELD.includes(tokenName) ? (
+                      <div className="flex items-center">
+                        <Image
+                          className="mr-1"
+                          src={`/icons/sol.svg`}
+                          width={14}
+                          height={14}
+                          alt="SOL Logo"
+                        />
+                        <span className="text-sm font-normal text-th-fgd-4">
+                          Earn SOL
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center">
+                        <Image
+                          className="mr-1"
+                          src={`/icons/usdc.svg`}
+                          width={14}
+                          height={14}
+                          alt="USDC Logo"
+                        />
+                        <span className="text-sm font-normal text-th-fgd-4">
+                          Earn USDC
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </>
               )}
             </span>

@@ -4,109 +4,189 @@ import { PublicKey } from '@solana/web3.js'
 export const JLP_BORROW_TOKEN = 'USDC'
 export const LST_BORROW_TOKEN = 'SOL'
 
-export const STAKEABLE_TOKENS_DATA: {
+export type StakeableTokensData = {
   name: string
+  symbol: string
+  description: string
   id: number
   active: boolean
   mint_address: string
   clientContext: ClientContextKeys
   borrowToken: 'USDC' | 'SOL'
-}[] = [
+  links: {
+    website: string | undefined
+    twitter: string | undefined
+  }
+}
+
+export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
   {
-    name: 'JLP',
+    name: 'Jupiter Perps LP',
+    symbol: 'JLP',
+    description: '',
     id: 1,
     active: true,
     mint_address: '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4',
     clientContext: 'jlp',
     borrowToken: 'USDC',
+    links: {
+      website: '',
+      twitter: '',
+    },
   },
   {
-    name: 'USDC',
+    name: 'USD Coin',
+    symbol: 'USDC',
+    description: '',
     id: 0,
     active: true,
     mint_address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
     clientContext: 'jlp',
     borrowToken: 'USDC',
+    links: {
+      website: '',
+      twitter: '',
+    },
   },
   {
-    name: 'MSOL',
+    name: 'Marinade Staked SOL',
+    symbol: 'MSOL',
+    description: '',
     id: 521,
     active: true,
     mint_address: 'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So',
     clientContext: 'lst',
     borrowToken: 'SOL',
+    links: {
+      website: '',
+      twitter: '',
+    },
   },
   {
-    name: 'JitoSOL',
+    name: 'Jito Staked SOL',
+    symbol: 'JitoSOL',
+    description: '',
     id: 621,
     active: true,
     mint_address: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn',
     clientContext: 'lst',
     borrowToken: 'SOL',
+    links: {
+      website: '',
+      twitter: '',
+    },
   },
   {
-    name: 'bSOL',
+    name: 'BlazeStake Staked SOL',
+    symbol: 'bSOL',
+    description: '',
     id: 721,
     active: true,
     mint_address: 'bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1',
     clientContext: 'lst',
     borrowToken: 'SOL',
+    links: {
+      website: '',
+      twitter: '',
+    },
   },
   {
-    name: 'JSOL',
+    name: 'JPool Staked SOL',
+    symbol: 'JSOL',
+    description: '',
     id: 1063,
     active: true,
     mint_address: '7Q2afV64in6N6SeZsAAB81TJzwDoD6zpqmHkzi9Dcavn',
     clientContext: 'lst',
     borrowToken: 'SOL',
+    links: {
+      website: '',
+      twitter: '',
+    },
   },
   {
-    name: 'INF',
+    name: 'Sanctum Infinity',
+    symbol: 'INF',
+    description: '',
     id: 1105,
     active: true,
     mint_address: '5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm',
     clientContext: 'lst',
     borrowToken: 'SOL',
+    links: {
+      website: '',
+      twitter: '',
+    },
   },
   {
-    name: 'hubSOL',
+    name: 'SolanaHub Staked SOL',
+    symbol: 'hubSOL',
+    description: '',
     id: 1153,
     active: true,
     mint_address: 'HUBsveNpjo5pWqNkH57QzxjQASdTVXcSK7bVKTSZtcSX',
     clientContext: 'lst',
     borrowToken: 'SOL',
+    links: {
+      website: '',
+      twitter: '',
+    },
   },
   {
-    name: 'digitSOL',
+    name: 'Simpdigit Staked SOL',
+    symbol: 'digitSOL',
+    description: '',
     id: 1161,
     active: true,
     mint_address: 'D1gittVxgtszzY4fMwiTfM4Hp7uL5Tdi1S9LYaepAUUm',
     clientContext: 'lst',
     borrowToken: 'SOL',
+    links: {
+      website: '',
+      twitter: '',
+    },
   },
   {
-    name: 'dualSOL',
+    name: 'Dual Finance Staked SOL',
+    symbol: 'dualSOL',
+    description: '',
     id: 1158,
     active: true,
     mint_address: 'DUAL6T9pATmQUFPYmrWq2BkkGdRxLtERySGScYmbHMER',
     clientContext: 'lst',
     borrowToken: 'SOL',
+    links: {
+      website: '',
+      twitter: '',
+    },
   },
   {
-    name: 'mangoSOL',
+    name: 'Mango Staked SOL',
+    symbol: 'mangoSOL',
+    description: '',
     id: 1162,
     active: true,
     mint_address: 'MangmsBgFqJhW4cLUR9LxfVgMboY1xAoP8UUBiWwwuY',
     clientContext: 'lst',
     borrowToken: 'SOL',
+    links: {
+      website: '',
+      twitter: '',
+    },
   },
   {
-    name: 'compassSOL',
+    name: 'Solana Compass Staked SOL',
+    symbol: 'compassSOL',
+    description: '',
     id: 1163,
     active: true,
     mint_address: 'Comp4ssDzXcLeu2MnLuGNNFC4cmLPMng8qWHPvzAMU1h',
     clientContext: 'lst',
     borrowToken: 'SOL',
+    links: {
+      website: '',
+      twitter: '',
+    },
   },
 ]
 
@@ -114,7 +194,7 @@ export type ClientContextKeys = 'lst' | 'jlp'
 
 export const STAKEABLE_TOKENS = STAKEABLE_TOKENS_DATA.filter(
   (d) => d.active,
-).map((d) => d.name)
+).map((d) => d.symbol)
 
 export const SHOW_INACTIVE_POSITIONS_KEY = 'showInactivePositions-0.1'
 // end

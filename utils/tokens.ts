@@ -80,6 +80,6 @@ export const getStakableTokensDataForMint = (mintPk: string) => {
   return STAKEABLE_TOKENS_DATA.find((x) => x.mint_address === mintPk)!
 }
 
-export const getStakableTokensDataForTokenName = (tokenName: string) => {
-  return STAKEABLE_TOKENS_DATA.find((x) => x.name === tokenName)!
+export const getStakableTokensDataForTokenName = (tokenSymbol: string) => {
+  return STAKEABLE_TOKENS_DATA.find((x) => x.symbol === tokenSymbol)!
 }

@@ -1,7 +1,5 @@
 import Image from 'next/image'
 import { formatTokenSymbol } from 'utils/tokens'
-import useBankRates from 'hooks/useBankRates'
-import useLeverageMax from 'hooks/useLeverageMax'
 import mangoStore from '@store/mangoStore'
 import SheenLoader from './shared/SheenLoader'
 import { useMemo } from 'react'
@@ -9,48 +7,34 @@ import FormatNumericValue from './shared/FormatNumericValue'
 import { walletBalanceForToken } from './StakeForm'
 import usePositions from 'hooks/usePositions'
 import { ClientContextKeys } from 'utils/constants'
+import { StakeableToken } from 'hooks/useStakeableTokens'
+import { SOL_YIELD } from './Stake'
 
 const TokenSelect = ({
   onClick,
-  tokenName,
+  tokenInfo,
   clientContext,
   showPositionSize,
 }: {
-  tokenName: string
+  tokenInfo: StakeableToken
   onClick: () => void
   clientContext: ClientContextKeys
   showPositionSize?: boolean
 }) => {
-  const leverage = useLeverageMax(tokenName)
+  const { symbol } = tokenInfo.token
+  const { APY } = tokenInfo.financialMetrics
   const groupLoaded = mangoStore((s) => s.groupLoaded)
   const walletTokens = mangoStore((s) => s.wallet.tokens)
   const { positions } = usePositions()
 
-  const { stakeBankDepositRate, financialMetrics } = useBankRates(
-    tokenName,
-    leverage,
-  )
-
-  const { financialMetrics: estimatedNetAPYFor1xLev } = useBankRates(
-    tokenName,
-    1,
-  )
-
   const walletBalance = useMemo(() => {
-    return walletBalanceForToken(walletTokens, tokenName, clientContext)
-  }, [walletTokens, tokenName, clientContext])
+    return walletBalanceForToken(walletTokens, symbol, clientContext)
+  }, [walletTokens, symbol, clientContext])
 
   const position = useMemo(() => {
     if (!positions || !positions?.length) return
-    return positions.find((position) => position.bank.name === tokenName)
-  }, [positions, tokenName])
-
-  const APY_Daily_Compound =
-    Math.pow(1 + Number(stakeBankDepositRate) / 365, 365) - 1
-  const UiRate =
-    tokenName === 'USDC'
-      ? APY_Daily_Compound * 100
-      : Math.max(estimatedNetAPYFor1xLev.APY, financialMetrics.APY)
+    return positions.find((position) => position.bank.name === symbol)
+  }, [positions, symbol])
 
   return (
     <button
@@ -63,7 +47,7 @@ const TokenSelect = ({
             className={`inner-shadow-bottom-sm flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-th-bkg-2 bg-gradient-to-b from-th-bkg-1 to-th-bkg-2`}
           >
             <Image
-              src={`/icons/${tokenName.toLowerCase()}.svg`}
+              src={`/icons/${symbol.toLowerCase()}.svg`}
               width={24}
               height={24}
               alt="Select a token"
@@ -71,7 +55,7 @@ const TokenSelect = ({
           </div>
           <div className="text-left">
             <p className={`text-sm text-th-fgd-1 lg:text-base`}>
-              {formatTokenSymbol(tokenName)}
+              {formatTokenSymbol(symbol)}
             </p>
             <span
               className={`text-sm font-bold leading-none text-th-fgd-1 sm:text-lg`}
@@ -80,19 +64,56 @@ const TokenSelect = ({
                 <SheenLoader>
                   <div className={`h-5 w-10 bg-th-bkg-2`} />
                 </SheenLoader>
-              ) : !UiRate || isNaN(UiRate) ? (
+              ) : !APY || isNaN(APY) ? (
                 'Rate Unavailable'
-              ) : tokenName === 'USDC' ? (
+              ) : symbol === 'USDC' ? (
                 <>
-                  {`${UiRate.toFixed(2)}%`}{' '}
-                  <span className="text-sm font-normal text-th-fgd-4">APY</span>
+                  {`${APY.toFixed(2)}%`}
+                  <div className="mt-1 flex items-center">
+                    <Image
+                      className="mr-1"
+                      src={`/icons/usdc.svg`}
+                      width={14}
+                      height={14}
+                      alt="USDC Logo"
+                    />
+                    <span className="text-sm font-normal text-th-fgd-4">
+                      Earn USDC
+                    </span>
+                  </div>
                 </>
               ) : (
                 <>
-                  {`${UiRate.toFixed(2)}%`}{' '}
-                  <span className="text-sm font-normal text-th-fgd-4">
-                    Max APY
-                  </span>
+                  {`${APY.toFixed(2)}%`}
+                  <div className="mt-1">
+                    {SOL_YIELD.includes(symbol) ? (
+                      <div className="flex items-center">
+                        <Image
+                          className="mr-1"
+                          src={`/icons/sol.svg`}
+                          width={14}
+                          height={14}
+                          alt="SOL Logo"
+                        />
+                        <span className="text-sm font-normal text-th-fgd-4">
+                          Earn SOL
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center">
+                        <Image
+                          className="mr-1"
+                          src={`/icons/usdc.svg`}
+                          width={14}
+                          height={14}
+                          alt="USDC Logo"
+                        />
+                        <span className="text-sm font-normal text-th-fgd-4">
+                          Earn USDC
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </>
               )}
             </span>
