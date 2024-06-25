@@ -2,8 +2,11 @@ import useMangoGroup from 'hooks/useMangoGroup'
 import { useMemo, useState } from 'react'
 import { SHOW_INACTIVE_POSITIONS_KEY } from 'utils/constants'
 import TokenLogo from './shared/TokenLogo'
-import Button from './shared/Button'
-import { formatTokenSymbol } from 'utils/tokens'
+import Button, { IconButton } from './shared/Button'
+import {
+  formatTokenSymbol,
+  getStakableTokensDataForTokenName,
+} from 'utils/tokens'
 import mangoStore, { ActiveTab } from '@store/mangoStore'
 import Switch from './forms/Switch'
 import useLocalStorageState from 'hooks/useLocalStorageState'
@@ -15,10 +18,16 @@ import {
 } from '@blockworks-foundation/mango-v4'
 import useBankRates from 'hooks/useBankRates'
 import usePositions from 'hooks/usePositions'
-import { AdjustmentsHorizontalIcon } from '@heroicons/react/20/solid'
+import {
+  AdjustmentsHorizontalIcon,
+  ArrowLeftIcon,
+} from '@heroicons/react/20/solid'
 import EditLeverageModal from './modals/EditLeverageModal'
 import Tooltip from './shared/Tooltip'
 import { useWallet } from '@solana/wallet-adapter-react'
+import UnstakeForm from './UnstakeForm'
+import StakeForm from './StakeForm'
+import DespositForm from './DepositForm'
 
 const set = mangoStore.getState().set
 
@@ -35,18 +44,20 @@ const Positions = ({
 }: {
   setActiveTab: (tab: ActiveTab) => void
 }) => {
+  const selectedToken = mangoStore((s) => s.selectedToken)
   const [showInactivePositions, setShowInactivePositions] =
-    useLocalStorageState(SHOW_INACTIVE_POSITIONS_KEY, true)
+    useLocalStorageState(SHOW_INACTIVE_POSITIONS_KEY, false)
   const { positions, jlpBorrowBank, lstBorrowBank } = usePositions(
     showInactivePositions,
   )
+  const [showAddRemove, setShowAddRemove] = useState('')
 
   const numberOfPositions = useMemo(() => {
     if (!positions.length) return 0
     return positions.filter((pos) => pos.stakeBalance > 0).length
   }, [positions])
 
-  return (
+  return !showAddRemove ? (
     <>
       <div className="mb-2 flex items-center justify-between rounded-lg border-2 border-th-fgd-1 bg-th-bkg-1 px-6 py-3.5">
         <p className="font-medium">{`You have ${numberOfPositions} active position${
@@ -69,6 +80,7 @@ const Positions = ({
                 key={bank.name}
                 position={position}
                 setActiveTab={setActiveTab}
+                setShowAddRemove={setShowAddRemove}
                 borrowBank={isUsdcBorrow ? jlpBorrowBank : lstBorrowBank}
               />
             ) : null
@@ -80,29 +92,80 @@ const Positions = ({
         )}
       </div>
     </>
+  ) : (
+    <div
+      className={`rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6 text-th-fgd-1 md:p-8`}
+    >
+      <div className="mb-3 flex items-center space-x-3">
+        <IconButton onClick={() => setShowAddRemove('')} size="small" isPrimary>
+          <ArrowLeftIcon className="h-5 w-5" />
+        </IconButton>
+        <h2>
+          {showAddRemove === 'add' ? 'Add' : 'Withdraw'} {selectedToken}
+        </h2>
+      </div>
+      {showAddRemove === 'add' ? (
+        selectedToken === 'USDC' ? (
+          <DespositForm
+            token="USDC"
+            clientContext={
+              getStakableTokensDataForTokenName('USDC').clientContext
+            }
+          />
+        ) : (
+          <StakeForm
+            token={selectedToken}
+            clientContext={
+              getStakableTokensDataForTokenName(selectedToken)?.clientContext
+            }
+          />
+        )
+      ) : (
+        <UnstakeForm
+          token={selectedToken}
+          clientContext={
+            getStakableTokensDataForTokenName(selectedToken)?.clientContext
+          }
+        />
+      )}
+    </div>
   )
 }
 
 const PositionItem = ({
   position,
   setActiveTab,
+  setShowAddRemove,
   borrowBank,
 }: {
   position: Position
   setActiveTab: (v: ActiveTab) => void
+  setShowAddRemove: (v: 'add' | 'remove') => void
   borrowBank: Bank | undefined
 }) => {
   const { connected } = useWallet()
   const { jlpGroup, lstGroup } = useMangoGroup()
   const { stakeBalance, bank, pnl, acct } = position
+  const [showEditLeverageModal, setShowEditLeverageModal] = useState(false)
 
-  const handleAddOrManagePosition = (token: string) => {
+  const handleAddNoPosition = (token: string) => {
     setActiveTab('Boost!')
     set((state) => {
       state.selectedToken = token
     })
   }
-  const [showEditLeverageModal, setShowEditLeverageModal] = useState(false)
+  const handleAddPosition = (token: string) => {
+    setShowAddRemove('add')
+    set((state) => {
+      state.selectedToken = token
+    })
+  }
+  const handleRemovePosition = (token: string) => {
+    setShowAddRemove('remove')
+    set((state) => {
+      state.selectedToken = token
+    })
+  }
 
   const leverage = useMemo(() => {
     if (!acct || !bank) return 1
@@ -162,11 +225,24 @@ const PositionItem = ({
             <p>${bank.uiPrice.toFixed(2)}</p>
           </div>
         </div>
-        <Button onClick={() => handleAddOrManagePosition(bank.name)}>
-          <p className="mb-1 text-base tracking-wider text-th-bkg-1">
-            {stakeBalance ? 'Add/Remove' : `Boost! ${bank.name}`}
-          </p>
-        </Button>
+        {stakeBalance ? (
+          <div className="flex space-x-2">
+            <Button onClick={() => handleAddPosition(bank.name)}>
+              <p className="mb-1 text-base tracking-wider text-th-bkg-1">Add</p>
+            </Button>
+            <Button onClick={() => handleRemovePosition(bank.name)}>
+              <p className="mb-1 text-base tracking-wider text-th-bkg-1">
+                Withdraw
+              </p>
+            </Button>
+          </div>
+        ) : (
+          <Button onClick={() => handleAddNoPosition(bank.name)}>
+            <p className="mb-1 text-base tracking-wider text-th-bkg-1">
+              {`Boost! ${bank.name}`}
+            </p>
+          </Button>
+        )}
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>

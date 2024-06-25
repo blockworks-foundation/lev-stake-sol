@@ -482,7 +482,7 @@ function UnstakeForm({
                 })}
               </div>
             ) : (
-              `Unboost ${inputAmount} ${formatTokenSymbol(selectedToken)}`
+              `Withdraw ${inputAmount} ${formatTokenSymbol(selectedToken)}`
             )}
           </Button>
         ) : (

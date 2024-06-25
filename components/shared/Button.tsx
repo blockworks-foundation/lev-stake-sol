@@ -54,6 +54,7 @@ interface IconButtonProps {
   hideBg?: boolean
   size?: 'small' | 'medium' | 'large'
   ref?: Ref<HTMLButtonElement>
+  isPrimary?: boolean
 }
 
 type IconButtonCombinedProps = AllButtonProps & IconButtonProps
@@ -62,12 +63,20 @@ export const IconButton = forwardRef<
   HTMLButtonElement,
   IconButtonCombinedProps
 >((props, ref) => {
-  const { children, onClick, disabled = false, className, hideBg, size } = props
+  const {
+    children,
+    onClick,
+    disabled = false,
+    className,
+    hideBg,
+    size,
+    isPrimary,
+  } = props
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex flex-shrink-0 ${
+      className={`flex shrink-0 ${
         size === 'large'
           ? 'h-12 w-12'
           : size === 'small'
@@ -78,7 +87,9 @@ export const IconButton = forwardRef<
       } items-center justify-center rounded-full ${
         hideBg
           ? 'md:hover:text-th-active'
-          : 'raised-button-neutral group after:rounded-full'
+          : `group after:rounded-full ${
+              isPrimary ? 'raised-button' : 'raised-button-neutral'
+            }`
       } text-th-fgd-1 focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 
       disabled:text-th-fgd-4 md:disabled:hover:text-th-fgd-4 ${className} focus-visible:text-th-active`}
       ref={ref}
