@@ -24,6 +24,7 @@ type FinancialMetrics = {
 export type StakeableToken = {
   token: StakeableTokensData
   financialMetrics: FinancialMetrics
+  estNetApy: number
 }
 
 const getLeverage = (
@@ -151,9 +152,6 @@ export default function useStakeableTokens() {
       ? jlpGroup?.banksMapByName.get(JLP_BORROW_TOKEN)?.[0]
       : lstGroup?.banksMapByName.get(LST_BORROW_TOKEN)?.[0]
 
-    //   const stakeBankDepositRate = stakeBank ? stakeBank.getDepositRate() : 0
-    //   const borrowBankBorrowRate = borrowBank ? Number(borrowBank.getBorrowRate()) : 0
-
     const tokenStakeRateAPY = stakeRates ? stakeRates[symbol.toLowerCase()] : 0
 
     const leverage = getLeverage(stakeBank, borrowBank, symbol)
@@ -163,7 +161,14 @@ export default function useStakeableTokens() {
       leverage,
       tokenStakeRateAPY,
     )
-    stakeableTokens.push({ token, financialMetrics })
+    const financialMetricsAt1x = getFinancialMetrics(
+      stakeBank,
+      borrowBank,
+      1,
+      tokenStakeRateAPY,
+    )
+    const estNetApy = Math.max(financialMetrics.APY, financialMetricsAt1x.APY)
+    stakeableTokens.push({ token, financialMetrics, estNetApy })
   }
   return { stakeableTokens }
 }

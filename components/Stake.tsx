@@ -1,4 +1,3 @@
-import TokenButton from './TokenButton'
 import { useCallback, useMemo, useState } from 'react'
 import StakeForm from '@components/StakeForm'
 import mangoStore from '@store/mangoStore'
@@ -7,11 +6,14 @@ import {
   getStakableTokensDataForTokenName,
 } from 'utils/tokens'
 import { useViewport } from 'hooks/useViewport'
-import { ArrowTopRightOnSquareIcon, XMarkIcon } from '@heroicons/react/20/solid'
+import {
+  ArrowLeftIcon,
+  ArrowTopRightOnSquareIcon,
+  XMarkIcon,
+} from '@heroicons/react/20/solid'
 import DespositForm from './DepositForm'
 import { EnterBottomExitBottom } from './shared/Transitions'
 import TokenSelect from './TokenSelect'
-import Label from './forms/Label'
 import { IconButton } from './shared/Button'
 import HeroTokenButton, {
   HERO_TOKEN_BUTTON_CLASSES,
@@ -72,8 +74,8 @@ const Stake = () => {
 
       // const aMaxAmount = aWalletBalance.maxAmount
       // const bMaxAmount = bWalletBalance.maxAmount
-      const aApy = a.financialMetrics.APY
-      const bApy = b.financialMetrics.APY
+      const aApy = a.estNetApy
+      const bApy = b.estNetApy
 
       // if (bMaxAmount !== aMaxAmount) {
       //   return bMaxAmount - aMaxAmount
@@ -134,8 +136,8 @@ const Stake = () => {
                     <p>Leverage up your liquid staking yield.</p>
                   </div>
                   <div className="p-6 md:p-8">
-                    <h2 className="mb-3 text-lg font-normal">
-                      What do you want to earn?
+                    <h2 className="mb-3 text-center text-lg font-normal">
+                      Select your yield
                     </h2>
                     <div className="grid grid-cols-2 gap-4 text-lg font-bold">
                       <button
@@ -209,13 +211,27 @@ const Stake = () => {
               </>
             ) : (
               <div className="p-6 md:p-8">
-                <div className="pb-6">
+                <div className="mb-3 flex items-center space-x-3">
+                  <IconButton
+                    onClick={() =>
+                      set((state) => {
+                        state.selectedToken = ''
+                      })
+                    }
+                    size="small"
+                    isPrimary
+                  >
+                    <ArrowLeftIcon className="h-5 w-5" />
+                  </IconButton>
+                  <h2>Boost! {selectedToken}</h2>
+                </div>
+                {/* <div className="pb-6">
                   <Label text="Token to Boost!" />
                   <TokenButton
                     onClick={() => setShowTokenSelect(true)}
                     tokenName={selectedToken}
                   />
-                </div>
+                </div> */}
                 {selectedToken === 'USDC' ? (
                   <DespositForm
                     token="USDC"

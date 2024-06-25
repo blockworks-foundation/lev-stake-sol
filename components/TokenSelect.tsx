@@ -22,7 +22,7 @@ const TokenSelect = ({
   showPositionSize?: boolean
 }) => {
   const { symbol } = tokenInfo.token
-  const { APY } = tokenInfo.financialMetrics
+  const { estNetApy } = tokenInfo
   const groupLoaded = mangoStore((s) => s.groupLoaded)
   const walletTokens = mangoStore((s) => s.wallet.tokens)
   const { positions } = usePositions()
@@ -64,11 +64,11 @@ const TokenSelect = ({
                 <SheenLoader>
                   <div className={`h-5 w-10 bg-th-bkg-2`} />
                 </SheenLoader>
-              ) : !APY || isNaN(APY) ? (
+              ) : !estNetApy || isNaN(estNetApy) ? (
                 'Rate Unavailable'
               ) : symbol === 'USDC' ? (
                 <>
-                  {`${APY.toFixed(2)}%`}
+                  {`${estNetApy.toFixed(2)}%`}
                   <div className="mt-1 flex items-center">
                     <Image
                       className="mr-1"
@@ -84,7 +84,7 @@ const TokenSelect = ({
                 </>
               ) : (
                 <>
-                  {`${APY.toFixed(2)}%`}
+                  {`${estNetApy.toFixed(2)}%`}
                   <div className="mt-1">
                     {SOL_YIELD.includes(symbol) ? (
                       <div className="flex items-center">

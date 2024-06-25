@@ -22,7 +22,7 @@ const TokenButton = ({
     return stakeableTokens.find((token) => token.token.symbol === tokenName)
   }, [tokenName, stakeableTokens])
 
-  const apy = tokenInfo?.financialMetrics?.APY
+  const apy = tokenInfo?.estNetApy
 
   return (
     <button

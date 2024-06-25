@@ -97,11 +97,7 @@ const Positions = ({
       className={`rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6 text-th-fgd-1 md:p-8`}
     >
       <div className="mb-3 flex items-center space-x-3">
-        <IconButton
-          onClick={() => setShowAddRemove('')}
-          size="medium"
-          isPrimary
-        >
+        <IconButton onClick={() => setShowAddRemove('')} size="small" isPrimary>
           <ArrowLeftIcon className="h-5 w-5" />
         </IconButton>
         <h2>

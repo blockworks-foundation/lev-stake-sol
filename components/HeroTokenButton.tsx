@@ -5,6 +5,10 @@ import SheenLoader from './shared/SheenLoader'
 import Tooltip from './shared/Tooltip'
 import Link from 'next/link'
 import { StakeableToken } from 'hooks/useStakeableTokens'
+import {
+  ArrowTopRightOnSquareIcon,
+  InformationCircleIcon,
+} from '@heroicons/react/20/solid'
 
 export const HERO_TOKEN_BUTTON_CLASSES =
   'inner-shadow-bottom default-transition relative w-full rounded-xl border border-th-bkg-3 bg-th-bkg-1 px-6 py-4 text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:bg-th-bkg-2 md:hover:focus-visible:border-th-fgd-4'
@@ -19,24 +23,9 @@ const HeroTokenButton = ({
   tokenInfo: StakeableToken
   onClick: () => void
 }) => {
-  const { symbol, name } = tokenInfo.token
-  const { APY } = tokenInfo.financialMetrics
-  // const leverage = useLeverageMax(symbol)
+  const { symbol, name } = tokenInfo.token ?? {}
+  const { estNetApy } = tokenInfo ?? {}
   const groupLoaded = mangoStore((s) => s.groupLoaded)
-
-  // const { stakeBankDepositRate, financialMetrics } = useBankRates(
-  //   symbol,
-  //   leverage,
-  // )
-
-  // const { financialMetrics: estimatedNetAPYFor1xLev } = useBankRates(symbol, 1)
-
-  // const APY_Daily_Compound =
-  //   Math.pow(1 + Number(stakeBankDepositRate) / 365, 365) - 1
-  // const UiRate =
-  //   symbol === 'USDC'
-  //     ? APY_Daily_Compound * 100
-  //     : Math.max(estimatedNetAPYFor1xLev.APY, financialMetrics.APY)
 
   const renderRateEmoji = (token: string, rate: number) => {
     if (token.toLowerCase().includes('sol')) {
@@ -56,7 +45,7 @@ const HeroTokenButton = ({
     }
   }
 
-  const emoji = renderRateEmoji(symbol, APY)
+  const emoji = renderRateEmoji(symbol, estNetApy)
 
   return (
     <button className={HERO_TOKEN_BUTTON_CLASSES} onClick={onClick}>
@@ -72,9 +61,48 @@ const HeroTokenButton = ({
           </div>
           <div className="flex w-full justify-between">
             <div className="text-left">
-              <span className="text-xl font-bold">
-                {formatTokenSymbol(symbol)}
-              </span>
+              <div className="flex items-center">
+                <span className="mr-1.5 text-xl font-bold">
+                  {formatTokenSymbol(symbol)}
+                </span>
+                <Tooltip
+                  content={
+                    <>
+                      <p>
+                        {tokenInfo?.token?.description
+                          ? tokenInfo.token.description
+                          : name}
+                      </p>
+                      <div className="flex">
+                        {tokenInfo?.token?.links?.website ? (
+                          <a
+                            className="mr-2 mt-2 flex items-center"
+                            href={tokenInfo.token.links.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <span className="mr-0.5">Website</span>
+                            <ArrowTopRightOnSquareIcon className="h-3 w-3" />
+                          </a>
+                        ) : null}
+                        {tokenInfo?.token?.links?.twitter ? (
+                          <a
+                            className="mt-2 flex items-center"
+                            href={tokenInfo.token.links.twitter}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <span className="mr-0.5">Twitter</span>
+                            <ArrowTopRightOnSquareIcon className="h-3 w-3" />
+                          </a>
+                        ) : null}
+                      </div>
+                    </>
+                  }
+                >
+                  <InformationCircleIcon className="mb-0.5 h-4 w-4 cursor-help text-th-bkg-4" />
+                </Tooltip>
+              </div>
               <p className={`text-xs text-th-fgd-4`}>{name}</p>
             </div>
             <div className="text-right">
@@ -103,43 +131,16 @@ const HeroTokenButton = ({
                     <SheenLoader>
                       <div className={`h-6 w-10 bg-th-bkg-2`} />
                     </SheenLoader>
-                  ) : !APY || isNaN(APY) ? (
+                  ) : !estNetApy || isNaN(estNetApy) ? (
                     <span className="text-base font-normal text-th-fgd-4">
                       Rate Unavailable
                     </span>
                   ) : (
-                    `${APY.toFixed(2)}%`
+                    `${estNetApy.toFixed(2)}%`
                   )}
                 </span>
               </div>
             </div>
-            {/* {groupLoaded ? (
-              <div className="mt-1 flex items-center">
-                {SOL_YIELD.includes(tokenName) ? (
-                  <>
-                    <Image
-                      className="mr-1.5"
-                      src={`/icons/sol.svg`}
-                      width={16}
-                      height={16}
-                      alt="SOL Logo"
-                    />
-                    <span className="text-sm text-th-fgd-4">Earn SOL</span>
-                  </>
-                ) : (
-                  <>
-                    <Image
-                      className="mr-1.5"
-                      src={`/icons/usdc.svg`}
-                      width={16}
-                      height={16}
-                      alt="USDC Logo"
-                    />
-                    <span className="text-sm text-th-fgd-4">Earn USDC</span>
-                  </>
-                )}
-              </div>
-            ) : null} */}
           </div>
         </div>
       </div>
