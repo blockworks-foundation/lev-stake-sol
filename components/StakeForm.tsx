@@ -50,6 +50,13 @@ import {
   JLP_BORROW_TOKEN,
   LST_BORROW_TOKEN,
 } from 'utils/constants'
+import {
+  HERO_TOKEN_BUTTON_CLASSES,
+  HERO_TOKEN_IMAGE_WRAPPER_CLASSES,
+} from './HeroTokenButton'
+import Image from 'next/image'
+import useQuoteRoutes from 'hooks/useQuoteRoutes'
+import { WRAPPED_SOL_MINT } from '@project-serum/serum/lib/token-instructions'
 
 const set = mangoStore.getState().set
 
@@ -98,6 +105,7 @@ export const walletBalanceForToken = (
 
 function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
   const { t } = useTranslation(['common', 'account'])
+  const [depositToken, setDepositToken] = useState(selectedToken)
   const [inputAmount, setInputAmount] = useState('')
   const [sizePercentage, setSizePercentage] = useState('')
   const submitting = mangoStore((s) => s.submittingBoost)
@@ -115,8 +123,10 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     leverage,
   )
   const leverageMax = useLeverageMax(selectedToken)
+  const { connected, publicKey } = useWallet()
+  const walletTokens = mangoStore((s) => s.wallet.tokens)
 
-  const [stakeBank, borrowBank] = useMemo(() => {
+  const [stakeBank, borrowBank, depositBank] = useMemo(() => {
     const stakeBank =
       clientContext === 'jlp'
         ? jlpGroup?.banksMapByName.get(selectedToken)?.[0]
@@ -125,8 +135,28 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
       clientContext === 'jlp'
         ? jlpGroup?.banksMapByName.get(JLP_BORROW_TOKEN)?.[0]
         : lstGroup?.banksMapByName.get(LST_BORROW_TOKEN)?.[0]
-    return [stakeBank, borrowBank]
-  }, [selectedToken, jlpGroup, lstGroup, clientContext])
+    const solBank = lstGroup?.banksMapByName.get('SOL')?.[0]
+    const depositBank = depositToken === 'SOL' ? solBank : stakeBank
+    return [stakeBank, borrowBank, depositBank]
+  }, [selectedToken, jlpGroup, lstGroup, clientContext, depositToken])
+
+  const {
+    bestRoute,
+    isFetching: fetchingRoute,
+    refetch: refetchRoute,
+  } = useQuoteRoutes({
+    inputMint: WRAPPED_SOL_MINT.toString(),
+    outputMint: stakeBank?.mint.toString(),
+    amount: inputAmount,
+    slippage: 0.1,
+    swapMode: 'ExactIn',
+    wallet: publicKey?.toBase58(),
+    mangoAccount: undefined,
+    routingMode: 'ALL_AND_JUPITER_DIRECT',
+    enabled: () => !!(stakeBank?.mint && inputAmount && depositToken === 'SOL'),
+  })
+
+  console.log(bestRoute)
 
   const liquidationPrice = useMemo(() => {
     let price
@@ -154,30 +184,42 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     return hasTokenPosition ? false : usedTokens.length >= totalTokens.length
   }, [stakeBank, usedTokens, totalTokens])
 
-  const { connected, publicKey } = useWallet()
-  const walletTokens = mangoStore((s) => s.wallet.tokens)
-
   const tokenMax = useMemo(() => {
-    return walletBalanceForToken(walletTokens, selectedToken, clientContext)
-  }, [walletTokens, selectedToken, clientContext])
+    return walletBalanceForToken(walletTokens, depositToken, clientContext)
+  }, [walletTokens, depositToken, clientContext])
 
   const setMax = useCallback(() => {
-    const max = floorToDecimal(tokenMax.maxAmount, 6)
+    if (!depositBank) return
+    let max = new Decimal(0)
+
+    if (depositBank.name === 'SOL') {
+      max = floorToDecimal(tokenMax.maxAmount - 0.01, depositBank.mintDecimals)
+    } else {
+      max = floorToDecimal(tokenMax.maxAmount, depositBank.mintDecimals)
+    }
     setInputAmount(max.toFixed())
     setSizePercentage('100')
-  }, [tokenMax])
+  }, [depositBank, tokenMax])
 
   const handleSizePercentage = useCallback(
     (percentage: string) => {
-      if (!stakeBank) return
+      if (!depositBank) return
       setSizePercentage(percentage)
-      const amount = floorToDecimal(
-        new Decimal(percentage).div(100).mul(tokenMax.maxAmount),
-        stakeBank.mintDecimals,
-      )
+      let amount = new Decimal(0)
+      if (depositBank.name === 'SOL' && percentage === '100') {
+        amount = floorToDecimal(
+          new Decimal(percentage).div(100).mul(tokenMax.maxAmount),
+          depositBank.mintDecimals,
+        ).sub(0.01)
+      } else {
+        amount = floorToDecimal(
+          new Decimal(percentage).div(100).mul(tokenMax.maxAmount),
+          depositBank.mintDecimals,
+        )
+      }
       setInputAmount(amount.toFixed())
     },
-    [tokenMax, stakeBank],
+    [tokenMax, depositBank],
   )
 
   const amountToBorrow = useMemo(() => {
@@ -194,7 +236,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
         (1 + priceDifference) * Number(inputAmount) * (leverage - 1)
       return borrowAmount
     }
-  }, [leverage, borrowBank, stakeBank, inputAmount])
+  }, [clientContext, leverage, borrowBank, stakeBank, inputAmount])
 
   const availableVaultBalance = useMemo(() => {
     if (!borrowBank) return 0
@@ -320,6 +362,45 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
 
   return (
     <>
+      <h2 className="mb-3 text-center text-lg font-normal">Token to deposit</h2>
+      <div className="mb-6 grid grid-cols-2 gap-4 border-b border-th-bkg-3 pb-6 text-lg font-bold md:pb-8">
+        <button
+          className={`${HERO_TOKEN_BUTTON_CLASSES} ${
+            depositToken === selectedToken ? 'bg-th-bkg-2' : ''
+          }`}
+          onClick={() => setDepositToken(selectedToken)}
+        >
+          <div className="flex flex-col items-center">
+            <div className={HERO_TOKEN_IMAGE_WRAPPER_CLASSES}>
+              <Image
+                src={`/icons/${selectedToken.toLowerCase()}.svg`}
+                width={32}
+                height={32}
+                alt="Select a token"
+              />
+            </div>
+            <span>{selectedToken}</span>
+          </div>
+        </button>
+        <button
+          className={`${HERO_TOKEN_BUTTON_CLASSES} ${
+            depositToken === 'SOL' ? 'bg-th-bkg-2' : ''
+          }`}
+          onClick={() => setDepositToken('SOL')}
+        >
+          <div className="flex flex-col items-center">
+            <div className={HERO_TOKEN_IMAGE_WRAPPER_CLASSES}>
+              <Image
+                src={`/icons/sol.svg`}
+                width={32}
+                height={32}
+                alt="Select a token"
+              />
+            </div>
+            <span>SOL</span>
+          </div>
+        </button>
+      </div>
       <div className="flex flex-col justify-between">
         <div className="pb-8">
           <SolBalanceWarnings
@@ -341,9 +422,9 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
               />
             </div>
           )}
-          <div className="grid grid-cols-2">
+          <div className="grid grid-cols-2 border-b border-th-bkg-3 pb-6 md:pb-8">
             <div className="col-span-2 flex justify-between">
-              <Label text="Amount" />
+              <Label text="Amount to Boost!" />
               <div className="mb-2 flex items-center space-x-2">
                 <MaxAmountButton
                   decimals={tokenMax.maxDecimals}
@@ -371,7 +452,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                   thousandSeparator=","
                   allowNegative={false}
                   isNumericString={true}
-                  decimalScale={stakeBank?.mintDecimals || 6}
+                  decimalScale={depositBank?.mintDecimals || 6}
                   className={NUMBERFORMAT_CLASSES}
                   placeholder="0.00"
                   value={inputAmount}
@@ -386,11 +467,11 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                   isAllowed={withValueLimit}
                 />
                 <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                  <TokenLogo bank={stakeBank} size={24} />
+                  <TokenLogo bank={depositBank} size={24} />
                 </div>
                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
                   <span className="font-bold text-th-fgd-1">
-                    {formatTokenSymbol(selectedToken)}
+                    {formatTokenSymbol(depositToken)}
                   </span>
                 </div>
               </div>
@@ -416,12 +497,30 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                   }
                 />
               ) : (
-                <ButtonGroup
-                  activeValue={sizePercentage}
-                  onChange={(p) => handleSizePercentage(p)}
-                  values={['10', '25', '50', '75', '100']}
-                  unit="%"
-                />
+                <>
+                  <ButtonGroup
+                    activeValue={sizePercentage}
+                    onChange={(p) => handleSizePercentage(p)}
+                    values={['10', '25', '50', '75', '100']}
+                    unit="%"
+                  />
+                  {depositToken === 'SOL' && stakeBank ? (
+                    <div className="mt-2">
+                      <InlineNotification
+                        desc={`Your ${inputAmount} SOL will be swapped to ${
+                          bestRoute?.otherAmountThreshold
+                            ? `~${floorToDecimal(
+                                bestRoute.otherAmountThreshold /
+                                  10 ** stakeBank.mintDecimals,
+                                stakeBank.mintDecimals,
+                              )}`
+                            : ''
+                        } ${selectedToken} before Boosting!`}
+                        type="info"
+                      />
+                    </div>
+                  ) : null}
+                </>
               )}
             </div>
             {depositLimitExceeded ? (
@@ -435,7 +534,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
               </div>
             ) : null}
           </div>
-          <div className="mt-4">
+          <div className="mt-6 md:mt-8">
             <div className="flex items-center justify-between">
               <Label text="Leverage" />
               <p className="mb-2 font-bold text-th-fgd-1">{leverage}x</p>
