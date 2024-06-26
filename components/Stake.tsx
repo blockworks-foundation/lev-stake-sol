@@ -1,16 +1,8 @@
 import { useCallback, useMemo, useState } from 'react'
 import StakeForm from '@components/StakeForm'
 import mangoStore from '@store/mangoStore'
-import {
-  formatTokenSymbol,
-  getStakableTokensDataForTokenName,
-} from 'utils/tokens'
-import { useViewport } from 'hooks/useViewport'
-import {
-  ArrowLeftIcon,
-  ArrowTopRightOnSquareIcon,
-  XMarkIcon,
-} from '@heroicons/react/20/solid'
+import { getStakableTokensDataForTokenName } from 'utils/tokens'
+import { ArrowLeftIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import DespositForm from './DepositForm'
 import { EnterBottomExitBottom } from './shared/Transitions'
 import TokenSelect from './TokenSelect'
@@ -43,7 +35,6 @@ const Stake = () => {
   const [showTokenSelect, setShowTokenSelect] = useState(false)
   const selectedToken = mangoStore((s) => s.selectedToken)
   // const walletTokens = mangoStore((s) => s.wallet.tokens)
-  const { isDesktop } = useViewport()
   const { stakeableTokens } = useStakeableTokens()
 
   const handleTokenSelect = useCallback((token: string) => {

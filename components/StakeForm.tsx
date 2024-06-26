@@ -56,7 +56,6 @@ import {
 } from './HeroTokenButton'
 import Image from 'next/image'
 import useQuoteRoutes from 'hooks/useQuoteRoutes'
-import { WRAPPED_SOL_MINT } from '@project-serum/serum/lib/token-instructions'
 
 const set = mangoStore.getState().set
 
@@ -135,17 +134,20 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
       clientContext === 'jlp'
         ? jlpGroup?.banksMapByName.get(JLP_BORROW_TOKEN)?.[0]
         : lstGroup?.banksMapByName.get(LST_BORROW_TOKEN)?.[0]
-    const solBank = lstGroup?.banksMapByName.get('SOL')?.[0]
-    const depositBank = depositToken === 'SOL' ? solBank : stakeBank
+    const backupBank =
+      clientContext === 'jlp'
+        ? jlpGroup?.banksMapByName.get('USDC')?.[0]
+        : lstGroup?.banksMapByName.get('SOL')?.[0]
+    const depositBank = depositToken !== selectedToken ? backupBank : stakeBank
     return [stakeBank, borrowBank, depositBank]
   }, [selectedToken, jlpGroup, lstGroup, clientContext, depositToken])
 
   const {
     bestRoute,
     isFetching: fetchingRoute,
-    refetch: refetchRoute,
+    // refetch: refetchRoute,
   } = useQuoteRoutes({
-    inputMint: WRAPPED_SOL_MINT.toString(),
+    inputMint: depositBank?.mint.toString(),
     outputMint: stakeBank?.mint.toString(),
     amount: inputAmount,
     slippage: 0.1,
@@ -153,10 +155,14 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     wallet: publicKey?.toBase58(),
     mangoAccount: undefined,
     routingMode: 'ALL_AND_JUPITER_DIRECT',
-    enabled: () => !!(stakeBank?.mint && inputAmount && depositToken === 'SOL'),
+    enabled: () =>
+      !!(
+        stakeBank?.mint &&
+        depositBank?.mint &&
+        inputAmount &&
+        depositToken !== selectedToken
+      ),
   })
-
-  console.log(bestRoute)
 
   const liquidationPrice = useMemo(() => {
     let price
@@ -185,8 +191,9 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
   }, [stakeBank, usedTokens, totalTokens])
 
   const tokenMax = useMemo(() => {
-    return walletBalanceForToken(walletTokens, depositToken, clientContext)
-  }, [walletTokens, depositToken, clientContext])
+    if (!depositBank) return { maxAmount: 0, maxDecimals: 0 }
+    return walletBalanceForToken(walletTokens, depositBank.name, clientContext)
+  }, [walletTokens, depositBank, clientContext])
 
   const setMax = useCallback(() => {
     if (!depositBank) return
@@ -360,6 +367,12 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     })
   }, [selectedToken, clientContext])
 
+  const handleDepositTokenChange = (token: string) => {
+    setDepositToken(token)
+    setInputAmount('')
+    setSizePercentage('')
+  }
+
   return (
     <>
       <h2 className="mb-3 text-center text-lg font-normal">Token to deposit</h2>
@@ -368,7 +381,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
           className={`${HERO_TOKEN_BUTTON_CLASSES} ${
             depositToken === selectedToken ? 'bg-th-bkg-2' : ''
           }`}
-          onClick={() => setDepositToken(selectedToken)}
+          onClick={() => handleDepositTokenChange(selectedToken)}
         >
           <div className="flex flex-col items-center">
             <div className={HERO_TOKEN_IMAGE_WRAPPER_CLASSES}>
@@ -384,20 +397,24 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
         </button>
         <button
           className={`${HERO_TOKEN_BUTTON_CLASSES} ${
-            depositToken === 'SOL' ? 'bg-th-bkg-2' : ''
+            depositToken !== selectedToken ? 'bg-th-bkg-2' : ''
           }`}
-          onClick={() => setDepositToken('SOL')}
+          onClick={() =>
+            handleDepositTokenChange(clientContext === 'jlp' ? 'USDC' : 'SOL')
+          }
         >
           <div className="flex flex-col items-center">
             <div className={HERO_TOKEN_IMAGE_WRAPPER_CLASSES}>
               <Image
-                src={`/icons/sol.svg`}
+                src={
+                  clientContext === 'jlp' ? '/icons/usdc.svg' : '/icons/sol.svg'
+                }
                 width={32}
                 height={32}
                 alt="Select a token"
               />
             </div>
-            <span>SOL</span>
+            <span>{clientContext === 'jlp' ? 'USDC' : 'SOL'}</span>
           </div>
         </button>
       </div>
@@ -504,20 +521,26 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                     values={['10', '25', '50', '75', '100']}
                     unit="%"
                   />
-                  {depositToken === 'SOL' && stakeBank ? (
+                  {depositToken !== selectedToken && stakeBank ? (
                     <div className="mt-2">
-                      <InlineNotification
-                        desc={`Your ${inputAmount} SOL will be swapped to ${
-                          bestRoute?.otherAmountThreshold
-                            ? `~${floorToDecimal(
-                                bestRoute.otherAmountThreshold /
-                                  10 ** stakeBank.mintDecimals,
-                                stakeBank.mintDecimals,
-                              )}`
-                            : ''
-                        } ${selectedToken} before Boosting!`}
-                        type="info"
-                      />
+                      {fetchingRoute ? (
+                        <SheenLoader className="flex flex-1">
+                          <div className="h-12 w-full bg-th-bkg-2" />
+                        </SheenLoader>
+                      ) : (
+                        <InlineNotification
+                          desc={`Your ${inputAmount} ${depositToken} will be swapped to ${
+                            bestRoute?.otherAmountThreshold
+                              ? `~${floorToDecimal(
+                                  bestRoute.otherAmountThreshold /
+                                    10 ** stakeBank.mintDecimals,
+                                  stakeBank.mintDecimals,
+                                )}`
+                              : ''
+                          } ${selectedToken} before Boosting!`}
+                          type="info"
+                        />
+                      )}
                     </div>
                   ) : null}
                 </>
