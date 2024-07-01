@@ -284,6 +284,8 @@ export const LAST_WALLET_NAME = 'lastWalletName'
 
 export const PRIVACY_MODE = 'privacy-mode-0.1'
 
+export const JUPITER_V6_QUOTE_API_MAINNET = 'https://quote-api.jup.ag/v6'
+
 // Unused
 export const PROFILE_CATEGORIES = [
   'borrower',

@@ -149,3 +149,38 @@ export type Token = {
   }
   tags: string[]
 }
+
+export interface JupiterV6RoutePlan {
+  swapInfo: {
+    ammKey: string
+    label?: string
+    inputMint: string
+    outputMint: string
+    inAmount: number
+    outAmount: number
+    feeAmount: number
+    feeMint: string
+  }
+  percent: number
+}
+
+export interface JupiterV6RouteInfo {
+  inputMint: string
+  inAmount: number
+  outputMint: string
+  outAmount: number
+  otherAmountThreshold: number
+  swapMode: SwapMode
+  slippageBps: number
+  platformFee?: {
+    amount: string
+    feeBps: number
+  }
+  priceImpactPct: number
+  routePlan: JupiterV6RoutePlan[] | undefined
+  contextSlot?: number
+  timeTaken?: number
+  error?: string
+  instructions?: TransactionInstruction[]
+  origin?: 'jupiter' | 'mango' | 'raydium'
+}

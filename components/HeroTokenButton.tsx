@@ -11,7 +11,7 @@ import {
 } from '@heroicons/react/20/solid'
 
 export const HERO_TOKEN_BUTTON_CLASSES =
-  'inner-shadow-bottom default-transition relative w-full rounded-xl border border-th-bkg-3 bg-th-bkg-1 px-6 py-4 text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:bg-th-bkg-2 md:hover:focus-visible:border-th-fgd-4'
+  'inner-shadow-bottom default-transition relative w-full rounded-xl border border-th-bkg-3 bg-th-bkg-1 px-6 py-4 text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:bg-th-bkg-2 md:hover:focus-visible:border-th-fgd-4 font-semibold'
 
 export const HERO_TOKEN_IMAGE_WRAPPER_CLASSES =
   'inner-shadow-bottom-sm mb-2 flex h-14 w-14 items-center justify-center rounded-full border border-th-bkg-2 bg-gradient-to-b from-th-bkg-1 to-th-bkg-2 shrink-0'
@@ -103,11 +103,11 @@ const HeroTokenButton = ({
                   <InformationCircleIcon className="mb-0.5 h-4 w-4 cursor-help text-th-bkg-4" />
                 </Tooltip>
               </div>
-              <p className={`text-xs text-th-fgd-4`}>{name}</p>
+              <p className={`text-xs font-normal text-th-fgd-4`}>{name}</p>
             </div>
             <div className="text-right">
               <p className={`text-xs text-th-fgd-4`}>Max APY</p>
-              <div className="flex items-center">
+              <div className="flex items-center justify-end">
                 {emoji ? (
                   <Tooltip
                     content={
