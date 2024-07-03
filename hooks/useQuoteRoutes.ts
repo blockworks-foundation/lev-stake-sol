@@ -11,7 +11,6 @@ import { useQuery } from '@tanstack/react-query'
 import Decimal from 'decimal.js'
 import { JupiterV6RouteInfo } from 'types/jupiter'
 import { MANGO_ROUTER_API_URL } from 'utils/constants'
-import useJupiterSwapData from './useJupiterSwapData'
 import { useMemo } from 'react'
 import { JUPITER_V6_QUOTE_API_MAINNET } from 'utils/constants'
 import { MangoAccount, toUiDecimals } from '@blockworks-foundation/mango-v4'
@@ -44,6 +43,8 @@ type useQuoteRoutesPropTypes = {
   wallet: string | undefined
   mangoAccount: MangoAccount | undefined
   routingMode: RoutingMode
+  inDecimals: number | undefined
+  outDecimals: number | undefined
   enabled?: () => boolean
 }
 
@@ -558,16 +559,16 @@ const useQuoteRoutes = ({
   wallet,
   mangoAccount,
   routingMode = 'ALL',
+  inDecimals,
+  outDecimals,
   enabled,
 }: useQuoteRoutesPropTypes) => {
   const connection = mangoStore((s) => s.connection)
   const { sendAnalytics } = useAnalytics()
-  const { inputTokenInfo, outputTokenInfo } = useJupiterSwapData()
+
   const decimals = useMemo(() => {
-    return swapMode === 'ExactIn'
-      ? inputTokenInfo?.decimals || 6
-      : outputTokenInfo?.decimals || 6
-  }, [swapMode, inputTokenInfo?.decimals, outputTokenInfo?.decimals])
+    return swapMode === 'ExactIn' ? inDecimals || 6 : outDecimals || 6
+  }, [swapMode, inDecimals, outDecimals])
 
   const nativeAmount = useMemo(() => {
     return amount && !Number.isNaN(+amount)

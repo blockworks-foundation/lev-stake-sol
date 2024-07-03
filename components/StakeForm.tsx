@@ -141,7 +141,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     const depositBank = depositToken !== selectedToken ? backupBank : stakeBank
     return [stakeBank, borrowBank, depositBank]
   }, [selectedToken, jlpGroup, lstGroup, clientContext, depositToken])
-
+  const isSwapMode = depositToken !== selectedToken
   const {
     bestRoute,
     isFetching: fetchingRoute,
@@ -150,18 +150,15 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     inputMint: depositBank?.mint.toString(),
     outputMint: stakeBank?.mint.toString(),
     amount: inputAmount,
-    slippage: 0.1,
+    slippage: 0.5,
     swapMode: 'ExactIn',
     wallet: publicKey?.toBase58(),
     mangoAccount: undefined,
-    routingMode: 'ALL_AND_JUPITER_DIRECT',
+    routingMode: 'ALL',
+    inDecimals: depositBank?.mintDecimals,
+    outDecimals: stakeBank?.mintDecimals,
     enabled: () =>
-      !!(
-        stakeBank?.mint &&
-        depositBank?.mint &&
-        inputAmount &&
-        depositToken !== selectedToken
-      ),
+      !!(stakeBank?.mint && depositBank?.mint && inputAmount && isSwapMode),
   })
 
   const liquidationPrice = useMemo(() => {
@@ -530,10 +527,9 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                       ) : (
                         <InlineNotification
                           desc={`Your ${inputAmount} ${depositToken} will be swapped to ${
-                            bestRoute?.otherAmountThreshold
-                              ? `~${floorToDecimal(
-                                  bestRoute.otherAmountThreshold /
-                                    10 ** stakeBank.mintDecimals,
+                            bestRoute?.outAmount
+                              ? `~${toUiDecimals(
+                                  bestRoute.outAmount,
                                   stakeBank.mintDecimals,
                                 )}`
                               : ''
