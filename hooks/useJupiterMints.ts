@@ -20,7 +20,7 @@ const fetchJupiterTokens = async () => {
   const mangoTokens = data.filter(
     (t) => jlpBankMints.includes(t.address) || lstBankMints.includes(t.address),
   )
-  console.log(mangoTokens, '@@@@@@')
+
   return {
     mangoTokens,
     jupiterTokens: data,

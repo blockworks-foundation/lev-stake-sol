@@ -232,20 +232,32 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
   )
 
   const amountToBorrow = useMemo(() => {
+    const stakeAmount =
+      isSwapMode && bestRoute && stakeBank
+        ? toUiDecimals(bestRoute.outAmount, stakeBank.mintDecimals)
+        : inputAmount
     const borrowPrice = borrowBank?.uiPrice
     const stakePrice = stakeBank?.uiPrice
-    if (!borrowPrice || !stakePrice || !Number(inputAmount)) return 0
+    if (!borrowPrice || !stakePrice || !Number(stakeAmount)) return 0
     if (clientContext === 'jlp') {
       const borrowAmount =
-        stakeBank?.uiPrice * Number(inputAmount) * (leverage - 1)
+        stakeBank?.uiPrice * Number(stakeAmount) * (leverage - 1)
       return borrowAmount
     } else {
       const priceDifference = (stakePrice - borrowPrice) / borrowPrice
       const borrowAmount =
-        (1 + priceDifference) * Number(inputAmount) * (leverage - 1)
+        (1 + priceDifference) * Number(stakeAmount) * (leverage - 1)
       return borrowAmount
     }
-  }, [clientContext, leverage, borrowBank, stakeBank, inputAmount])
+  }, [
+    isSwapMode,
+    bestRoute,
+    stakeBank,
+    inputAmount,
+    borrowBank?.uiPrice,
+    clientContext,
+    leverage,
+  ])
 
   const availableVaultBalance = useMemo(() => {
     if (!borrowBank) return 0
