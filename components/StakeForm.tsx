@@ -166,6 +166,10 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
       !!(stakeBank?.mint && depositBank?.mint && inputAmount && isSwapMode),
   })
 
+  const uiOutAmount =
+    bestRoute?.outAmount && stakeBank
+      ? toUiDecimals(bestRoute.outAmount, stakeBank.mintDecimals) * 0.999
+      : 0
   const liquidationPrice = useMemo(() => {
     let price
     if (borrowBank?.name == 'SOL') {
@@ -233,9 +237,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
 
   const amountToBorrow = useMemo(() => {
     const stakeAmount =
-      isSwapMode && bestRoute && stakeBank
-        ? toUiDecimals(bestRoute.outAmount, stakeBank.mintDecimals)
-        : inputAmount
+      isSwapMode && bestRoute && stakeBank ? uiOutAmount : inputAmount
     const borrowPrice = borrowBank?.uiPrice
     const stakePrice = stakeBank?.uiPrice
     if (!borrowPrice || !stakePrice || !Number(stakeAmount)) return 0
@@ -571,12 +573,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                       ) : (
                         <InlineNotification
                           desc={`Your ${inputAmount} ${depositToken} will be swapped to ${
-                            bestRoute?.outAmount
-                              ? `~${toUiDecimals(
-                                  bestRoute.outAmount,
-                                  stakeBank.mintDecimals,
-                                )}`
-                              : ''
+                            uiOutAmount ? `~${uiOutAmount}` : ''
                           } ${selectedToken} before Boosting!`}
                           type="info"
                         />
@@ -846,7 +843,9 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                 })}
               </div>
             ) : ipAllowed ? (
-              `Boost! ${inputAmount} ${formatTokenSymbol(selectedToken)}`
+              `Boost! ${
+                isSwapMode && uiOutAmount ? uiOutAmount : inputAmount
+              } ${formatTokenSymbol(selectedToken)}`
             ) : (
               'Country not allowed'
             )}
