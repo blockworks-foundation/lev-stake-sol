@@ -34,7 +34,11 @@ import Link from 'next/link'
 import LeverageSlider from './shared/LeverageSlider'
 import useMangoGroup from 'hooks/useMangoGroup'
 import FormatNumericValue from './shared/FormatNumericValue'
-import { getNextAccountNumber, stakeAndCreate } from 'utils/transactions'
+import {
+  getNextAccountNumber,
+  stakeAndCreate,
+  walletSwap,
+} from 'utils/transactions'
 // import { MangoAccount } from '@blockworks-foundation/mango-v4'
 import useBankRates from 'hooks/useBankRates'
 import { Disclosure } from '@headlessui/react'
@@ -112,7 +116,8 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
   const [refreshingWalletTokens, setRefreshingWalletTokens] = useState(false)
   const { maxSolDeposit } = useSolBalance()
   const { ipAllowed } = useIpAddress()
-
+  const wallet = useWallet()
+  const connection = mangoStore((s) => s.connection)
   const storedLeverage = mangoStore((s) => s.leverage)
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { jlpGroup, lstGroup } = useMangoGroup()
@@ -281,10 +286,31 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     })
     try {
       // const newAccountfNum = getNextAccountNumber(mangoAccounts)
+      if (!bestRoute && isSwapMode) {
+        notify({
+          title: 'No swap route found',
+          type: 'error',
+        })
+      }
       notify({
         title: 'Building transaction. This may take a moment.',
         type: 'info',
       })
+      if (isSwapMode && bestRoute) {
+        const { txid } = await walletSwap(
+          bestRoute,
+          connection,
+          0.5,
+          wallet,
+          client,
+        )
+        notify({
+          title: 'Transaction confirmed',
+          type: 'success',
+          txid: txid,
+        })
+      }
+
       const { signature: tx, slot } = await stakeAndCreate(
         client,
         group,
@@ -327,9 +353,12 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     ipAllowed,
     stakeBank,
     publicKey,
+    clientContext,
+    bestRoute,
+    connection,
+    wallet,
     amountToBorrow,
     inputAmount,
-    clientContext,
   ])
 
   const showInsufficientBalance =
