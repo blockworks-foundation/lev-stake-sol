@@ -286,6 +286,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     })
     try {
       // const newAccountfNum = getNextAccountNumber(mangoAccounts)
+      let stakeAmount = parseFloat(inputAmount)
       if (!bestRoute && isSwapMode) {
         notify({
           title: 'No swap route found',
@@ -297,13 +298,14 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
         type: 'info',
       })
       if (isSwapMode && bestRoute) {
-        const { txid } = await walletSwap(
+        const { txid, outAmount } = await walletSwap(
           bestRoute,
           connection,
           0.5,
           wallet,
           client,
         )
+        stakeAmount = toUiDecimals(outAmount, stakeBank.mintDecimals)
         notify({
           title: 'Transaction confirmed',
           type: 'success',
@@ -317,7 +319,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
         mangoAccount,
         amountToBorrow,
         stakeBank.mint,
-        parseFloat(inputAmount),
+        stakeAmount,
         accNumber ?? 0,
       )
       notify({
@@ -354,11 +356,12 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     stakeBank,
     publicKey,
     clientContext,
+    inputAmount,
     bestRoute,
+    isSwapMode,
+    amountToBorrow,
     connection,
     wallet,
-    amountToBorrow,
-    inputAmount,
   ])
 
   const showInsufficientBalance =

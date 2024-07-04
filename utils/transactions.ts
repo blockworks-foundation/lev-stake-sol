@@ -996,7 +996,7 @@ export const walletSwap = async (
     signed,
     latestBlockhash,
   )
-  return { txid }
+  return { txid, outAmount: selectedRoute.outAmount }
 }
 
 /**  Given a Jupiter route, fetch the transaction for the user to sign.
