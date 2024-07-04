@@ -112,13 +112,13 @@ const TransactionNotificationList = () => {
         </button>
       ) : null}
       {reversedNotifications.map((n) => (
-        <TransactionNotification key={n.id} notification={n} />
+        <TransactionNotificationComponent key={n.id} notification={n} />
       ))}
     </div>
   )
 }
 
-const TransactionNotification = ({
+const TransactionNotificationComponent = ({
   notification,
 }: {
   notification: TransactionNotification
