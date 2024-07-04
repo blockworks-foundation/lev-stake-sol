@@ -1,16 +1,8 @@
 import { useCallback, useMemo, useState } from 'react'
 import StakeForm from '@components/StakeForm'
 import mangoStore from '@store/mangoStore'
-import {
-  formatTokenSymbol,
-  getStakableTokensDataForTokenName,
-} from 'utils/tokens'
-import { useViewport } from 'hooks/useViewport'
-import {
-  ArrowLeftIcon,
-  ArrowTopRightOnSquareIcon,
-  XMarkIcon,
-} from '@heroicons/react/20/solid'
+import { getStakableTokensDataForTokenName } from 'utils/tokens'
+import { ArrowLeftIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import DespositForm from './DepositForm'
 import { EnterBottomExitBottom } from './shared/Transitions'
 import TokenSelect from './TokenSelect'
@@ -43,7 +35,6 @@ const Stake = () => {
   const [showTokenSelect, setShowTokenSelect] = useState(false)
   const selectedToken = mangoStore((s) => s.selectedToken)
   // const walletTokens = mangoStore((s) => s.wallet.tokens)
-  const { isDesktop } = useViewport()
   const { stakeableTokens } = useStakeableTokens()
 
   const handleTokenSelect = useCallback((token: string) => {
@@ -86,7 +77,7 @@ const Stake = () => {
     })
   }, [stakeableTokens])
 
-  const swapUrl = `https://app.mango.markets/swap?in=USDC&out=${selectedToken}&walletSwap=true`
+  // const swapUrl = `https://app.mango.markets/swap?in=USDC&out=${selectedToken}&walletSwap=true`
 
   return (
     <>
@@ -125,17 +116,17 @@ const Stake = () => {
           </div>
         </EnterBottomExitBottom>
         <div
-          className={`rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 text-th-fgd-1`}
+          className={`rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6 text-th-fgd-1 md:p-8`}
         >
           {selectableTokens.length ? (
             !selectedToken ? (
               <>
-                <div className="flex flex-col items-center ">
-                  <div className="w-full border-b border-th-bkg-3 p-6 text-center md:p-8">
+                <div className="flex flex-col items-center">
+                  <div className="w-full border-b border-th-bkg-3 pb-6 text-center md:pb-8">
                     <h1 className="mb-1">Let&apos;s Boost!</h1>
                     <p>Leverage up your liquid staking yield.</p>
                   </div>
-                  <div className="p-6 md:p-8">
+                  <div className="w-full py-6 md:py-8">
                     <h2 className="mb-3 text-center text-lg font-normal">
                       Select your yield
                     </h2>
@@ -180,7 +171,7 @@ const Stake = () => {
                   </div>
                 </div>
                 {tokensToShow ? (
-                  <div className="space-y-3 border-t border-th-bkg-3 p-6 md:p-8">
+                  <div className="space-y-3 border-t border-th-bkg-3 pt-6 md:pt-8">
                     <h2 className="text-center text-lg font-normal">
                       Select a token to Boost!
                     </h2>
@@ -210,8 +201,8 @@ const Stake = () => {
                 ) : null}
               </>
             ) : (
-              <div className="p-6 md:p-8">
-                <div className="mb-3 flex items-center space-x-3">
+              <>
+                <div className="mb-6 flex items-center space-x-3">
                   <IconButton
                     onClick={() =>
                       set((state) => {
@@ -225,13 +216,6 @@ const Stake = () => {
                   </IconButton>
                   <h2>Boost! {selectedToken}</h2>
                 </div>
-                {/* <div className="pb-6">
-                  <Label text="Token to Boost!" />
-                  <TokenButton
-                    onClick={() => setShowTokenSelect(true)}
-                    tokenName={selectedToken}
-                  />
-                </div> */}
                 {selectedToken === 'USDC' ? (
                   <DespositForm
                     token="USDC"
@@ -248,7 +232,7 @@ const Stake = () => {
                     }
                   />
                 )}
-              </div>
+              </>
             )
           ) : (
             <div className="p-10">
@@ -259,7 +243,7 @@ const Stake = () => {
           )}
         </div>
       </div>
-      {selectedToken ? (
+      {/* {selectedToken ? (
         <div className="fixed bottom-0 left-0 z-20 w-full lg:bottom-8 lg:left-8 lg:w-auto">
           {isDesktop ? (
             <a
@@ -288,7 +272,7 @@ const Stake = () => {
             </div>
           )}
         </div>
-      ) : null}
+      ) : null} */}
     </>
   )
 }

@@ -95,7 +95,7 @@ export default function useStakeRates() {
     cacheTime: 1000 * 60 * 5,
     staleTime: 1000 * 60,
     retry: 3,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   })
 
   return {

@@ -98,7 +98,7 @@ const HydrateStore = () => {
         actions.estimatePriorityFee(priorityFeeMultiplier)
       }
     },
-    (slowNetwork ? 60 : 10) * SECONDS,
+    (slowNetwork ? 60 : 20) * SECONDS,
   )
 
   // The websocket library solana/web3.js uses closes its websocket connection when the subscription list

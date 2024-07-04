@@ -3,8 +3,10 @@ import {
   Bank,
   FlashLoanType,
   Group,
+  MANGO_ROUTER_API_URL,
   MangoAccount,
   MangoClient,
+  MangoError,
   MangoSignatureStatus,
   RouteInfo,
   TokenIndex,
@@ -15,6 +17,7 @@ import {
   toNative,
   toNativeI80F48,
   toUiDecimals,
+  tryStringify,
 } from '@blockworks-foundation/mango-v4'
 import { TOKEN_PROGRAM_ID } from '@solana/spl-governance'
 import {
@@ -28,16 +31,22 @@ import {
   Connection,
   Keypair,
   PublicKey,
+  RpcResponseAndContext,
   SYSVAR_INSTRUCTIONS_PUBKEY,
+  SignatureResult,
   SystemProgram,
+  Transaction,
   TransactionInstruction,
   TransactionMessage,
   VersionedTransaction,
 } from '@solana/web3.js'
 import { floorToDecimal } from './numbers'
-import { BOOST_ACCOUNT_PREFIX } from './constants'
+import { BOOST_ACCOUNT_PREFIX, JUPITER_V6_QUOTE_API_MAINNET } from './constants'
 import { notify } from './notifications'
 import { getStakableTokensDataForMint } from './tokens'
+import { JupiterV6RouteInfo } from 'types/jupiter'
+import { WalletContextState } from '@solana/wallet-adapter-react'
+import { awaitTransactionSignatureConfirmation } from '@blockworks-foundation/mangolana/lib/transactions'
 
 export const withdrawAndClose = async (
   client: MangoClient,
@@ -961,4 +970,156 @@ export const getNextAccountNumber = (accounts: MangoAccount[]): number => {
     return accounts[0].accountNum + 1
   }
   return 0
+}
+
+export const walletSwap = async (
+  selectedRoute: JupiterV6RouteInfo,
+  connection: Connection,
+  slippage: number,
+  wallet: WalletContextState,
+  client: MangoClient,
+) => {
+  const vtx = await fetchJupiterWalletSwapTransaction(
+    selectedRoute,
+    wallet!.publicKey!,
+    slippage,
+    selectedRoute.origin,
+  )
+
+  const latestBlockhash = await connection.getLatestBlockhash()
+  const sign = wallet.signTransaction!
+  const signed = await sign(vtx)
+
+  const txid = await sendTxAndConfirm(
+    client.opts.multipleConnections,
+    connection,
+    signed,
+    latestBlockhash,
+  )
+  return { txid, outAmount: selectedRoute.outAmount }
+}
+
+/**  Given a Jupiter route, fetch the transaction for the user to sign.
+ **This function should ONLY be used for wallet swaps* */
+export const fetchJupiterWalletSwapTransaction = async (
+  selectedRoute: JupiterV6RouteInfo,
+  userPublicKey: PublicKey,
+  slippage: number,
+  origin?: 'mango' | 'jupiter' | 'raydium',
+): Promise<VersionedTransaction> => {
+  // docs https://station.jup.ag/api-v6/post-swap
+  const params: {
+    quoteResponse: JupiterV6RouteInfo
+    userPublicKey: PublicKey
+    slippageBps: number
+    autoCreateOutAta?: boolean
+    wrapAndUnwrapSol?: boolean
+  } = {
+    // response from /quote api
+    quoteResponse: selectedRoute,
+    // user public key to be used for the swap
+    userPublicKey,
+    slippageBps: Math.ceil(slippage * 100),
+  }
+
+  if (origin === 'mango') {
+    params.autoCreateOutAta = true
+    params.wrapAndUnwrapSol = true
+  }
+
+  const transactions = await (
+    await fetch(
+      `${
+        origin === 'mango' ? MANGO_ROUTER_API_URL : JUPITER_V6_QUOTE_API_MAINNET
+      }/swap`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(params),
+      },
+    )
+  ).json()
+
+  const { swapTransaction } = transactions
+  const parsedSwapTransaction = VersionedTransaction.deserialize(
+    Buffer.from(swapTransaction, 'base64'),
+  )
+  return parsedSwapTransaction
+}
+
+export const sendTxAndConfirm = async (
+  multipleConnections: Connection[] = [],
+  connection: Connection,
+  tx: Transaction | VersionedTransaction,
+  latestBlockhash: {
+    lastValidBlockHeight: number
+    blockhash: string
+  },
+) => {
+  let signature = ''
+  const abortController = new AbortController()
+  try {
+    const allConnections = [connection, ...multipleConnections]
+    const rawTransaction = tx.serialize()
+    signature = await Promise.any(
+      allConnections.map((c) => {
+        return c.sendRawTransaction(rawTransaction, {
+          skipPreflight: true,
+        })
+      }),
+    )
+    await Promise.any(
+      allConnections.map((c) =>
+        awaitTransactionSignatureConfirmation({
+          txid: signature,
+          confirmLevel: 'processed',
+          connection: c,
+          timeoutStrategy: {
+            block: latestBlockhash,
+          },
+          abortSignal: abortController.signal,
+        }),
+      ),
+    )
+    abortController.abort()
+    return signature
+  } catch (e) {
+    abortController.abort()
+    if (e instanceof AggregateError) {
+      for (const individualError of e.errors) {
+        const stringifiedError = tryStringify(individualError)
+        throw new MangoError({
+          txid: signature,
+          message: `${
+            stringifiedError
+              ? stringifiedError
+              : individualError
+              ? individualError
+              : 'Unknown error'
+          }`,
+        })
+      }
+    }
+    if (isErrorWithSignatureResult(e)) {
+      const stringifiedError = tryStringify(e?.value?.err)
+      throw new MangoError({
+        txid: signature,
+        message: `${stringifiedError ? stringifiedError : e?.value?.err}`,
+      })
+    }
+    const stringifiedError = tryStringify(e)
+    throw new MangoError({
+      txid: signature,
+      message: `${stringifiedError ? stringifiedError : e}`,
+    })
+  }
+}
+
+function isErrorWithSignatureResult(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  err: any,
+): err is RpcResponseAndContext<SignatureResult> {
+  return err && typeof err.value !== 'undefined'
 }
