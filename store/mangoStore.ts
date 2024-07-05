@@ -83,7 +83,13 @@ const MANGO_BOOST_ID = new PublicKey(
 )
 
 export const LITE_RPC_URL = `https://api.mngo.cloud/lite-rpc/v1-mangoui-812743`
-const backupConnections = [new Connection(LITE_RPC_URL, 'recent')]
+const backupConnections = [
+  new Connection(LITE_RPC_URL, 'recent'),
+  new Connection(
+    'https://idalina-qy4oxi-fast-mainnet.helius-rpc.com/',
+    'recent',
+  ),
+]
 
 const GROUP_JLP = new PublicKey('AKeMSYiJekyKfwCc3CUfVNDVAiqk9FfbQVMY3G7RUZUf')
 const GROUP_V1 = new PublicKey('78b8f4cGCwmZ9ysPFMWLaLTkkaYnUjwMJYStWe5RTSSX')
