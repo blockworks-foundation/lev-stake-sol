@@ -167,7 +167,11 @@ export default function useStakeableTokens() {
       1,
       tokenStakeRateAPY,
     )
-    const estNetApy = Math.max(financialMetrics.APY, financialMetricsAt1x.APY)
+    const estNetApy = Math.max(
+      financialMetrics.APY,
+      financialMetricsAt1x.APY,
+      0,
+    )
     stakeableTokens.push({ token, financialMetrics, estNetApy })
   }
   return { stakeableTokens }
