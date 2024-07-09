@@ -35,6 +35,7 @@ export type Position = {
   borrowBalance: number
   stakeBalance: number
   pnl: number
+  solPnl: number | undefined
   bank: Bank
   acct: MangoAccount | undefined
 }
@@ -145,8 +146,9 @@ const PositionItem = ({
 }) => {
   const { connected } = useWallet()
   const { jlpGroup, lstGroup } = useMangoGroup()
-  const { stakeBalance, bank, pnl, acct } = position
+  const { stakeBalance, bank, pnl, acct, solPnl } = position
   const [showEditLeverageModal, setShowEditLeverageModal] = useState(false)
+  const isJlpGroup = bank.name === 'JLP' || bank.name === 'USDC'
 
   const handleAddNoPosition = (token: string) => {
     setActiveTab('Boost!')
@@ -183,7 +185,7 @@ const PositionItem = ({
     } else {
       return Math.abs(1 - assetsValue / accountValue) + 1
     }
-  }, [acct, bank, jlpGroup, lstGroup])
+  }, [acct, bank, jlpGroup, lstGroup, isJlpGroup])
 
   const liquidationPrice = useMemo(() => {
     let price
@@ -210,6 +212,8 @@ const PositionItem = ({
     Math.pow(1 + Number(stakeBankDepositRate) / 365, 365) - 1
   const uiRate =
     bank.name == 'USDC' ? APY_Daily_Compound * 100 : financialMetrics.APY
+
+  const currentPnl = isJlpGroup ? pnl : solPnl
 
   return (
     <div className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
@@ -351,13 +355,20 @@ const PositionItem = ({
             className={`text-xl font-bold ${
               !stakeBalance
                 ? 'text-th-fgd-4'
-                : pnl >= 0
+                : currentPnl && currentPnl >= 0
                 ? 'text-th-success'
                 : 'text-th-error'
             }`}
           >
-            {stakeBalance || pnl ? (
-              <FormatNumericValue value={pnl} decimals={2} isUsd />
+            {currentPnl ? (
+              <>
+                <FormatNumericValue
+                  value={currentPnl}
+                  decimals={2}
+                  isUsd={isJlpGroup}
+                />
+                {!isJlpGroup && ' SOL'}
+              </>
             ) : (
               '–'
             )}

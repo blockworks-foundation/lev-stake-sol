@@ -7,10 +7,16 @@ import {
 import useStakeAccounts from './useStakeAccounts'
 import useMangoGroup from './useMangoGroup'
 import { toUiDecimalsForQuote } from '@blockworks-foundation/mango-v4'
+import useSolPnl from './useSolPnl'
 
 export default function usePositions(showInactive = false) {
   const { stakeAccounts } = useStakeAccounts()
   const { jlpGroup, lstGroup } = useMangoGroup()
+  const { data } = useSolPnl(
+    stakeAccounts
+      ? stakeAccounts.map((x) => x.publicKey.toBase58())
+      : undefined,
+  )
 
   const jlpBorrowBank = useMemo(() => {
     return jlpGroup?.banksMapByName.get(JLP_BORROW_TOKEN)?.[0]
@@ -46,7 +52,10 @@ export default function usePositions(showInactive = false) {
       const pnl = acct ? toUiDecimalsForQuote(acct.getPnl(group).toNumber()) : 0
       const borrowBalance =
         acct && borrowBank ? acct.getTokenBalanceUi(borrowBank) : 0
-      positions.push({ borrowBalance, stakeBalance, bank, pnl, acct })
+      const solPnl =
+        acct && data ? data.accToSolPnl[acct.publicKey.toBase58()] : undefined
+
+      positions.push({ borrowBalance, stakeBalance, bank, pnl, acct, solPnl })
     }
     const sortedPositions = positions.sort(
       (a, b) => b.stakeBalance - a.stakeBalance,
@@ -62,6 +71,7 @@ export default function usePositions(showInactive = false) {
     lstGroup,
     jlpBorrowBank,
     lstBorrowBank,
+    data?.accToSolPnl,
   ])
 
   return { jlpBorrowBank, lstBorrowBank, positions }

@@ -13,8 +13,6 @@ export default function useStakeAccounts(): {
     )
   }, [mangoAccounts])
 
-  console.log(stakeAccounts, mangoAccounts)
-
   return {
     stakeAccounts,
   }
