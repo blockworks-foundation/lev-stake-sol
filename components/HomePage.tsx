@@ -47,7 +47,7 @@ const HomePage = () => {
         <NavTabs
           activeValue={activeTab}
           values={[
-            ['Boost!', 0],
+            ['Earn', 0],
             ['Positions', positions.length],
             ['Activity', 0],
           ]}
@@ -70,7 +70,7 @@ const TabContent = ({
   setActiveTab: (tab: ActiveTab) => void
 }) => {
   switch (activeTab) {
-    case 'Boost!':
+    case 'Earn':
       return <Stake />
     case 'Positions':
       return <Positions setActiveTab={setActiveTab} />

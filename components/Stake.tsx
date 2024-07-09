@@ -7,14 +7,14 @@ import DespositForm from './DepositForm'
 import { EnterBottomExitBottom } from './shared/Transitions'
 import TokenSelect from './TokenSelect'
 import { IconButton } from './shared/Button'
-import HeroTokenButton, {
-  HERO_TOKEN_BUTTON_CLASSES,
-  HERO_TOKEN_IMAGE_WRAPPER_CLASSES,
-} from './HeroTokenButton'
+import HeroTokenButton from './HeroTokenButton'
 import Image from 'next/image'
 import useStakeableTokens, { StakeableToken } from 'hooks/useStakeableTokens'
+import { useTheme } from 'next-themes'
 
 const set = mangoStore.getState().set
+
+export const YIELD_BUTTON_CLASSES = `flex items-center justify-center rounded-xl raised-button-neutral group after:rounded-xl h-32 px-6 md:px-6 w-full after:border after:border-th-bkg-3 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50`
 
 export const SOL_YIELD = [
   'bSOL',
@@ -31,6 +31,7 @@ export const SOL_YIELD = [
 const USDC_YIELD = ['JLP', 'USDC']
 
 const Stake = () => {
+  const { theme } = useTheme()
   const [tokensToShow, setTokensToShow] = useState('')
   const [showTokenSelect, setShowTokenSelect] = useState(false)
   const selectedToken = mangoStore((s) => s.selectedToken)
@@ -122,82 +123,104 @@ const Stake = () => {
             !selectedToken ? (
               <>
                 <div className="flex flex-col items-center">
-                  <div className="w-full border-b border-th-bkg-3 pb-6 text-center md:pb-8">
-                    <h1 className="mb-1">Let&apos;s Boost!</h1>
-                    <p>Leverage up your liquid staking yield.</p>
+                  <div className="w-full pb-6 text-center md:pb-8">
+                    <h1 className="mb-1">Welcome yield fans 👋</h1>
+                    <p>
+                      It&apos;s time to leverage up your liquid staking yield.
+                    </p>
                   </div>
+                  <div
+                    className={`bg-x-repeat h-2 w-full ${
+                      theme === 'Light'
+                        ? `bg-[url('/images/zigzag-repeat.svg')]`
+                        : `bg-[url('/images/zigzag-repeat-dark.svg')]`
+                    } bg-contain opacity-20`}
+                  />
                   <div className="w-full py-6 md:py-8">
                     <h2 className="mb-3 text-center text-lg font-normal">
-                      Select your yield
+                      I want to earn
                     </h2>
                     <div className="grid grid-cols-2 gap-4 text-lg font-bold">
                       <button
-                        className={`${HERO_TOKEN_BUTTON_CLASSES} ${
-                          tokensToShow === 'SOL' ? 'bg-th-bkg-2' : ''
+                        className={`${YIELD_BUTTON_CLASSES} ${
+                          tokensToShow === 'SOL'
+                            ? 'after:bg-th-bkg-2 after:md:hover:bg-th-bkg-2'
+                            : ''
                         }`}
                         onClick={() => setTokensToShow('SOL')}
                       >
-                        <div className="flex flex-col items-center">
-                          <div className={HERO_TOKEN_IMAGE_WRAPPER_CLASSES}>
+                        <div className="mt-1 flex w-full flex-col items-center group-hover:mt-2 group-active:mt-3">
+                          <div className="rounded-full border-4 border-th-bkg-1">
                             <Image
                               src={`/icons/sol.svg`}
-                              width={32}
-                              height={32}
+                              width={40}
+                              height={40}
                               alt="Select a token"
                             />
                           </div>
-                          <span>SOL</span>
+                          <span className="mt-3 leading-none">SOL</span>
                         </div>
                       </button>
                       <button
-                        className={`${HERO_TOKEN_BUTTON_CLASSES} ${
-                          tokensToShow === 'USDC' ? 'bg-th-bkg-2' : ''
+                        className={`${YIELD_BUTTON_CLASSES} ${
+                          tokensToShow === 'USDC'
+                            ? 'after:bg-th-bkg-2 after:md:hover:bg-th-bkg-2'
+                            : ''
                         }`}
                         onClick={() => setTokensToShow('USDC')}
                       >
-                        <div className="flex flex-col items-center">
-                          <div className={HERO_TOKEN_IMAGE_WRAPPER_CLASSES}>
+                        <div className="mt-1 flex w-full flex-col items-center group-hover:mt-2 group-active:mt-3">
+                          <div className="rounded-full border-4 border-th-bkg-1">
                             <Image
                               src={`/icons/usdc.svg`}
-                              width={32}
-                              height={32}
+                              width={40}
+                              height={40}
                               alt="Select a token"
                             />
                           </div>
-                          <span>USDC</span>
+                          <span className="mt-3 leading-none">USDC</span>
                         </div>
                       </button>
                     </div>
                   </div>
                 </div>
                 {tokensToShow ? (
-                  <div className="space-y-3 border-t border-th-bkg-3 pt-6 md:pt-8">
-                    <h2 className="text-center text-lg font-normal">
-                      Select a token to Boost!
-                    </h2>
-                    {selectableTokens
-                      .filter((t) => {
-                        if (tokensToShow === 'SOL') {
-                          return SOL_YIELD.includes(t.token.symbol)
-                        } else if (tokensToShow === 'USDC') {
-                          return USDC_YIELD.includes(t.token.symbol)
-                        } else return
-                      })
-                      .map((token) => {
-                        const { symbol } = token.token
-                        return (
-                          <HeroTokenButton
-                            key={symbol}
-                            onClick={() =>
-                              set((state) => {
-                                state.selectedToken = symbol
-                              })
-                            }
-                            tokenInfo={token}
-                          />
-                        )
-                      })}
-                  </div>
+                  <>
+                    <div
+                      className={`bg-x-repeat h-2 w-full ${
+                        theme === 'Light'
+                          ? `bg-[url('/images/zigzag-repeat.svg')]`
+                          : `bg-[url('/images/zigzag-repeat-dark.svg')]`
+                      } bg-contain opacity-20`}
+                    />
+                    <div className="space-y-3 pt-6 md:pt-8">
+                      <h2 className="text-center text-lg font-normal">
+                        By adding leverage to
+                      </h2>
+                      {selectableTokens
+                        .filter((t) => {
+                          if (tokensToShow === 'SOL') {
+                            return SOL_YIELD.includes(t.token.symbol)
+                          } else if (tokensToShow === 'USDC') {
+                            return USDC_YIELD.includes(t.token.symbol)
+                          } else return
+                        })
+                        .map((token) => {
+                          const { symbol } = token.token
+                          return (
+                            <HeroTokenButton
+                              key={symbol}
+                              onClick={() =>
+                                set((state) => {
+                                  state.selectedToken = symbol
+                                })
+                              }
+                              tokenInfo={token}
+                            />
+                          )
+                        })}
+                    </div>
+                  </>
                 ) : null}
               </>
             ) : (
@@ -214,7 +237,7 @@ const Stake = () => {
                   >
                     <ArrowLeftIcon className="h-5 w-5" />
                   </IconButton>
-                  <h2>Boost! {selectedToken}</h2>
+                  <h2>Leverage {selectedToken}</h2>
                 </div>
                 {selectedToken === 'USDC' ? (
                   <DespositForm

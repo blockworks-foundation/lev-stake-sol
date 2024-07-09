@@ -15,6 +15,7 @@ import BoostLogo from './BoostLogo'
 import { IconButton } from './shared/Button'
 import { Transition } from '@headlessui/react'
 import { useViewport } from 'hooks/useViewport'
+import Image from 'next/image'
 
 const TopBar = () => {
   const { connected } = useWallet()
@@ -32,7 +33,13 @@ const TopBar = () => {
     <div className="mb-8 grid h-20 grid-cols-9 px-6">
       <div className="col-span-3 flex items-center sm:col-span-1 md:col-span-3">
         <Link href="/" shallow={true}>
-          <div className="group flex items-center">
+          <Image
+            src="/logos/yield-fans.png"
+            alt="Logo"
+            height={48}
+            width={48}
+          />
+          {/* <div className="group flex items-center">
             <BoostLogo className="h-auto w-12 shrink-0 cursor-pointer group-hover:animate-shake" />
             <span className="text-shadow ml-2 hidden text-[32px] font-black text-th-bkg-1 md:block">
               Boost!
@@ -42,13 +49,13 @@ const TopBar = () => {
                 v2
               </span>
             </div>
-          </div>
+          </div> */}
         </Link>
       </div>
       <div className="col-span-3 flex items-center space-x-4 sm:col-span-4 md:col-span-3 md:justify-center">
         {!isMobile ? (
           <>
-            <NavLink active={pathname === '/'} path="/" text="Boost!" />
+            <NavLink active={pathname === '/'} path="/" text="Home" />
             <NavLink
               active={pathname === '/stats'}
               path="/stats"

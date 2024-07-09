@@ -10,11 +10,10 @@ import {
   InformationCircleIcon,
 } from '@heroicons/react/20/solid'
 
-export const HERO_TOKEN_BUTTON_CLASSES =
-  'inner-shadow-bottom default-transition relative w-full rounded-xl border border-th-bkg-3 bg-th-bkg-1 px-6 py-4 text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:bg-th-bkg-2 md:hover:focus-visible:border-th-fgd-4 font-semibold'
+const HERO_TOKEN_BUTTON_CLASSES = `flex items-center rounded-xl raised-button-neutral group after:rounded-xl h-20 px-6 md:px-6 w-full after:border after:border-th-bkg-3 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50`
 
 export const HERO_TOKEN_IMAGE_WRAPPER_CLASSES =
-  'inner-shadow-bottom-sm mb-2 flex h-14 w-14 items-center justify-center rounded-full border border-th-bkg-2 bg-gradient-to-b from-th-bkg-1 to-th-bkg-2 shrink-0'
+  'inner-shadow-bottom-sm flex h-14 w-14 items-center justify-center rounded-full border border-th-bkg-2 bg-gradient-to-b from-th-bkg-1 to-th-bkg-2 shrink-0'
 
 const HeroTokenButton = ({
   onClick,
@@ -49,20 +48,18 @@ const HeroTokenButton = ({
 
   return (
     <button className={HERO_TOKEN_BUTTON_CLASSES} onClick={onClick}>
-      <div>
-        <div className="flex items-center space-x-2.5">
-          <div className={HERO_TOKEN_IMAGE_WRAPPER_CLASSES}>
-            <Image
-              src={`/icons/${symbol.toLowerCase()}.svg`}
-              width={32}
-              height={32}
-              alt="Select a token"
-            />
-          </div>
+      <span className="mt-1 w-full group-hover:mt-2 group-active:mt-3">
+        <div className="flex items-center space-x-3">
+          <Image
+            src={`/icons/${symbol.toLowerCase()}.svg`}
+            width={40}
+            height={40}
+            alt="Select a token"
+          />
           <div className="flex w-full justify-between">
             <div className="text-left">
               <div className="flex items-center">
-                <span className="mr-1.5 text-xl font-bold">
+                <span className="mr-1.5 text-lg font-bold">
                   {formatTokenSymbol(symbol)}
                 </span>
                 <Tooltip
@@ -143,7 +140,7 @@ const HeroTokenButton = ({
             </div>
           </div>
         </div>
-      </div>
+      </span>
     </button>
   )
 }

@@ -59,7 +59,7 @@ const Positions = ({
 
   return !showAddRemove ? (
     <>
-      <div className="mb-2 flex items-center justify-between rounded-lg border-2 border-th-fgd-1 bg-th-bkg-1 px-6 py-3.5">
+      <div className="mb-2 flex items-center justify-between rounded-xl border-2 border-th-fgd-1 bg-th-bkg-1 px-6 py-3.5">
         <p className="font-medium">{`You have ${numberOfPositions} active position${
           numberOfPositions !== 1 ? 's' : ''
         }`}</p>
@@ -149,7 +149,7 @@ const PositionItem = ({
   const [showEditLeverageModal, setShowEditLeverageModal] = useState(false)
 
   const handleAddNoPosition = (token: string) => {
-    setActiveTab('Boost!')
+    setActiveTab('Earn')
     set((state) => {
       state.selectedToken = token
     })

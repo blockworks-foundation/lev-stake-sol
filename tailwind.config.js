@@ -17,12 +17,12 @@ module.exports = {
       colors: {
         'light-theme': {
           active: {
-            DEFAULT: '#ECEE8F',
-            dark: '#E2E480',
+            DEFAULT: '#110B11',
+            dark: '#000',
           },
           button: {
-            DEFAULT: '#A0DDCC',
-            hover: '#5EC1AD',
+            DEFAULT: '#47D1FF',
+            hover: '#00BBF9',
           },
           input: {
             bkg: '#F2F2F2',
@@ -41,14 +41,14 @@ module.exports = {
           'fgd-2': 'hsl(0, 0%, 15%)',
           'fgd-3': 'hsl(0, 0%, 30%)',
           'fgd-4': 'hsl(0, 0%, 40%)',
-          'primary-1': '#99ADD9',
-          'primary-2': '#889FD3',
-          'primary-3': '#728DC8',
+          'primary-1': '#EBF441',
+          'primary-2': '#F1F778',
+          'primary-3': '#110B11',
           'primary-4': '#627DB8',
         },
         'dark-theme': {
           active: {
-            DEFAULT: '#E29997',
+            DEFAULT: '#EBF441',
             dark: '#B57A79',
           },
           button: {
