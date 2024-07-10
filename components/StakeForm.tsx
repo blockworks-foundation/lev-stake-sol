@@ -419,7 +419,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
   return (
     <>
       <h2 className="text-center text-lg font-normal">Token to deposit</h2>
-      <p className="mb-3 text-center text-sm text-th-fgd-4">
+      <p className="mb-4 text-center text-sm text-th-fgd-4">
         (If you deposit {clientContext === 'jlp' ? 'USDC' : 'SOL'} it will be
         swapped to {selectedToken})
       </p>

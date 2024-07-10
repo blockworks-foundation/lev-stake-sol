@@ -88,6 +88,7 @@ th {
   --fgd-3: theme('colors.light-theme.fgd-3');
   --fgd-4: theme('colors.light-theme.fgd-4');
   --button: theme('colors.light-theme.button.DEFAULT');
+  --button-text: theme('colors.light-theme.button.text');
   --input-bkg: theme('colors.light-theme.input.bkg');
   --input-border: theme('colors.light-theme.input.border');
   --input-border-hover: theme('colors.light-theme.input.borderDark');
@@ -115,6 +116,7 @@ th {
   --fgd-3: theme('colors.dark-theme.fgd-3');
   --fgd-4: theme('colors.dark-theme.fgd-4');
   --button: theme('colors.dark-theme.button.DEFAULT');
+  --button-text: theme('colors.dark-theme.button.text');
   --button-hover: theme('colors.dark-theme.button.hover');
   --input-bkg: theme('colors.dark-theme.input.bkg');
   --input-border: theme('colors.dark-theme.input.border');

@@ -23,6 +23,7 @@ module.exports = {
           button: {
             DEFAULT: '#47D1FF',
             hover: '#00BBF9',
+            text: '#FFFFFF',
           },
           input: {
             bkg: '#F2F2F2',
@@ -54,6 +55,7 @@ module.exports = {
           button: {
             DEFAULT: '#47D1FF',
             hover: '#00BBF9',
+            text: '#110B11',
           },
           input: {
             bkg: '#352130',
@@ -93,6 +95,7 @@ module.exports = {
         'th-link': 'var(--link)',
         'th-link-hover': 'var(--link-hover)',
         'th-button': 'var(--button)',
+        'th-button-text': 'var(--button-text)',
         'th-button-hover': 'var(--button-hover)',
         'th-input-bkg': 'var(--input-bkg)',
         'th-input-border': 'var(--input-border)',

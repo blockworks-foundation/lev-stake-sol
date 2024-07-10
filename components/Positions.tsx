@@ -87,8 +87,11 @@ const Positions = ({
             ) : null
           })
         ) : (
-          <div className="flex justify-center rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
-            <span>Nothing to see here...</span>
+          <div className="flex min-h-[280px] items-center justify-center rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
+            <div className="flex flex-col items-center">
+              <span className="text-xl">😑</span>
+              <span>Nothing to see here...</span>
+            </div>
           </div>
         )}
       </div>
@@ -215,7 +218,7 @@ const PositionItem = ({
 
   return (
     <div className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
-      <div className="flex flex-col pb-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col pb-6 md:flex-row md:items-center md:justify-between">
         <div className="mb-4 flex items-center space-x-3 md:mb-0">
           <TokenLogo bank={bank} size={40} />
           <div>
@@ -249,7 +252,7 @@ const PositionItem = ({
             : `bg-[url('/images/zigzag-repeat-dark.svg')]`
         } bg-contain opacity-20`}
       />
-      <div className="grid grid-cols-1 gap-4 pt-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 pt-6 sm:grid-cols-2">
         <div>
           <p className="mb-1 text-th-fgd-4">Position Size</p>
           <span className="text-xl font-bold text-th-fgd-1">

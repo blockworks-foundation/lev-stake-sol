@@ -123,7 +123,7 @@ const HeroTokenButton = ({
                     <span className="mr-2 text-lg">{emoji}</span>
                   </Tooltip>
                 ) : null}
-                <span className={`text-xl font-bold`}>
+                <span className={`text-lg font-bold`}>
                   {!groupLoaded ? (
                     <SheenLoader>
                       <div className={`h-6 w-10 bg-th-bkg-2`} />

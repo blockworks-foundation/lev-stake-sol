@@ -36,21 +36,10 @@ const Layout = ({ children }: { children: ReactNode }) => {
         {/* <div className="border-th-primary-4 from-th-primary-3 to-th-primary-2 absolute bottom-0 h-44 w-full border-b-[20px] bg-gradient-to-b" /> */}
         <div className="relative z-10">
           <TopBar />
-          <div className="mx-auto max-w-3xl px-6 pb-20 lg:px-12">
+          <div className="mx-auto max-w-3xl px-6 pb-20 md:pb-12 lg:px-12">
             {children}
             <Footer />
           </div>
-          {/* <div className="fixed bottom-8 right-8 hidden lg:block">
-            <a
-              className="flex items-center rounded-md border-b-2 border-th-bkg-3 bg-th-bkg-1 px-2 py-0.5 text-th-fgd-1"
-              target="_blank"
-              href="https://boost-v1.mango.markets/"
-              rel="noopener noreferrer"
-            >
-              <span className="mr-1.5 block font-bold">Boost! v1</span>
-              <ArrowTopRightOnSquareIcon className="h-5 w-5" />
-            </a>
-          </div> */}
           <DeployRefreshManager />
           <TermsOfUse />
           <RestrictedCountryCheck
