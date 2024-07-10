@@ -87,7 +87,7 @@ const Positions = ({
             ) : null
           })
         ) : (
-          <div className="flex min-h-[280px] items-center justify-center rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
+          <div className="flex min-h-[336px] items-center justify-center rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
             <div className="flex flex-col items-center">
               <span className="text-xl">😑</span>
               <span>Nothing to see here...</span>
