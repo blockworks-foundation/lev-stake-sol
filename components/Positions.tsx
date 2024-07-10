@@ -28,6 +28,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import UnstakeForm from './UnstakeForm'
 import StakeForm from './StakeForm'
 import DespositForm from './DepositForm'
+import { useTheme } from 'next-themes'
 
 const set = mangoStore.getState().set
 
@@ -144,6 +145,7 @@ const PositionItem = ({
   borrowBank: Bank | undefined
 }) => {
   const { connected } = useWallet()
+  const { theme } = useTheme()
   const { jlpGroup, lstGroup } = useMangoGroup()
   const { stakeBalance, bank, pnl, acct } = position
   const [showEditLeverageModal, setShowEditLeverageModal] = useState(false)
@@ -213,13 +215,9 @@ const PositionItem = ({
 
   return (
     <div className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
-      <div className="mb-4 flex flex-col border-b border-th-bkg-3 pb-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col pb-4 md:flex-row md:items-center md:justify-between">
         <div className="mb-4 flex items-center space-x-3 md:mb-0">
-          <div
-            className={`inner-shadow-bottom-sm flex h-12 w-12 items-center justify-center rounded-full border border-th-bkg-2 bg-gradient-to-b from-th-bkg-1 to-th-bkg-2`}
-          >
-            <TokenLogo bank={bank} size={28} />
-          </div>
+          <TokenLogo bank={bank} size={40} />
           <div>
             <h3>{formatTokenSymbol(bank.name)}</h3>
             <p>${bank.uiPrice.toFixed(2)}</p>
@@ -239,12 +237,19 @@ const PositionItem = ({
         ) : (
           <Button onClick={() => handleAddNoPosition(bank.name)}>
             <p className="mb-1 text-base tracking-wider text-th-bkg-1">
-              {`Boost! ${bank.name}`}
+              {`Add`}
             </p>
           </Button>
         )}
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div
+        className={`bg-x-repeat h-2 w-full ${
+          theme === 'Light'
+            ? `bg-[url('/images/zigzag-repeat.svg')]`
+            : `bg-[url('/images/zigzag-repeat-dark.svg')]`
+        } bg-contain opacity-20`}
+      />
+      <div className="grid grid-cols-1 gap-4 pt-4 sm:grid-cols-2">
         <div>
           <p className="mb-1 text-th-fgd-4">Position Size</p>
           <span className="text-xl font-bold text-th-fgd-1">
@@ -381,10 +386,12 @@ const PositionItem = ({
                       })
                       setShowEditLeverageModal(!showEditLeverageModal)
                     }}
-                    className="default-transition flex items-center rounded-md border-b-2 border-th-bkg-4 bg-th-bkg-2 px-2.5 py-1 text-th-fgd-1 md:hover:bg-th-bkg-3"
+                    className="raised-button-neutral group flex h-8 items-center rounded-lg px-3 after:rounded-lg after:border after:border-th-bkg-3 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <AdjustmentsHorizontalIcon className="mr-1.5 h-4 w-4" />
-                    <span className="font-bold">Edit</span>
+                    <span className="flex w-full items-center group-hover:mt-1 group-active:mt-2">
+                      <AdjustmentsHorizontalIcon className="mr-1.5 h-4 w-4" />
+                      <span className="font-bold">Edit</span>
+                    </span>
                   </button>
                 ) : null}
               </div>

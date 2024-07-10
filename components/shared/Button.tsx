@@ -29,10 +29,10 @@ const Button: FunctionComponent<ButtonCombinedProps> = ({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex items-center justify-center rounded-xl ${
+      className={`flex items-center justify-center rounded-lg ${
         secondary
           ? 'border border-th-button focus-visible:border-th-fgd-4 md:hover:border-th-button-hover'
-          : 'raised-button text-shadow group text-xl text-th-bkg-1 after:rounded-xl'
+          : 'raised-button text-shadow group text-xl text-th-bkg-1 after:rounded-lg'
       } ${
         size === 'medium'
           ? 'h-10 px-4'

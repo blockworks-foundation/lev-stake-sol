@@ -299,7 +299,7 @@ table p {
 }
 
 #range-slider-gradient .range-slider__range {
-  @apply rounded-full bg-gradient-to-r from-th-success via-th-active to-th-error shadow-[inset_0_2px_0px_rgba(0,0,0,0.15)];
+  @apply rounded-full bg-gradient-to-r from-th-success via-th-warning to-th-error shadow-[inset_0_2px_0px_rgba(0,0,0,0.15)];
   background-size: 200% 100%;
   background-position: 50% 0;
 }

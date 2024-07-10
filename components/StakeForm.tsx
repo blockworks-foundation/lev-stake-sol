@@ -63,7 +63,7 @@ import { useTheme } from 'next-themes'
 const set = mangoStore.getState().set
 
 export const NUMBERFORMAT_CLASSES =
-  'inner-shadow-top-sm w-full rounded-xl border border-th-bkg-3 bg-th-input-bkg p-3 pl-12 pr-4 text-left font-bold text-xl text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:border-th-bkg-4 md:hover:focus-visible:border-th-fgd-4'
+  'inner-shadow-top-sm w-full rounded-lg border border-th-bkg-3 bg-th-input-bkg p-3 pl-12 pr-4 text-left font-bold text-xl text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:border-th-bkg-4 md:hover:focus-visible:border-th-fgd-4'
 
 interface StakeFormProps {
   token: string
@@ -418,7 +418,11 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
 
   return (
     <>
-      <h2 className="mb-3 text-center text-lg font-normal">Token to deposit</h2>
+      <h2 className="text-center text-lg font-normal">Token to deposit</h2>
+      <p className="mb-3 text-center text-sm text-th-fgd-4">
+        (If you deposit {clientContext === 'jlp' ? 'USDC' : 'SOL'} it will be
+        swapped to {selectedToken})
+      </p>
       <div className="grid grid-cols-2 gap-4 pb-6 text-lg font-bold md:pb-8">
         <button
           className={`${YIELD_BUTTON_CLASSES} ${
@@ -556,7 +560,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                   desc={
                     <div>
                       <p>
-                        No {formatTokenSymbol(selectedToken)} balance to Boost!{' '}
+                        No {formatTokenSymbol(selectedToken)} balance to add.{' '}
                         <a
                           className="font-bold"
                           href={`https://app.mango.markets/swap?in=USDC&out=${selectedToken}&walletSwap=true`}
@@ -587,7 +591,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                         <InlineNotification
                           desc={`Your ${inputAmount} ${depositToken} will be swapped to ${
                             uiOutAmount ? `~${uiOutAmount}` : ''
-                          } ${selectedToken} before Boosting!`}
+                          } ${selectedToken}`}
                           type="info"
                         />
                       )}
@@ -632,7 +636,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                 {({ open }) => (
                   <>
                     <Disclosure.Button
-                      className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${
+                      className={`w-full rounded-lg border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${
                         open ? 'rounded-b-none border-b-0' : ''
                       }`}
                     >
@@ -863,7 +867,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                 })}
               </div>
             ) : ipAllowed ? (
-              `Boost! ${
+              `Add ${
                 isSwapMode && uiOutAmount ? uiOutAmount : inputAmount
               } ${formatTokenSymbol(selectedToken)}`
             ) : (

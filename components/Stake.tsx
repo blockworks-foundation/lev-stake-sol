@@ -124,7 +124,7 @@ const Stake = () => {
               <>
                 <div className="flex flex-col items-center">
                   <div className="w-full pb-6 text-center md:pb-8">
-                    <h1 className="mb-1">Welcome yield fans 👋</h1>
+                    <h1 className="mb-1">Welcome yield fan 👋</h1>
                     <p>
                       It&apos;s time to leverage up your liquid staking yield.
                     </p>
@@ -237,7 +237,7 @@ const Stake = () => {
                   >
                     <ArrowLeftIcon className="h-5 w-5" />
                   </IconButton>
-                  <h2>Leverage {selectedToken}</h2>
+                  <h2>Add {selectedToken}</h2>
                 </div>
                 {selectedToken === 'USDC' ? (
                   <DespositForm

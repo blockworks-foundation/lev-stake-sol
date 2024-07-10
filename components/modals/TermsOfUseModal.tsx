@@ -29,7 +29,7 @@ const TermsOfUseModal = ({ isOpen, onClose }: ModalProps) => {
             height={48}
             width={48}
           />
-          <h2 className="mt-2 text-xl">Welcome yield fans</h2>
+          <h2 className="mt-2 text-xl">Welcome yield fan</h2>
           <p className="text-center">
             Earn leveraged yield on your JLP and liquid staking tokens.
           </p>

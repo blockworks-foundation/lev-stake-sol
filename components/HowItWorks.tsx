@@ -3,7 +3,7 @@ const HowItWorks = () => {
     <div className="mt-6 rounded-lg border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
       <h2 className="mb-1">Before you jump in</h2>
       <p className="mb-6 leading-relaxed">
-        Boost! is high risk. Make sure you understand how it works before
+        This product is high risk. Make sure you understand how it works before
         risking any funds.
       </p>
       <h3 className="mb-1">The basics of JLP</h3>
@@ -18,12 +18,12 @@ const HowItWorks = () => {
         all perp trading fees. This is automatically accrued in the price of JLP
         over time and is represented as an APR.
       </p>
-      <h3 className="mb-1">The basics of boosting JLP</h3>
+      <h3 className="mb-1">The basics of adding leverage to JLP</h3>
       <p className="mb-3 leading-relaxed">
-        Boost! offers a simple way to add leverage to your JLP position. It
-        works by borrowing USDC against your deposited JLP and then swapping the
-        borrowed USDC to JLP. This leaves you with more JLP than you deposited
-        and a borrowed amount of USDC.
+        This product offers a simple way to add leverage to your JLP position.
+        It works by borrowing USDC against your deposited JLP and then swapping
+        the borrowed USDC to JLP. This leaves you with more JLP than you
+        deposited and a borrowed amount of USDC.
       </p>
       <p className="mb-6 leading-relaxed">
         The idea is to increase your return by harvesting more of the native
@@ -31,7 +31,7 @@ const HowItWorks = () => {
         JLP yield. As long as your borrow costs are less than the extra JLP
         yield you make a profit.
       </p>
-      <h3 className="mb-1">Is boosting JLP always profitable?</h3>
+      <h3 className="mb-1">Is adding leverage to JLP always profitable?</h3>
       <p className="mb-3 leading-relaxed">
         No. For one, there is a real risk of liquidation. If the price of JLP
         drops below your liquidation threshold you will lose some or all of your
@@ -46,7 +46,7 @@ const HowItWorks = () => {
         This variable APR can change significantly and frequently depending on
         the ratio or USDC deposits and borrows. It is charged continuosly on the
         balance of your USDC borrow and paid to USDC depositors (lenders) on
-        Boost!.
+        yield.fans
       </p>
       <h4 className="mb-1">USDC Loan Origination Fee</h4>
       <p className="mb-3 leading-relaxed">
@@ -77,26 +77,22 @@ const HowItWorks = () => {
       </p>
       <h4 className="mb-1">Position Entry Costs</h4>
       <p className="mb-3 leading-relaxed">
-        When boosting JLP the USDC you borrow gets swapped via Jupiter to more
-        JLP. This can incur some slippage resulting in an entry price worse than
-        expected.
+        When adding leverage to JLP the USDC you borrow gets swapped via Jupiter
+        to more JLP. This can incur some slippage resulting in an entry price
+        worse than expected.
       </p>
       <p className="mb-6 leading-relaxed">
-        So, for boosting JLP to be profitable the extra yield needs to be
+        So, for leveraging JLP to be profitable the extra yield needs to be
         greater than these costs. It can also take some time for your position
         to be in profit because of the upfront fees paid to borrow USDC.
       </p>
-      <h3 className="mb-1">Boosting USDC</h3>
+      <h3 className="mb-1">Depositing USDC</h3>
       <p className="mb-6 leading-relaxed">
-        Boosting USDC is simply supplying it to the lending pool. Your USDC
-        balance will be lent to JLP boosters and will continously earn the
-        variable interest rate. There are no fees associated with lending USDC.
+        Depositing USDC is simply supplying it to the lending pool. Your USDC
+        balance will be lent to users leveraging JLP and will continously earn
+        the variable interest rate. There are no fees associated with lending
+        USDC.
       </p>
-      {/* <p className="mb-3 leading-relaxed">
-        There are no fees associated with lending USDC but there are risks. If
-        there was a catastrophic failure in JLP or Boost! you could lose all of
-        your funds.
-      </p> */}
       <h3 className="mb-1">Risks</h3>
       <p className="mb-3 leading-relaxed">
         The following risks are non-exhaustive.
@@ -108,44 +104,45 @@ const HowItWorks = () => {
         result in total loss of funds.
       </p>
       <p className="mb-3 leading-relaxed">
-        If JLP were to have a large depegging event it could leave Boost! with
-        bad debt. JLP boosters would lose due to JLP losing value and USDC
-        depositors would lose if the JLP was unable to be liquidated in time.
+        If JLP were to have a large depegging event it could leave the product
+        with bad debt. Users leveraging JLP would lose due to JLP losing value
+        and USDC depositors would lose if the JLP was unable to be liquidated in
+        time.
       </p>
       <h4 className="mb-1">Oracles</h4>
       <p className="mb-3 leading-relaxed">
-        Boost! uses 3rd party oracle providers for pricing data. It is possible
-        that bad data from these oracle services could result in liquidations
-        and/or total loss of funds.
+        This product uses 3rd party oracle providers for pricing data. It is
+        possible that bad data from these oracle services could result in
+        liquidations and/or total loss of funds.
       </p>
       <h4 className="mb-1">Liquidity</h4>
       <p className="mb-3 leading-relaxed">
-        Opening and closing positions on Boost! relies on swapping between JLP
-        and USDC without significant price impact. During an extreme market
-        event there could be issues liquidating positions effectively. This
-        could affect the liquidity available to open/close positions.
+        Opening and closing positions relies on swapping between JLP and USDC
+        without significant price impact. During an extreme market event there
+        could be issues liquidating positions effectively. This could affect the
+        liquidity available to open/close positions.
       </p>
-      <h4 className="mb-1">Boost! Code</h4>
+      <h4 className="mb-1">Code</h4>
       <p className="mb-3 leading-relaxed">
-        Boost! is an integration with the Mango v4 contracts. These are audited
-        by{' '}
+        This product is an integration with the Mango v4 contracts. These are
+        audited by{' '}
         <a href="https://osec.io/" rel="noopener noreferrer" target="_blank">
           OtterSec
         </a>{' '}
         on every release. It is still possible for exploitable vulnerabilities
         to exist that could result in total loss of funds.
       </p>
-      <h4 className="mb-1">Boost! UI</h4>
+      <h4 className="mb-1">UI</h4>
       <p className="mb-3 leading-relaxed">
-        As the Boost! UI changes fairly regularly it&apos;s possible for errors
-        to be introduced that could temporaily affect your ability to enter or
-        exit positions.
+        As the UI changes fairly regularly it&apos;s possible for errors to be
+        introduced that could temporaily affect your ability to enter or exit
+        positions.
       </p>
       <h4 className="mb-1">Solana Network and RPCs</h4>
       <p className="mb-3 leading-relaxed">
-        Boost! relies on the Solana Network and external RPCs to function. If
-        these services are down access to your funds on Boost! will be affected.
-        If this coincides with a market event you could lose funds.
+        This product relies on the Solana Network and external RPCs to function.
+        If these services are down access to your funds will be affected. If
+        this coincides with a market event you could lose funds.
       </p>
     </div>
   )

@@ -29,7 +29,7 @@ module.exports = {
             border: 'hsl(0, 0%, 33%)',
             borderDark: 'hsl(0, 0%, 23%)',
           },
-          link: { DEFAULT: '#889FD3', hover: '#728DC8' },
+          link: { DEFAULT: '#9425A7', hover: '#6B1B79' },
           error: '#EA6161',
           success: '#51E44E',
           warning: '#EAB348',
@@ -52,8 +52,8 @@ module.exports = {
             dark: '#B57A79',
           },
           button: {
-            DEFAULT: '#99ADD9',
-            hover: '#7284AC',
+            DEFAULT: '#47D1FF',
+            hover: '#00BBF9',
           },
           input: {
             bkg: '#352130',

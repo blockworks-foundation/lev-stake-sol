@@ -27,12 +27,13 @@ const NavTabs = <T extends Values>({
           key={`${value}` + i}
           onClick={() => onChange(value)}
         >
+          {count ? <div className="mr-1.5 h-5 w-5" /> : null}
           {names ? names[i] : value}
           {count ? (
             <div
-              className={`ml-2 rounded ${
+              className={`ml-1.5 h-5 w-5 rounded-full text-xs ${
                 value === activeValue ? 'bg-th-bkg-1' : 'bg-th-bkg-3'
-              } px-1.5 py-0.5 `}
+              }`}
             >
               <span className="text-sm text-th-fgd-2">{count}</span>
             </div>

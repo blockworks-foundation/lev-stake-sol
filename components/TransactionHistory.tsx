@@ -9,13 +9,15 @@ const TransactionHistory = () => {
   const { history, isLoading, refetch } = useAccountHistory()
   return (
     <div className="flex min-h-[380px] flex-col space-y-2 rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
-      <div className="text-center text-sm opacity-50">
-        History may be delayed by a few minutes.{' '}
+      <div className="text-center text-sm">
+        <span className="text-th-fgd-4">
+          History may be delayed by a few minutes.
+        </span>{' '}
         <button
-          className="text-blue-400 hover:text-blue-600 active:text-purple-900"
+          className="text-th-link md:hover:text-th-link-hover"
           onClick={() => refetch()}
         >
-          Click to refresh.
+          Click to refresh
         </button>
       </div>
       {history?.length ? (
