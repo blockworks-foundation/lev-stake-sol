@@ -46,9 +46,9 @@ import PlausibleProvider from 'next-plausible'
 // init react-query
 export const queryClient = new QueryClient()
 
-const metaTitle = 'Boost!'
+const metaTitle = 'Welcome Yield Fan'
 const metaDescription =
-  'Earn boosted yield on JLP, mSOL, JitoSOL, bSOL and USDC. Powered by Mango'
+  'Earn leveraged yield on JLP and Liquid Staking Tokens. Powered by Mango'
 
 // Do not add hooks to this component, that will cause unnecessary rerenders
 // Top level state hydrating/updating should go in MangoProvider
@@ -101,7 +101,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Boost!</title>
+        <title>Welcome Yield Fan</title>
         <link rel="icon" href="/favicon.ico" />
         <meta property="og:title" content={metaTitle} />
         <meta name="description" content={metaDescription} />
@@ -116,10 +116,10 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={metaTitle} />
         <meta name="twitter:description" content={metaDescription} />
-        <meta
+        {/* <meta
           name="twitter:image"
           content="https://boost.mango.markets/images/1200x675-share.png?345678790"
-        />
+        /> */}
         <meta name="google" content="notranslate" />
         <link rel="manifest" href="/manifest.json"></link>
       </Head>
@@ -176,7 +176,7 @@ const Telemetry = () => {
 
   return (
     <PlausibleProvider
-      domain="boost.mango.markets"
+      domain="yield.fan"
       customDomain="https://pl.mngo.cloud"
       trackLocalhost={true}
       selfHosted={true}
