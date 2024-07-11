@@ -3,7 +3,11 @@ import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import mangoStore from '@store/mangoStore'
 import TopBar from './TopBar'
 import useLocalStorageState from '../hooks/useLocalStorageState'
-import { ACCEPT_TERMS_KEY, SECONDS } from '../utils/constants'
+import {
+  ACCEPT_TERMS_KEY,
+  SECONDS,
+  YIELD_FANS_INTRO_KEY,
+} from '../utils/constants'
 import useInterval from './shared/useInterval'
 import { Transition } from '@headlessui/react'
 import { useTranslation } from 'next-i18next'
@@ -13,6 +17,10 @@ import Footer from './Footer'
 import useIpAddress from 'hooks/useIpAddress'
 import RestrictedCountryModal from './shared/RestrictedCountryModal'
 import { useRouter } from 'next/router'
+import Modal from './shared/Modal'
+import { ModalProps } from 'types/modal'
+import Button from './shared/Button'
+import Image from 'next/image'
 
 export const NON_RESTRICTED_JURISDICTION_KEY = 'non-restricted-jurisdiction-0.1'
 
@@ -42,6 +50,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
           </div>
           <DeployRefreshManager />
           <TermsOfUse />
+          <YieldFansIntro />
           <RestrictedCountryCheck
             ipCountry={ipCountry}
             loadingIpCountry={loadingIpCountry}
@@ -60,6 +69,10 @@ const TermsOfUse = () => {
     ACCEPT_TERMS_KEY,
     '',
   )
+  const [, setYieldFansIntro] = useLocalStorageState(
+    YIELD_FANS_INTRO_KEY,
+    false,
+  )
 
   const showTermsOfUse = useMemo(() => {
     return (
@@ -67,16 +80,55 @@ const TermsOfUse = () => {
     )
   }, [acceptTerms, asPath])
 
+  const handleClose = () => {
+    setAcceptTerms(Date.now())
+    setYieldFansIntro(true)
+  }
+
   return (
     <>
       {showTermsOfUse ? (
-        <TermsOfUseModal
-          isOpen={showTermsOfUse}
-          onClose={() => setAcceptTerms(Date.now())}
-        />
+        <TermsOfUseModal isOpen={showTermsOfUse} onClose={handleClose} />
       ) : null}
     </>
   )
+}
+
+const YieldFansIntro = () => {
+  const [acceptTerms] = useLocalStorageState(ACCEPT_TERMS_KEY, '')
+  const [yieldFansIntro, setYieldFansIntro] = useLocalStorageState(
+    YIELD_FANS_INTRO_KEY,
+    false,
+  )
+
+  const showModal = useMemo(() => {
+    return acceptTerms && !yieldFansIntro
+  }, [acceptTerms, yieldFansIntro])
+
+  return showModal ? (
+    <Modal isOpen={showModal} onClose={() => setYieldFansIntro(true)}>
+      <div className="flex flex-col items-center">
+        <Image
+          className="mb-3"
+          src="/logos/yield-fans.png"
+          alt="Logo"
+          height={48}
+          width={48}
+        />
+        <h2 className="mb-1 text-center">New name. Same APYs.</h2>
+        <p className="text-center">
+          Are you a fan of epic yields? Boost! is now yield.fan
+        </p>
+        <Button
+          className="mt-6"
+          onClick={() => setYieldFansIntro(true)}
+          size="medium"
+        >
+          Let&apos;s Go
+        </Button>
+      </div>
+    </Modal>
+  ) : null
 }
 
 function DeployRefreshManager(): JSX.Element | null {
