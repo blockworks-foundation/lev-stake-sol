@@ -18,7 +18,6 @@ import useIpAddress from 'hooks/useIpAddress'
 import RestrictedCountryModal from './shared/RestrictedCountryModal'
 import { useRouter } from 'next/router'
 import Modal from './shared/Modal'
-import { ModalProps } from 'types/modal'
 import Button from './shared/Button'
 import Image from 'next/image'
 
@@ -69,20 +68,18 @@ const TermsOfUse = () => {
     ACCEPT_TERMS_KEY,
     '',
   )
-  const [, setYieldFansIntro] = useLocalStorageState(
-    YIELD_FANS_INTRO_KEY,
-    false,
-  )
+  const [yieldFansIntro] = useLocalStorageState(YIELD_FANS_INTRO_KEY, false)
 
   const showTermsOfUse = useMemo(() => {
     return (
-      (!acceptTerms || acceptTerms < termsLastUpdated) && asPath !== '/risks'
+      (!acceptTerms || acceptTerms < termsLastUpdated) &&
+      asPath !== '/risks' &&
+      yieldFansIntro
     )
-  }, [acceptTerms, asPath])
+  }, [acceptTerms, asPath, yieldFansIntro])
 
   const handleClose = () => {
     setAcceptTerms(Date.now())
-    setYieldFansIntro(true)
   }
 
   return (
@@ -95,18 +92,13 @@ const TermsOfUse = () => {
 }
 
 const YieldFansIntro = () => {
-  const [acceptTerms] = useLocalStorageState(ACCEPT_TERMS_KEY, '')
   const [yieldFansIntro, setYieldFansIntro] = useLocalStorageState(
     YIELD_FANS_INTRO_KEY,
     false,
   )
 
-  const showModal = useMemo(() => {
-    return acceptTerms && !yieldFansIntro
-  }, [acceptTerms, yieldFansIntro])
-
-  return showModal ? (
-    <Modal isOpen={showModal} onClose={() => setYieldFansIntro(true)}>
+  return !yieldFansIntro ? (
+    <Modal isOpen={!yieldFansIntro} onClose={() => setYieldFansIntro(true)}>
       <div className="flex flex-col items-center">
         <Image
           className="mb-3"

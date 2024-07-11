@@ -5,7 +5,6 @@ import Button from '@components/shared/Button'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { useState } from 'react'
 import Checkbox from '@components/forms/Checkbox'
-import Image from 'next/image'
 import { useTheme } from 'next-themes'
 
 const TermsOfUseModal = ({ isOpen, onClose }: ModalProps) => {
@@ -23,16 +22,7 @@ const TermsOfUseModal = ({ isOpen, onClose }: ModalProps) => {
     >
       <div className="mb-6">
         <div className="flex flex-col items-center pb-4">
-          <Image
-            src="/logos/yield-fans.png"
-            alt="Logo"
-            height={48}
-            width={48}
-          />
-          <h2 className="mt-2 text-xl">Welcome yield fan</h2>
-          <p className="text-center">
-            Earn leveraged yield on your JLP and liquid staking tokens.
-          </p>
+          <h2 className="mt-2 text-xl">Accept terms</h2>
         </div>
         <div
           className={`bg-x-repeat h-2 w-full ${
