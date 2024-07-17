@@ -1,23 +1,19 @@
 import Link from 'next/link'
 import DiscordIcon from './icons/DiscordIcon'
 import { XIcon } from './icons/XIcon'
+import MangoMade from './icons/MangoMade'
 
 const Footer = () => {
   return (
     <>
       <div className="my-6 flex items-center justify-between rounded-xl border-2 border-th-fgd-1 bg-th-bkg-1 px-6 py-4">
         <a
-          className="flex items-center space-x-1"
-          href="https://app.mango.markets"
-          rel="noopener noreferrer"
+          className="text-th-fgd-4 focus:outline-none md:hover:text-th-fgd-2"
+          href="https://mango.markets"
+          rel="noreferrer noopener"
           target="_blank"
         >
-          <span className="font-bold text-th-fgd-1">Powered by</span>
-          <img
-            className="h-5 w-5 shrink-0"
-            src={'/images/mango.svg'}
-            alt="logo"
-          />
+          <MangoMade className="h-4 w-auto" />
         </a>
         <div className="flex items-center space-x-4">
           <a

@@ -1,12 +1,17 @@
 import { useQuery } from '@tanstack/react-query'
 import { OHLCVPairItem, fetchOHLCPair } from 'apis/birdeye/helpers'
-import { SOL_MINT, STAKEABLE_TOKENS_DATA, USDC_MINT } from 'utils/constants'
+import {
+  SOL_MINT,
+  STAKEABLE_TOKENS_DATA,
+  StakeableTokensData,
+  USDC_MINT,
+} from 'utils/constants'
 
 const avgOpenClose = (i: OHLCVPairItem) => (i.c + i.o) * 0.5
 const sum = (x: number, y: number) => x + y
 const ANNUAL_SECONDS = 60 * 60 * 24 * 365
 
-const calculateRate = (ohlcvs: OHLCVPairItem[]) => {
+const calculateRateFromOhlcv = (ohlcvs: OHLCVPairItem[]) => {
   if (ohlcvs && ohlcvs?.length > 30) {
     // basic least squares regression:
     // https://www.ncl.ac.uk/webtemplate/ask-assets/external/maths-resources/statistics/regression-and-correlation/simple-linear-regression.html
@@ -41,25 +46,16 @@ const fetchRates = async () => {
       const dailyCandles = await fetchOHLCPair(t.mint_address, quoteMint, '90')
       return dailyCandles
     })
+
+    const monthlyLstPriceChanges = await fetchApyToSol(STAKEABLE_TOKENS_DATA)
     const [
       jlpPrices,
       msolPrices,
       jitoPrices,
       bsolPrices,
-      jsolPrices,
       infPrices,
-      hubSOLPrices,
-      digitSOLPrices,
-      dualSOLPrices,
-      mangoSOLPrices,
-      compassSOLPrices,
+      jsolPrices,
     ] = await Promise.all(promises)
-    console.log({
-      digitSOLPrices,
-      dualSOLPrices,
-      mangoSOLPrices,
-      compassSOLPrices,
-    })
     // may be null if the price range cannot be calculated
     /*
     
@@ -69,21 +65,20 @@ const fetchRates = async () => {
     const lidoRange = getPriceRangeFromPeriod(lidoPrices, PERIOD.DAYS_30)
     
     */
-
+    console.log(monthlyLstPriceChanges)
     const rateData: Record<string, number> = {}
-    rateData.jlp = calculateRate(jlpPrices)?.rate ?? rateData.jlp
-    rateData.msol = calculateRate(msolPrices)?.rate ?? rateData.msol
-    rateData.jitosol = calculateRate(jitoPrices)?.rate ?? rateData.jitosol
-    rateData.bsol = calculateRate(bsolPrices)?.rate ?? rateData.bsol
-    rateData.jsol = calculateRate(jsolPrices)?.rate ?? rateData.jsol
-    rateData.inf = calculateRate(infPrices)?.rate ?? rateData.inf
-    rateData.hubsol = calculateRate(hubSOLPrices)?.rate ?? rateData.hubsol
-    rateData.digitsol = calculateRate(digitSOLPrices)?.rate ?? rateData.digitsol
-    rateData.dualsol = calculateRate(dualSOLPrices)?.rate ?? rateData.dualsol
-    rateData.mangosol = calculateRate(mangoSOLPrices)?.rate ?? rateData.mangosol
-    rateData.compasssol =
-      calculateRate(compassSOLPrices)?.rate ?? rateData.compasssol
-
+    rateData.jlp = calculateRateFromOhlcv(jlpPrices)?.rate ?? rateData.jlp
+    rateData.msol = calculateRateFromOhlcv(msolPrices)?.rate ?? rateData.msol
+    rateData.jitosol =
+      calculateRateFromOhlcv(jitoPrices)?.rate ?? rateData.jitosol
+    rateData.bsol = calculateRateFromOhlcv(bsolPrices)?.rate ?? rateData.bsol
+    rateData.inf = calculateRateFromOhlcv(infPrices)?.rate ?? rateData.inf
+    rateData.jsol = calculateRateFromOhlcv(jsolPrices)?.rate ?? rateData.jsol
+    rateData.hubsol = monthlyLstPriceChanges['hubsol'] ?? 0
+    rateData.digitsol = monthlyLstPriceChanges['digitsol'] ?? 0
+    rateData.dualsol = monthlyLstPriceChanges['dualsol'] ?? 0
+    rateData.mangosol = monthlyLstPriceChanges['mangosol'] ?? 0
+    rateData.compasssol = monthlyLstPriceChanges['compasssol'] ?? 0
     return rateData
   } catch (e) {
     return {}
@@ -102,4 +97,19 @@ export default function useStakeRates() {
     data: response.data,
     isLoading: response.isFetching || response.isLoading,
   }
+}
+
+async function fetchApyToSol(tokensData: StakeableTokensData[]) {
+  const resp = await fetch(
+    'https://api.mngo.cloud/data/boost/stats/monthly-sol-price',
+  )
+  const json: { data: { mint: string; monthly_price_change: number }[] } =
+    await resp.json()
+  const tokenToApy: { [key: string]: number } = {}
+  for (const token of tokensData) {
+    const record = json.data.find((x) => x.mint === token.mint_address)
+    const apy = (1 + (record?.monthly_price_change || 0)) ** 12 - 1
+    tokenToApy[token.symbol.toLowerCase()] = apy
+  }
+  return tokenToApy
 }

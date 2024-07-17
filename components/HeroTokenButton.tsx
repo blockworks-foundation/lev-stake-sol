@@ -112,7 +112,7 @@ const HeroTokenButton = ({
                         <p className="mb-2">
                           The max APY is favorable right now. Rates can change
                           very quickly. Make sure you understand the risks
-                          before boosting.
+                          before using this product.
                         </p>
                         <Link href="/risks" shallow>
                           Risks

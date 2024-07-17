@@ -8,7 +8,6 @@ import { EnterBottomExitBottom } from './shared/Transitions'
 import TokenSelect from './TokenSelect'
 import { IconButton } from './shared/Button'
 import HeroTokenButton from './HeroTokenButton'
-import Image from 'next/image'
 import useStakeableTokens, { StakeableToken } from 'hooks/useStakeableTokens'
 import { useTheme } from 'next-themes'
 
@@ -28,14 +27,11 @@ export const SOL_YIELD = [
   'mangoSOL',
   'compassSOL',
 ]
-const USDC_YIELD = ['JLP', 'USDC']
 
 const Stake = () => {
   const { theme } = useTheme()
-  const [tokensToShow, setTokensToShow] = useState('')
   const [showTokenSelect, setShowTokenSelect] = useState(false)
   const selectedToken = mangoStore((s) => s.selectedToken)
-  // const walletTokens = mangoStore((s) => s.wallet.tokens)
   const { stakeableTokens } = useStakeableTokens()
 
   const handleTokenSelect = useCallback((token: string) => {
@@ -47,33 +43,8 @@ const Stake = () => {
 
   const selectableTokens = useMemo(() => {
     return stakeableTokens.sort((a: StakeableToken, b: StakeableToken) => {
-      // const aClientContext = getStakableTokensDataForTokenName(
-      //   a.token.symbol,
-      // ).clientContext
-      // const aWalletBalance = walletBalanceForToken(
-      //   walletTokens,
-      //   a.token.symbol,
-      //   aClientContext,
-      // )
-      // const bClientContext = getStakableTokensDataForTokenName(
-      //   b.token.symbol,
-      // ).clientContext
-      // const bWalletBalance = walletBalanceForToken(
-      //   walletTokens,
-      //   b.token.symbol,
-      //   bClientContext,
-      // )
-
-      // const aMaxAmount = aWalletBalance.maxAmount
-      // const bMaxAmount = bWalletBalance.maxAmount
       const aApy = a.estNetApy
       const bApy = b.estNetApy
-
-      // if (bMaxAmount !== aMaxAmount) {
-      //   return bMaxAmount - aMaxAmount
-      // } else {
-      //   return bApy - aApy
-      // }
       return bApy - aApy
     })
   }, [stakeableTokens])
@@ -136,92 +107,26 @@ const Stake = () => {
                         : `bg-[url('/images/zigzag-repeat-dark.svg')]`
                     } bg-contain opacity-20`}
                   />
-                  <div className="w-full py-6 md:py-8">
-                    <h2 className="mb-3 text-center text-lg font-normal">
-                      I want to earn
-                    </h2>
-                    <div className="grid grid-cols-2 gap-4 text-lg font-bold">
-                      <button
-                        className={`${YIELD_BUTTON_CLASSES} ${
-                          tokensToShow === 'SOL'
-                            ? 'after:bg-th-bkg-2 after:md:hover:bg-th-bkg-2'
-                            : ''
-                        }`}
-                        onClick={() => setTokensToShow('SOL')}
-                      >
-                        <div className="mt-1 flex w-full flex-col items-center group-hover:mt-2 group-active:mt-3">
-                          <div className="rounded-full border-4 border-th-bkg-1">
-                            <Image
-                              src={`/icons/sol.svg`}
-                              width={40}
-                              height={40}
-                              alt="Select a token"
-                            />
-                          </div>
-                          <span className="mt-3 leading-none">SOL</span>
-                        </div>
-                      </button>
-                      <button
-                        className={`${YIELD_BUTTON_CLASSES} ${
-                          tokensToShow === 'USDC'
-                            ? 'after:bg-th-bkg-2 after:md:hover:bg-th-bkg-2'
-                            : ''
-                        }`}
-                        onClick={() => setTokensToShow('USDC')}
-                      >
-                        <div className="mt-1 flex w-full flex-col items-center group-hover:mt-2 group-active:mt-3">
-                          <div className="rounded-full border-4 border-th-bkg-1">
-                            <Image
-                              src={`/icons/usdc.svg`}
-                              width={40}
-                              height={40}
-                              alt="Select a token"
-                            />
-                          </div>
-                          <span className="mt-3 leading-none">USDC</span>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
                 </div>
-                {tokensToShow ? (
-                  <>
-                    <div
-                      className={`bg-x-repeat h-2 w-full ${
-                        theme === 'Light'
-                          ? `bg-[url('/images/zigzag-repeat.svg')]`
-                          : `bg-[url('/images/zigzag-repeat-dark.svg')]`
-                      } bg-contain opacity-20`}
-                    />
-                    <div className="space-y-3 pt-6 md:pt-8">
-                      <h2 className="text-center text-lg font-normal">
-                        By adding leverage to
-                      </h2>
-                      {selectableTokens
-                        .filter((t) => {
-                          if (tokensToShow === 'SOL') {
-                            return SOL_YIELD.includes(t.token.symbol)
-                          } else if (tokensToShow === 'USDC') {
-                            return USDC_YIELD.includes(t.token.symbol)
-                          } else return
-                        })
-                        .map((token) => {
-                          const { symbol } = token.token
-                          return (
-                            <HeroTokenButton
-                              key={symbol}
-                              onClick={() =>
-                                set((state) => {
-                                  state.selectedToken = symbol
-                                })
-                              }
-                              tokenInfo={token}
-                            />
-                          )
-                        })}
-                    </div>
-                  </>
-                ) : null}
+                <div className="space-y-3 pt-6 md:pt-8">
+                  <h2 className="text-center text-lg font-normal">
+                    Select to earn leveraged yield
+                  </h2>
+                  {selectableTokens.map((token) => {
+                    const { symbol } = token.token
+                    return (
+                      <HeroTokenButton
+                        key={symbol}
+                        onClick={() =>
+                          set((state) => {
+                            state.selectedToken = symbol
+                          })
+                        }
+                        tokenInfo={token}
+                      />
+                    )
+                  })}
+                </div>
               </>
             ) : (
               <>
@@ -266,36 +171,6 @@ const Stake = () => {
           )}
         </div>
       </div>
-      {/* {selectedToken ? (
-        <div className="fixed bottom-0 left-0 z-20 w-full lg:bottom-8 lg:left-8 lg:w-auto">
-          {isDesktop ? (
-            <a
-              className="raised-button text-shadow group flex h-20 w-20 cursor-pointer items-center justify-center p-3 text-center text-base font-extrabold after:rounded-full"
-              href={swapUrl}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <div className="group-hover:mt-1 group-active:mt-2">
-                <p className="text-th-bkg-1">Buy</p>
-                <p className="-mt-1.5 text-th-bkg-1">
-                  {formatTokenSymbol(selectedToken)}
-                </p>
-              </div>
-            </a>
-          ) : (
-            <div className="flex justify-end border-t-2 border-th-fgd-1 bg-th-bkg-1 px-4 py-3">
-              <a href={swapUrl} rel="noopener noreferrer" target="_blank">
-                <div className="flex items-center">
-                  <span className="mr-1.5 font-bold">{`Buy ${formatTokenSymbol(
-                    selectedToken,
-                  )}`}</span>
-                  <ArrowTopRightOnSquareIcon className="-mt-0.5 h-5 w-5" />
-                </div>
-              </a>
-            </div>
-          )}
-        </div>
-      ) : null} */}
     </>
   )
 }
