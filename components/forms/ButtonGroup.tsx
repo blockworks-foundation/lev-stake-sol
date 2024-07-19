@@ -47,7 +47,7 @@ const ButtonGroup = <T extends Values>({
             }
               ${
                 v === activeValue
-                  ? `inner-shadow-top-sm border-l border-th-active-dark text-th-fgd-1`
+                  ? `inner-shadow-top-sm border-l border-th-active-dark text-th-bkg-1`
                   : `transition-color inner-shadow-bottom-sm border-th-bkg-3 bg-th-bkg-1 text-th-fgd-2 duration-300 md:hover:bg-th-bkg-2 md:hover:text-th-fgd-1`
               }
               ${

@@ -32,12 +32,7 @@ const TopBar = () => {
     <div className="mb-8 grid h-20 grid-cols-9 px-6">
       <div className="col-span-3 flex items-center sm:col-span-1 md:col-span-3">
         <Link href="/" shallow={true}>
-          <Image
-            src="/logos/yield-fans.png"
-            alt="Logo"
-            height={48}
-            width={48}
-          />
+          <Image src="/logos/yieldfan.png" alt="Logo" height={48} width={48} />
         </Link>
       </div>
       <div className="col-span-3 flex items-center space-x-4 sm:col-span-4 md:col-span-3 md:justify-center">
@@ -180,8 +175,10 @@ const NavLink = ({
   return (
     <Link target={target ? target : undefined} href={path} shallow={true}>
       <span
-        className={`default-transition flex items-center rounded-md border-th-bkg-3 bg-th-bkg-1 px-2 py-0.5 text-sm font-bold md:text-base md:hover:text-th-link-hover ${
-          active ? 'border-t-2 text-th-fgd-1' : 'border-b-2 text-th-fgd-4'
+        className={`default-transition flex items-center rounded-md border-th-bkg-3 bg-th-bkg-1 px-2 py-0.5 text-sm font-bold md:text-base ${
+          active
+            ? 'border-t-2 text-th-fgd-1 md:hover:text-th-fgd-1'
+            : 'border-b-2 text-th-fgd-4 md:hover:text-th-link-hover'
         }`}
       >
         {text}
