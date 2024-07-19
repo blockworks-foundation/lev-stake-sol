@@ -26,7 +26,7 @@ const Footer = () => {
           </a>
           <a
             className="text-th-fgd-1 md:hover:text-th-fgd-3"
-            href="https://x.com/mangomarkets"
+            href="https://x.com/yieldfan"
             target="_blank"
             rel="noopener noreferrer"
           >
