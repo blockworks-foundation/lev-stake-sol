@@ -102,7 +102,7 @@ const YieldFansIntro = () => {
       <div className="flex flex-col items-center">
         <Image
           className="mb-3"
-          src="/logos/yield-fans.png"
+          src="/logos/yieldfan.png"
           alt="Logo"
           height={48}
           width={48}
