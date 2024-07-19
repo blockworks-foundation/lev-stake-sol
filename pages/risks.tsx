@@ -15,11 +15,11 @@ const Risks: NextPage = () => {
       <h1 className="mb-4">Risks</h1>
       <p className="mb-3">
         <b>KEY INVESTOR INFORMATION:</b> This document provides you with key
-        information about the Mango Markets Boost! Leveraged Staking product and
-        the risks involved. It is not marketing material. The information is
-        required to help you understand the nature and risks of investing in
-        this product.You are advised to read it so you can make an informed
-        decision about whether to invest.
+        information about this Leveraged Staking product and the risks involved.
+        It is not marketing material. The information is required to help you
+        understand the nature and risks of investing in this product.You are
+        advised to read it so you can make an informed decision about whether to
+        invest.
       </p>
       <p className="mb-3">
         <b>IMPORTANT INFORMATION: CAPITAL AT RISK</b> The value and income of
@@ -37,15 +37,15 @@ const Risks: NextPage = () => {
         blockchains, operate independently of Mango Markets DAO.
       </p>
       <p className="mb-3">
-        This leverage product, known as Boost! v2, allows users to deposit JLP
+        This leverage product, known as yield.fan, allows users to deposit JLP
         and SOL liquid staking tokens (LSTs), to be used as collateral in the
-        borrowing of USDC (if boosting JLP) or SOL (if boosting LSTs) at a
+        borrowing of USDC (if leveraging JLP) or SOL (if leveraging LSTs) at a
         variable interest rate. The USDC or SOL is used to purchase additional
         tokens, creating increased exposure.
       </p>
       <p className="mb-3">
         The product entails various fees, including variable collateral fee
-        rates (if boosting JLP), loan origination fees, and variable loan
+        rates (if leveraging JLP), loan origination fees, and variable loan
         maintenance fees. The value of your position is directly affected by
         changes in the USDC or SOL interest rate and the market value of the
         deposited tokens. Typically, an increase in borrow interest rates, or a
@@ -53,49 +53,48 @@ const Risks: NextPage = () => {
         the value of your position, potentially resulting in liquidation.
       </p>
       <p className="mb-3">
-        The Boost! leverage staking product relies on external oracles to
-        provide real-time price feeds for deposited tokens, USDC and SOL. These
-        oracles are essential for ensuring accurate collateral valuation.
-        However, investors should be aware that oracle data is subject to risks
-        of manipulation, delay, or inaccuracies. Such issues with oracle feeds
-        can lead to improper valuation of deposited assets, potentially
-        triggering unintended liquidations or affecting the overall performance
-        of your investment.
+        This leverage staking product relies on external oracles to provide
+        real-time price feeds for deposited tokens, USDC and SOL. These oracles
+        are essential for ensuring accurate collateral valuation. However,
+        investors should be aware that oracle data is subject to risks of
+        manipulation, delay, or inaccuracies. Such issues with oracle feeds can
+        lead to improper valuation of deposited assets, potentially triggering
+        unintended liquidations or affecting the overall performance of your
+        investment.
       </p>
       <p className="mb-3">
         Investors should also be aware of the inherent smart-contract risks
-        associated with the Boost! leverage staking on the Mango Markets DAO.
-        These risks include, but are not limited to, vulnerabilities in the
-        contract code that could potentially be exploited, leading to financial
-        loss.
+        associated with this product. These risks include, but are not limited
+        to, vulnerabilities in the contract code that could potentially be
+        exploited, leading to financial loss.
       </p>
       <p className="mb-6 font-bold">
-        Please consider these risks carefully before using Mango Markets Boost!
-        Leveraged Staking.
+        Please consider these risks carefully before using yield.fan
       </p>
-      <h3 className="mb-3">1. Why Boost JLP or LSTs?</h3>
+      <h3 className="mb-3">1. Why add leverage to JLP or LSTs?</h3>
       <p className="mb-6">
         Increased Exposure and Returns: Amplifies investment in JLP/LSTs,
         leveraging USDC/SOL to enhance yield potential and market position
         without the need for extra capital.
       </p>
-      <h3 className="mb-3">2. Why Not Boost JLP or LSTs?</h3>
+      <h3 className="mb-3">2. Why Not add leverage to JLP or LSTs?</h3>
       <p className="mb-6">
         Risk of Liquidation: High volatility in the JLP/LST and USDC/SOL market
         can rapidly depreciate collateral value, triggering liquidations and
         potential loss of investment.
       </p>
-      <h3 className="mb-3">3. Boosting</h3>
+      <h3 className="mb-3">3. Adding leverage</h3>
       <p className="mb-3">
-        Boosting offers a significant advantage by amplifying investors&apos;
-        exposure to JLP/LSTs and their associated yield through USDC or SOL
-        borrowing, which facilitates the acquisition of additional amounts of
-        JLP or LSTs, enhancing potential gains. This strategic leverage allows
-        investors to expand their market position and potentially increase
-        returns without the need for additional capital investment upfront. The
-        product operates within a framework of carefully calibrated risk
-        parameters, managed by the Mango DAO, to balance growth opportunities
-        against the inherent risks of the JLP/LST and USDC/SOL markets.
+        Adding leverage offers a significant advantage by amplifying
+        investors&apos; exposure to JLP/LSTs and their associated yield through
+        USDC or SOL borrowing, which facilitates the acquisition of additional
+        amounts of JLP or LSTs, enhancing potential gains. This strategic
+        leverage allows investors to expand their market position and
+        potentially increase returns without the need for additional capital
+        investment upfront. The product operates within a framework of carefully
+        calibrated risk parameters, managed by the Mango DAO, to balance growth
+        opportunities against the inherent risks of the JLP/LST and USDC/SOL
+        markets.
       </p>
       <p className="mb-3">
         However, this increased exposure is not without its costs. The primary
@@ -151,7 +150,7 @@ const Risks: NextPage = () => {
       <h3 className="mb-3">5. Objectives and Policy</h3>
       <ul className="ml-6 list-outside list-disc">
         <li className="mb-3">
-          Boost! v2 augments the investor&apos;s exposure to the deposited
+          yield.fan augments the investor&apos;s exposure to the deposited
           tokens by leveraging USDC or SOL borrowing to finance the acquisition
           of additional amounts of the deposited asset, which is designated as
           &quot;Collateral&quot;.
@@ -164,13 +163,13 @@ const Risks: NextPage = () => {
           adjusting it in accordance with their risk management strategy.
         </li>
         <li className="mb-3">
-          When boosting JLP the collateral of deposited tokens is subject to a
-          fixed rate fee, which is imposed in direct proportion to the extent of
-          the collateral that is secured by outstanding liabilities. In the
-          context of liquidations, a distinct and typically lower value, known
-          as the &quot;maintenance asset weight&quot;, comes into play,
-          representing the &quot;weighted assets&quot; threshold for triggering
-          liquidation.
+          When adding leverage to JLP the collateral of deposited tokens is
+          subject to a fixed rate fee, which is imposed in direct proportion to
+          the extent of the collateral that is secured by outstanding
+          liabilities. In the context of liquidations, a distinct and typically
+          lower value, known as the &quot;maintenance asset weight&quot;, comes
+          into play, representing the &quot;weighted assets&quot; threshold for
+          triggering liquidation.
         </li>
         <li className="mb-3">
           The USDC and SOL borrow rates are dynamically adjusted based on the
@@ -183,11 +182,12 @@ const Risks: NextPage = () => {
         </li>
         <li className="mb-3">
           The effectiveness of leveraging JLP and the associated USDC borrowing
-          rates are directly influenced by Boost! USDC, a distinct service on
+          rates are directly influenced by USDC deposits, a distinct service on
           the platform designed for USDC lending. The interplay between JLP
-          leverage and Boost USDC underscores the importance of understanding
-          the inherent risks of Boost USDC when utilizing JLP for investment
-          strategies. JLP and USDC are isolated from the LST pool.
+          leverage and deposited USDC underscores the importance of
+          understanding the inherent risks of deposited USDC when utilizing JLP
+          for investment strategies. JLP and USDC are isolated from the LST
+          pool.
         </li>
         <li className="mb-3">
           A liquidation event is initiated when the combined value of the
@@ -211,7 +211,7 @@ const Risks: NextPage = () => {
         </li>
       </ul>
       <p className="mb-6">
-        For more information on Mango Boost, risks and charges please contact{' '}
+        For more information on yield.fan, risks and charges please contact{' '}
         <a
           href="https://discord.gg/pV5mybZYY8"
           target="_blank"
@@ -220,18 +220,17 @@ const Risks: NextPage = () => {
           https://discord.gg/pV5mybZYY8
         </a>
       </p>
-      <h3 className="mb-3">6. Interdependence with Boost USDC</h3>
+      <h3 className="mb-3">6. Interdependence with deposited USDC</h3>
       <p className="mb-6">
-        The &quot;Boost JLP&quot; product intricately relies on the &quot;Boost
-        USDC&quot; , serving as a mechanism for deposits within the ecosystem.
-        Specifically, the Boost USDC product facilitates the deposit of USDC,
-        which is a critical component in enabling the leveraging features of
-        Boost JLP. This interdependence underscores a strategic approach to
-        liquidity management and leverage within the platform, where the
-        availability and conditions of USDC deposits directly influence the
-        operational dynamics of Boost JLP. As such, users engaging with Boost
-        JLP are implicitly interacting with the underlying mechanisms and risks
-        associated with Boost USDC.
+        The &quot;Leveraged JLP&quot; product intricately relies on the
+        deposited USDC, serving as a mechanism for deposits within the
+        ecosystem. Specifically, USDC deposits are a critical component in
+        enabling the leveraging of JLP. This interdependence underscores a
+        strategic approach to liquidity management and leverage within the
+        platform, where the availability and conditions of USDC deposits
+        directly influence the operational dynamics of leveraged JLP. As such,
+        users engaging with JLP are implicitly interacting with the underlying
+        mechanisms and risks associated with the deposited USDC.
       </p>
       <h3 className="mb-3">7. Charges</h3>
       <p className="mb-3">
@@ -253,10 +252,10 @@ const Risks: NextPage = () => {
           rate falls within a 0-10 percent Annual Percentage Rate (APR).
         </li>
         <li className="mb-3">
-          Collateral Fee Rate, This is a percentage fee for boosting JLP,
-          assessed on the collateral deposited by the borrower. It fluctuates
-          based on the ratio of weighted liabilities to weighted collateral,
-          affecting the overall cost of borrowing.
+          Collateral Fee Rate, This is a percentage fee for adding leverage to
+          JLP and other LSTs, assessed on the collateral deposited by the
+          borrower. It fluctuates based on the ratio of weighted liabilities to
+          weighted collateral, affecting the overall cost of borrowing.
         </li>
         <li className="mb-3">
           Swap Fees, When positions are initiated by swapping USDC or SOL for a
@@ -268,13 +267,12 @@ const Risks: NextPage = () => {
       <h3 className="mb-3">8. JLP and LST Specific Risks</h3>
       <h4 className="mb-2">8.1 Disclaimer on Jupiter Token Management</h4>
       <p className="mb-3">
-        It is important for users to understand that the Boost platform does not
-        have any control over the management, performance, or operational
-        strategies of JLP or any of the LSTs. Users should conduct their own due
-        diligence and assess the risks involved when engaging with these tokens.
-        Boost! accepts no responsibility for any financial outcomes related to
-        the fluctuation in value, liquidity, or regulatory changes affecting
-        these tokens.
+        It is important for users to understand that the platform does not have
+        any control over the management, performance, or operational strategies
+        of JLP or any of the LSTs. Users should conduct their own due diligence
+        and assess the risks involved when engaging with these tokens. We accept
+        no responsibility for any financial outcomes related to the fluctuation
+        in value, liquidity, or regulatory changes affecting these tokens.
       </p>
       <h4 className="mb-2">
         8.2 Risks Associated with Accepting JLP/LST Deposits
@@ -301,9 +299,8 @@ const Risks: NextPage = () => {
       </ul>
       <h3 className="mb-3">9. General Risks</h3>
       <p className="mb-3">
-        The below describes the potential risks faced by users of Boost!,
-        categorized into general risks, platform-specific risks, and market
-        operation risks
+        The below describes the potential risks faced by users categorized into
+        general risks, platform-specific risks, and market operation risks
       </p>
       <ul className="ml-6 list-outside list-disc">
         <li className="mb-3">
@@ -324,14 +321,14 @@ const Risks: NextPage = () => {
       <p className="mb-3">
         Solana Network Risks: Solana&apos;s architecture, designed for high
         throughput and low transaction costs, faces challenges that can impact
-        users on the Boost platform. Key areas of concern include:
+        users on the platform. Key areas of concern include:
       </p>
       <ul className="ml-6 list-outside list-disc">
         <li className="mb-3">
           Wallet Loss: The decentralized nature of blockchain technology means
           that wallet security is paramount. Users losing access to their
           private keys will find themselves permanently unable to access their
-          funds on Boost, with no centralized authority to facilitate recovery.
+          funds, with no centralized authority to facilitate recovery.
         </li>
         <li className="mb-3">
           Infrastructure Risks: The Solana network is not immune to downtimes or
@@ -373,7 +370,7 @@ const Risks: NextPage = () => {
       </ul>
       <h4 className="mb-2">9.3 Disclaimer on Oracle Management</h4>
       <p className="mb-6">
-        It is crucial for platform users to acknowledge that Boost! does not
+        It is crucial for platform users to acknowledge that yield.fan does not
         control or manage the oracle services provided by Switchboard, Pyth, or
         any other third-party oracle providers. As such, we are not liable for
         any discrepancies, inaccuracies, or failures of the oracle services. In
@@ -382,9 +379,9 @@ const Risks: NextPage = () => {
         received data, underscoring the importance of users&apos; awareness of
         these oracle provider risks.
       </p>
-      <h3 className="mb-3">10. Boost! Specific Risks</h3>
+      <h3 className="mb-3">10. Specific Risks</h3>
       <p className="mb-3">
-        The &quot;Boost&quot; products within the Mango Markets ecosystem,
+        The &quot;yield.fan&quot; products within the Mango Markets ecosystem,
         designed to enhance user engagement through leveraged positions and
         liquidity provision, carry their own set of specific risks. These risks
         stem from operational complexities, market volatilities, and
@@ -394,7 +391,7 @@ const Risks: NextPage = () => {
       </p>
       <ul className="ml-6 list-outside list-disc">
         <li className="mb-3">
-          Operational Risks: Bugs or vulnerabilities in the deployed Boost
+          Operational Risks: Bugs or vulnerabilities in the deployed Mango
           program or governance mechanisms could lead to incorrect behavior or
           loss of funds.
         </li>

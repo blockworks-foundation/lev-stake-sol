@@ -399,7 +399,7 @@ function EditLeverageForm({
                 {({ open }) => (
                   <>
                     <Disclosure.Button
-                      className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${
+                      className={`w-full rounded-lg border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${
                         open ? 'rounded-b-none border-b-0' : ''
                       }`}
                     >

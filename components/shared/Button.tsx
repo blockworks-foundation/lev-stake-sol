@@ -29,10 +29,10 @@ const Button: FunctionComponent<ButtonCombinedProps> = ({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex items-center justify-center rounded-xl ${
+      className={`flex items-center justify-center rounded-lg ${
         secondary
           ? 'border border-th-button focus-visible:border-th-fgd-4 md:hover:border-th-button-hover'
-          : 'raised-button text-shadow group text-xl text-th-bkg-1 after:rounded-xl'
+          : 'raised-button text-shadow text-th-button-text group text-xl after:rounded-lg'
       } ${
         size === 'medium'
           ? 'h-10 px-4'
@@ -88,9 +88,11 @@ export const IconButton = forwardRef<
         hideBg
           ? 'md:hover:text-th-active'
           : `group after:rounded-full ${
-              isPrimary ? 'raised-button' : 'raised-button-neutral'
+              isPrimary
+                ? 'raised-button text-[#110B11]'
+                : 'raised-button-neutral text-th-fgd-1'
             }`
-      } text-th-fgd-1 focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 
+      } focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 
       disabled:text-th-fgd-4 md:disabled:hover:text-th-fgd-4 ${className} focus-visible:text-th-active`}
       ref={ref}
     >

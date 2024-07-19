@@ -54,17 +54,16 @@ import {
   JLP_BORROW_TOKEN,
   LST_BORROW_TOKEN,
 } from 'utils/constants'
-import {
-  HERO_TOKEN_BUTTON_CLASSES,
-  HERO_TOKEN_IMAGE_WRAPPER_CLASSES,
-} from './HeroTokenButton'
+import { HERO_TOKEN_IMAGE_WRAPPER_CLASSES } from './HeroTokenButton'
 import Image from 'next/image'
 import useQuoteRoutes from 'hooks/useQuoteRoutes'
+import { YIELD_BUTTON_CLASSES } from './Stake'
+import { useTheme } from 'next-themes'
 
 const set = mangoStore.getState().set
 
 export const NUMBERFORMAT_CLASSES =
-  'inner-shadow-top-sm w-full rounded-xl border border-th-bkg-3 bg-th-input-bkg p-3 pl-12 pr-4 text-left font-bold text-xl text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:border-th-bkg-4 md:hover:focus-visible:border-th-fgd-4'
+  'inner-shadow-top-sm w-full rounded-lg border border-th-bkg-3 bg-th-input-bkg p-3 pl-12 pr-4 text-left font-bold text-xl text-th-fgd-1 focus:outline-none focus-visible:border-th-fgd-4 md:hover:border-th-bkg-4 md:hover:focus-visible:border-th-fgd-4'
 
 interface StakeFormProps {
   token: string
@@ -107,6 +106,7 @@ export const walletBalanceForToken = (
 // }
 
 function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
+  const { theme } = useTheme()
   const { t } = useTranslation(['common', 'account'])
   const [depositToken, setDepositToken] = useState(selectedToken)
   const [inputAmount, setInputAmount] = useState('')
@@ -418,50 +418,67 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
 
   return (
     <>
-      <h2 className="mb-3 text-center text-lg font-normal">Token to deposit</h2>
-      <div className="mb-6 grid grid-cols-2 gap-4 border-b border-th-bkg-3 pb-6 text-lg font-bold md:pb-8">
+      <h2 className="text-center text-lg font-normal">Token to deposit</h2>
+      <p className="mb-4 text-center text-sm text-th-fgd-4">
+        (If you deposit {clientContext === 'jlp' ? 'USDC' : 'SOL'} it will be
+        swapped to {selectedToken})
+      </p>
+      <div className="grid grid-cols-2 gap-4 pb-6 text-lg font-bold md:pb-8">
         <button
-          className={`${HERO_TOKEN_BUTTON_CLASSES} ${
-            depositToken === selectedToken ? 'bg-th-bkg-2' : ''
+          className={`${YIELD_BUTTON_CLASSES} ${
+            depositToken === selectedToken
+              ? 'after:bg-th-bkg-2 after:md:hover:bg-th-bkg-2'
+              : ''
           }`}
           onClick={() => handleDepositTokenChange(selectedToken)}
         >
-          <div className="flex flex-col items-center">
-            <div className={HERO_TOKEN_IMAGE_WRAPPER_CLASSES}>
+          <div className="flex flex-col items-center group-hover:mt-2 group-active:mt-3">
+            <div className="rounded-full border-4 border-th-bkg-1">
               <Image
                 src={`/icons/${selectedToken.toLowerCase()}.svg`}
-                width={32}
-                height={32}
+                width={40}
+                height={40}
                 alt="Select a token"
               />
             </div>
-            <span>{selectedToken}</span>
+            <span className="mt-3 leading-none">{selectedToken}</span>
           </div>
         </button>
         <button
-          className={`${HERO_TOKEN_BUTTON_CLASSES} ${
-            depositToken !== selectedToken ? 'bg-th-bkg-2' : ''
+          className={`${YIELD_BUTTON_CLASSES} ${
+            depositToken !== selectedToken
+              ? 'after:bg-th-bkg-2 after:md:hover:bg-th-bkg-2'
+              : ''
           }`}
           onClick={() =>
             handleDepositTokenChange(clientContext === 'jlp' ? 'USDC' : 'SOL')
           }
         >
-          <div className="flex flex-col items-center">
-            <div className={HERO_TOKEN_IMAGE_WRAPPER_CLASSES}>
+          <div className="flex flex-col items-center group-hover:mt-2 group-active:mt-3">
+            <div className="rounded-full border-4 border-th-bkg-1">
               <Image
                 src={
                   clientContext === 'jlp' ? '/icons/usdc.svg' : '/icons/sol.svg'
                 }
-                width={32}
-                height={32}
+                width={40}
+                height={40}
                 alt="Select a token"
               />
             </div>
-            <span>{clientContext === 'jlp' ? 'USDC' : 'SOL'}</span>
+            <span className="mt-3 leading-none">
+              {clientContext === 'jlp' ? 'USDC' : 'SOL'}
+            </span>
           </div>
         </button>
       </div>
-      <div className="flex flex-col justify-between">
+      <div
+        className={`bg-x-repeat h-2 w-full ${
+          theme === 'Light'
+            ? `bg-[url('/images/zigzag-repeat.svg')]`
+            : `bg-[url('/images/zigzag-repeat-dark.svg')]`
+        } bg-contain opacity-20`}
+      />
+      <div className="flex flex-col justify-between pt-6 md:pt-8">
         <div className="pb-8">
           <SolBalanceWarnings
             amount={inputAmount}
@@ -482,9 +499,9 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
               />
             </div>
           )}
-          <div className="grid grid-cols-2 border-b border-th-bkg-3 pb-6 md:pb-8">
+          <div className="grid grid-cols-2 pb-6 md:pb-8">
             <div className="col-span-2 flex justify-between">
-              <Label text="Amount to Boost!" />
+              <Label text="Amount" />
               <div className="mb-2 flex items-center space-x-2">
                 <MaxAmountButton
                   decimals={tokenMax.maxDecimals}
@@ -543,7 +560,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                   desc={
                     <div>
                       <p>
-                        No {formatTokenSymbol(selectedToken)} balance to Boost!{' '}
+                        No {formatTokenSymbol(selectedToken)} balance to add.{' '}
                         <a
                           className="font-bold"
                           href={`https://app.mango.markets/swap?in=USDC&out=${selectedToken}&walletSwap=true`}
@@ -574,7 +591,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                         <InlineNotification
                           desc={`Your ${inputAmount} ${depositToken} will be swapped to ${
                             uiOutAmount ? `~${uiOutAmount}` : ''
-                          } ${selectedToken} before Boosting!`}
+                          } ${selectedToken}`}
                           type="info"
                         />
                       )}
@@ -594,6 +611,13 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
               </div>
             ) : null}
           </div>
+          <div
+            className={`bg-x-repeat h-2 w-full ${
+              theme === 'Light'
+                ? `bg-[url('/images/zigzag-repeat.svg')]`
+                : `bg-[url('/images/zigzag-repeat-dark.svg')]`
+            } bg-contain opacity-20`}
+          />
           <div className="mt-6 md:mt-8">
             <div className="flex items-center justify-between">
               <Label text="Leverage" />
@@ -612,7 +636,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                 {({ open }) => (
                   <>
                     <Disclosure.Button
-                      className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${
+                      className={`w-full rounded-lg border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${
                         open ? 'rounded-b-none border-b-0' : ''
                       }`}
                     >
@@ -843,7 +867,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                 })}
               </div>
             ) : ipAllowed ? (
-              `Boost! ${
+              `Add ${
                 isSwapMode && uiOutAmount ? uiOutAmount : inputAmount
               } ${formatTokenSymbol(selectedToken)}`
             ) : (

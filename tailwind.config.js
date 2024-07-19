@@ -17,19 +17,20 @@ module.exports = {
       colors: {
         'light-theme': {
           active: {
-            DEFAULT: '#ECEE8F',
-            dark: '#E2E480',
+            DEFAULT: '#110B11',
+            dark: '#000',
           },
           button: {
-            DEFAULT: '#A0DDCC',
-            hover: '#5EC1AD',
+            DEFAULT: '#47D1FF',
+            hover: '#00BBF9',
+            text: '#FFFFFF',
           },
           input: {
             bkg: '#F2F2F2',
             border: 'hsl(0, 0%, 33%)',
             borderDark: 'hsl(0, 0%, 23%)',
           },
-          link: { DEFAULT: '#889FD3', hover: '#728DC8' },
+          link: { DEFAULT: '#9425A7', hover: '#6B1B79' },
           error: '#EA6161',
           success: '#51E44E',
           warning: '#EAB348',
@@ -41,19 +42,20 @@ module.exports = {
           'fgd-2': 'hsl(0, 0%, 15%)',
           'fgd-3': 'hsl(0, 0%, 30%)',
           'fgd-4': 'hsl(0, 0%, 40%)',
-          'primary-1': '#99ADD9',
-          'primary-2': '#889FD3',
-          'primary-3': '#728DC8',
+          'primary-1': '#EBF441',
+          'primary-2': '#F1F778',
+          'primary-3': '#110B11',
           'primary-4': '#627DB8',
         },
         'dark-theme': {
           active: {
-            DEFAULT: '#E29997',
+            DEFAULT: '#EBF441',
             dark: '#B57A79',
           },
           button: {
-            DEFAULT: '#99ADD9',
-            hover: '#7284AC',
+            DEFAULT: '#47D1FF',
+            hover: '#00BBF9',
+            text: '#110B11',
           },
           input: {
             bkg: '#352130',
@@ -93,6 +95,7 @@ module.exports = {
         'th-link': 'var(--link)',
         'th-link-hover': 'var(--link-hover)',
         'th-button': 'var(--button)',
+        'th-button-text': 'var(--button-text)',
         'th-button-hover': 'var(--button-hover)',
         'th-input-bkg': 'var(--input-bkg)',
         'th-input-border': 'var(--input-border)',

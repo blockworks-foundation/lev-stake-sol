@@ -3,7 +3,11 @@ import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import mangoStore from '@store/mangoStore'
 import TopBar from './TopBar'
 import useLocalStorageState from '../hooks/useLocalStorageState'
-import { ACCEPT_TERMS_KEY, SECONDS } from '../utils/constants'
+import {
+  ACCEPT_TERMS_KEY,
+  SECONDS,
+  YIELD_FANS_INTRO_KEY,
+} from '../utils/constants'
 import useInterval from './shared/useInterval'
 import { Transition } from '@headlessui/react'
 import { useTranslation } from 'next-i18next'
@@ -13,6 +17,9 @@ import Footer from './Footer'
 import useIpAddress from 'hooks/useIpAddress'
 import RestrictedCountryModal from './shared/RestrictedCountryModal'
 import { useRouter } from 'next/router'
+import Modal from './shared/Modal'
+import Button from './shared/Button'
+import Image from 'next/image'
 
 export const NON_RESTRICTED_JURISDICTION_KEY = 'non-restricted-jurisdiction-0.1'
 
@@ -36,23 +43,13 @@ const Layout = ({ children }: { children: ReactNode }) => {
         {/* <div className="border-th-primary-4 from-th-primary-3 to-th-primary-2 absolute bottom-0 h-44 w-full border-b-[20px] bg-gradient-to-b" /> */}
         <div className="relative z-10">
           <TopBar />
-          <div className="mx-auto max-w-3xl px-6 pb-20 lg:px-12">
+          <div className="mx-auto max-w-3xl px-6 pb-20 md:pb-12 lg:px-12">
             {children}
             <Footer />
           </div>
-          {/* <div className="fixed bottom-8 right-8 hidden lg:block">
-            <a
-              className="flex items-center rounded-md border-b-2 border-th-bkg-3 bg-th-bkg-1 px-2 py-0.5 text-th-fgd-1"
-              target="_blank"
-              href="https://boost-v1.mango.markets/"
-              rel="noopener noreferrer"
-            >
-              <span className="mr-1.5 block font-bold">Boost! v1</span>
-              <ArrowTopRightOnSquareIcon className="h-5 w-5" />
-            </a>
-          </div> */}
           <DeployRefreshManager />
           <TermsOfUse />
+          <YieldFansIntro />
           <RestrictedCountryCheck
             ipCountry={ipCountry}
             loadingIpCountry={loadingIpCountry}
@@ -71,23 +68,59 @@ const TermsOfUse = () => {
     ACCEPT_TERMS_KEY,
     '',
   )
+  const [yieldFansIntro] = useLocalStorageState(YIELD_FANS_INTRO_KEY, false)
 
   const showTermsOfUse = useMemo(() => {
     return (
-      (!acceptTerms || acceptTerms < termsLastUpdated) && asPath !== '/risks'
+      (!acceptTerms || acceptTerms < termsLastUpdated) &&
+      asPath !== '/risks' &&
+      yieldFansIntro
     )
-  }, [acceptTerms, asPath])
+  }, [acceptTerms, asPath, yieldFansIntro])
+
+  const handleClose = () => {
+    setAcceptTerms(Date.now())
+  }
 
   return (
     <>
       {showTermsOfUse ? (
-        <TermsOfUseModal
-          isOpen={showTermsOfUse}
-          onClose={() => setAcceptTerms(Date.now())}
-        />
+        <TermsOfUseModal isOpen={showTermsOfUse} onClose={handleClose} />
       ) : null}
     </>
   )
+}
+
+const YieldFansIntro = () => {
+  const [yieldFansIntro, setYieldFansIntro] = useLocalStorageState(
+    YIELD_FANS_INTRO_KEY,
+    false,
+  )
+
+  return !yieldFansIntro ? (
+    <Modal isOpen={!yieldFansIntro} onClose={() => setYieldFansIntro(true)}>
+      <div className="flex flex-col items-center">
+        <Image
+          className="mb-3"
+          src="/logos/yield-fans.png"
+          alt="Logo"
+          height={48}
+          width={48}
+        />
+        <h2 className="mb-1 text-center">New name. Same APYs.</h2>
+        <p className="text-center">
+          Are you a fan of epic yields? Boost! is now yield.fan
+        </p>
+        <Button
+          className="mt-6"
+          onClick={() => setYieldFansIntro(true)}
+          size="medium"
+        >
+          Let&apos;s Go
+        </Button>
+      </div>
+    </Modal>
+  ) : null
 }
 
 function DeployRefreshManager(): JSX.Element | null {

@@ -382,12 +382,12 @@ function UnstakeForm({
                     ) : (
                       <>
                         <Disclosure.Button
-                          className={`w-full rounded-xl border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${
+                          className={`w-full rounded-lg border-2 border-th-bkg-3 px-4 py-3 text-left focus:outline-none ${
                             open ? 'rounded-b-none border-b-0' : ''
                           }`}
                         >
                           <div className="flex items-center justify-between">
-                            <p className="font-medium">Staked Amount</p>
+                            <p className="font-medium">Staked amount</p>
                             <div className="flex items-center space-x-2">
                               <span className="text-lg font-bold text-th-fgd-1">
                                 <FormatNumericValue
@@ -405,7 +405,7 @@ function UnstakeForm({
                         </Disclosure.Button>
                         <Disclosure.Panel className="space-y-2 rounded-xl rounded-t-none border-2 border-t-0 border-th-bkg-3 px-4 pb-3">
                           <div className="flex justify-between">
-                            <p className="text-th-fgd-4">Staked Amount</p>
+                            <p className="text-th-fgd-4">Staked amount</p>
                             <span className="font-bold text-th-fgd-1">
                               <BankAmountWithValue
                                 amount={tokenMax.maxAmount}
@@ -415,7 +415,7 @@ function UnstakeForm({
                           </div>
                           <div className="flex justify-between">
                             <p className="text-th-fgd-4">
-                              Staked Amount with borrow
+                              Staked amount with borrow
                             </p>
                             <span className="font-bold text-th-fgd-1">
                               <BankAmountWithValue

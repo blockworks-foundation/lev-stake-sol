@@ -5,10 +5,11 @@ import Button from '@components/shared/Button'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { useState } from 'react'
 import Checkbox from '@components/forms/Checkbox'
-import BoostLogo from '@components/BoostLogo'
+import { useTheme } from 'next-themes'
 
 const TermsOfUseModal = ({ isOpen, onClose }: ModalProps) => {
   const { t } = useTranslation('common')
+  const { theme } = useTheme()
   const [acceptTerms, setAcceptTerms] = useState(false)
 
   return (
@@ -17,37 +18,35 @@ const TermsOfUseModal = ({ isOpen, onClose }: ModalProps) => {
       onClose={onClose}
       disableOutsideClose
       hideClose
-      panelClassNames="md:max-w-2xl bg-gradient-to-br from-th-bkg-2 to-th-bkg-1"
+      panelClassNames="md:max-w-xl bg-th-bkg-1"
     >
       <div className="mb-6">
-        <div className="mb-4 border-b border-th-bkg-3 pb-4">
-          <div className="group mb-2 flex items-center justify-center">
-            <BoostLogo className="h-auto w-12 shrink-0 cursor-pointer group-hover:animate-shake" />
-            <span className="text-shadow ml-2 block text-[32px] font-black text-th-bkg-1">
-              Boost!
-            </span>
-            <div className="ml-2.5 hidden rounded border border-th-fgd-1 bg-th-active px-1.5 py-1 md:block">
-              <span className="block font-mono text-xxs font-black leading-none text-th-fgd-1">
-                v2
-              </span>
-            </div>
-          </div>
-          <p className="text-center text-lg">
-            Earn boosted yield on your JLP and liquid staking tokens.
-          </p>
+        <div className="flex flex-col items-center pb-4">
+          <h2 className="mt-2 text-xl">Accept terms</h2>
         </div>
-        <ul className="space-y-2 border-b border-th-bkg-3 pb-4">
+        <div
+          className={`bg-x-repeat h-2 w-full ${
+            theme === 'Light'
+              ? `bg-[url('/images/zigzag-repeat.svg')]`
+              : `bg-[url('/images/zigzag-repeat-dark.svg')]`
+          } bg-contain opacity-20`}
+        />
+        <ul className="space-y-3 py-4">
           <li className="flex items-center">
             <CheckCircleIcon className="mr-2 h-5 w-5 shrink-0 text-th-success" />
-            <span>Easily add leverage to boost your yield.</span>
+            <span className="leading-tight">
+              Easily add leverage to increase your yield.
+            </span>
           </li>
           <li className="flex items-center">
             <CheckCircleIcon className="mr-2 h-5 w-5 shrink-0 text-th-success" />
-            <span>No lockup. Remove your assets when you want.</span>
+            <span className="leading-tight">
+              No lockup. Remove your assets when you want.
+            </span>
           </li>
           <li className="flex items-center">
             <CheckCircleIcon className="mr-2 h-5 w-5 shrink-0 text-th-success" />
-            <span>
+            <span className="leading-tight">
               Powered by{' '}
               <a
                 href="https://app.mango.markets"
@@ -60,6 +59,13 @@ const TermsOfUseModal = ({ isOpen, onClose }: ModalProps) => {
             </span>
           </li>
         </ul>
+        <div
+          className={`bg-x-repeat h-2 w-full ${
+            theme === 'Light'
+              ? `bg-[url('/images/zigzag-repeat.svg')]`
+              : `bg-[url('/images/zigzag-repeat-dark.svg')]`
+          } bg-contain opacity-20`}
+        />
       </div>
       <Checkbox
         checked={acceptTerms}
