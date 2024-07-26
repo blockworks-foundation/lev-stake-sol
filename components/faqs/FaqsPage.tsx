@@ -80,7 +80,7 @@ const FAQS = [
     ),
   },
   {
-    question: 'Is adding leverage always profitalbe?',
+    question: 'Is adding leverage always profitable?',
     answer: (
       <>
         <h3>JLP/Liquid staking tokens</h3>
