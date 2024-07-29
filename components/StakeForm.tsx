@@ -54,7 +54,6 @@ import {
   JLP_BORROW_TOKEN,
   LST_BORROW_TOKEN,
 } from 'utils/constants'
-import { HERO_TOKEN_IMAGE_WRAPPER_CLASSES } from './HeroTokenButton'
 import Image from 'next/image'
 import useQuoteRoutes from 'hooks/useQuoteRoutes'
 import { YIELD_BUTTON_CLASSES } from './Stake'

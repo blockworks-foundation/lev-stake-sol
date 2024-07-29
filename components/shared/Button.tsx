@@ -32,7 +32,7 @@ const Button: FunctionComponent<ButtonCombinedProps> = ({
       className={`flex items-center justify-center rounded-lg ${
         secondary
           ? 'border border-th-button focus-visible:border-th-fgd-4 md:hover:border-th-button-hover'
-          : 'raised-button text-shadow text-th-button-text group text-xl after:rounded-lg'
+          : 'raised-button text-shadow group text-xl text-th-button-text after:rounded-lg'
       } ${
         size === 'medium'
           ? 'h-10 px-4'

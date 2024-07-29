@@ -213,7 +213,6 @@ export interface OHLCVPairItem {
   unixTime: number
 }
 
-
 export const fetchOHLCPair = async (
   baseMint: string | undefined,
   quoteMint: string | undefined,
@@ -226,17 +225,13 @@ export const fetchOHLCPair = async (
   const query = `defi/ohlcv/base_quote?base_address=${baseMint}&quote_address=${quoteMint}&type=${interval}&time_from=${queryStart}&time_to=${queryEnd}`
 
   try {
-    const ohlcv = await makeApiRequest(query);
+    const ohlcv = await makeApiRequest(query)
 
-    if (
-      ohlcv.success &&
-      ohlcv?.data?.items?.length
-    ) {
-      return ohlcv.data.items as OHLCVPairItem[];
+    if (ohlcv.success && ohlcv?.data?.items?.length) {
+      return ohlcv.data.items as OHLCVPairItem[]
     } else return []
   } catch (e) {
     console.log('failed to fetch swap chart data from birdeye', e)
     return []
   }
-
 }
