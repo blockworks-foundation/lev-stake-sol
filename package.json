@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@blockworks-foundation/mango-feeds": "0.1.7",
-    "@blockworks-foundation/mango-v4": "0.31.3",
+    "@blockworks-foundation/mango-v4": "0.32.12",
     "@blockworks-foundation/mango-v4-settings": "0.14.24",
     "@blockworks-foundation/mangolana": "0.0.17",
     "@glitchful-dev/sol-apy-sdk": "3.0.2",
@@ -112,7 +112,10 @@
     "@coral-xyz/anchor": "^0.27.0",
     "eslint-config-next/eslint-import-resolver-typescript/tsconfig-paths/json5": "1.0.2",
     "crypto-js": ">=4.1.1",
-    "protobufjs": ">=7.2.5"
+    "protobufjs": ">=7.2.5",
+    "**/@solana/web3.js/node-fetch": "npm:@blockworks-foundation/node-fetch@2.6.11",
+    "**/cross-fetch/node-fetch": "npm:@blockworks-foundation/node-fetch@2.6.11",
+    "**/@blockworks-foundation/mangolana/node-fetch": "npm:@blockworks-foundation/node-fetch@2.6.11"
   },
   "lavamoat": {
     "allowScripts": {
@@ -122,6 +125,7 @@
       "@solana/wallet-adapter-wallets>@solana/wallet-adapter-torus>@toruslabs/solana-embed>@toruslabs/base-controllers>@toruslabs/broadcast-channel>@toruslabs/eccrypto>secp256k1": true,
       "@solana/wallet-adapter-wallets>@solana/wallet-adapter-torus>@toruslabs/solana-embed>@toruslabs/base-controllers>ethereumjs-util>ethereum-cryptography>secp256k1": true,
       "@solana/wallet-adapter-wallets>@solana/wallet-adapter-torus>@toruslabs/solana-embed>@toruslabs/openlogin-jrpc>@toruslabs/openlogin-utils>keccak": true,
+      "@blockworks-foundation/mango-v4>@raydium-io/raydium-sdk>tsup>esbuild": true,
       "@metaplex-foundation/js>@bundlr-network/client>arbundles>secp256k1": false,
       "@metaplex-foundation/js>@bundlr-network/client>arbundles>keccak": false,
       "@switchboard-xyz/solana.js>@switchboard-xyz/common>protobufjs": true,
