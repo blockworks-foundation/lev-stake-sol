@@ -82,7 +82,7 @@ const MANGO_BOOST_ID = new PublicKey(
   'zF2vSz6V9g1YHGmfrzsY497NJzbRr84QUrPry4bLQ25',
 )
 
-export const LITE_RPC_URL = `https://rpc.mngo.cloud/kqy2ep1ovw9g/staging/`
+export const LITE_RPC_URL = `https://rpc.mngo.cloud/kqy2ep1ovw9g/`
 const backupConnections = [
   new Connection(LITE_RPC_URL, 'recent'),
   new Connection(
