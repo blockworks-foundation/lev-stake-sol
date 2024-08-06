@@ -18,7 +18,6 @@ import Button, { IconButton } from './shared/Button'
 import Loading from './shared/Loading'
 import MaxAmountButton from '@components/shared/MaxAmountButton'
 import Tooltip from '@components/shared/Tooltip'
-import SolBalanceWarnings from '@components/shared/SolBalanceWarnings'
 import useSolBalance from 'hooks/useSolBalance'
 import {
   floorToDecimal,
@@ -53,11 +52,15 @@ import {
   ClientContextKeys,
   JLP_BORROW_TOKEN,
   LST_BORROW_TOKEN,
+  MIN_SOL_BALANCE,
 } from 'utils/constants'
 import Image from 'next/image'
 import useQuoteRoutes from 'hooks/useQuoteRoutes'
 import { YIELD_BUTTON_CLASSES } from './Stake'
 import { useTheme } from 'next-themes'
+import usePositions from 'hooks/usePositions'
+
+export const MIN_SOL_BALANCE_FOR_ACCOUNT = 0.045
 
 const set = mangoStore.getState().set
 
@@ -106,6 +109,7 @@ export const walletBalanceForToken = (
 
 function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
   const { theme } = useTheme()
+  const { positions } = usePositions()
   const { t } = useTranslation(['common', 'account'])
   const [depositToken, setDepositToken] = useState(selectedToken)
   const [inputAmount, setInputAmount] = useState('')
@@ -200,18 +204,30 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     return walletBalanceForToken(walletTokens, depositBank.name, clientContext)
   }, [walletTokens, depositBank, clientContext])
 
+  const minSol = useMemo(() => {
+    const isExistingPosition = positions.find(
+      (p) => p.bank.name === selectedToken,
+    )
+    return isExistingPosition ? MIN_SOL_BALANCE : MIN_SOL_BALANCE_FOR_ACCOUNT
+  }, [positions, selectedToken])
+
   const setMax = useCallback(() => {
     if (!depositBank) return
     let max = new Decimal(0)
 
     if (depositBank.name === 'SOL') {
-      max = floorToDecimal(tokenMax.maxAmount - 0.01, depositBank.mintDecimals)
+      if (tokenMax.maxAmount > minSol) {
+        max = floorToDecimal(
+          tokenMax.maxAmount - minSol,
+          depositBank.mintDecimals,
+        )
+      }
     } else {
       max = floorToDecimal(tokenMax.maxAmount, depositBank.mintDecimals)
     }
     setInputAmount(max.toFixed())
     setSizePercentage('100')
-  }, [depositBank, tokenMax])
+  }, [depositBank, minSol, tokenMax])
 
   const handleSizePercentage = useCallback(
     (percentage: string) => {
@@ -219,10 +235,12 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
       setSizePercentage(percentage)
       let amount = new Decimal(0)
       if (depositBank.name === 'SOL' && percentage === '100') {
-        amount = floorToDecimal(
-          new Decimal(percentage).div(100).mul(tokenMax.maxAmount),
-          depositBank.mintDecimals,
-        ).sub(0.01)
+        if (tokenMax.maxAmount > minSol) {
+          amount = floorToDecimal(
+            new Decimal(percentage).div(100).mul(tokenMax.maxAmount),
+            depositBank.mintDecimals,
+          ).sub(minSol)
+        }
       } else {
         amount = floorToDecimal(
           new Decimal(percentage).div(100).mul(tokenMax.maxAmount),
@@ -231,7 +249,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
       }
       setInputAmount(amount.toFixed())
     },
-    [tokenMax, depositBank],
+    [tokenMax, depositBank, minSol],
   )
 
   const amountToBorrow = useMemo(() => {
@@ -479,12 +497,12 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
       />
       <div className="flex flex-col justify-between pt-6 md:pt-8">
         <div className="pb-8">
-          <SolBalanceWarnings
+          {/* <SolBalanceWarnings
             amount={inputAmount}
             className="mb-4"
             setAmount={setInputAmount}
             selectedToken={selectedToken}
-          />
+          /> */}
           {availableVaultBalance < amountToBorrow && borrowBank && (
             <div className="mb-4">
               <InlineNotification
@@ -594,6 +612,16 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                           type="info"
                         />
                       )}
+                    </div>
+                  ) : null}
+
+                  {depositBank?.name === 'SOL' &&
+                  tokenMax.maxAmount - minSol < parseFloat(inputAmount) ? (
+                    <div className="mt-2">
+                      <InlineNotification
+                        type="error"
+                        desc={`Max exceeded. You need ${minSol} SOL for this transaction. Most of this will be refunded when you close your position.`}
+                      />
                     </div>
                   ) : null}
                 </>

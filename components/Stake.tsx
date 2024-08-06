@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import StakeForm from '@components/StakeForm'
+import StakeForm, { MIN_SOL_BALANCE_FOR_ACCOUNT } from '@components/StakeForm'
 import mangoStore from '@store/mangoStore'
 import { getStakableTokensDataForTokenName } from 'utils/tokens'
 import { ArrowLeftIcon, XMarkIcon } from '@heroicons/react/20/solid'
@@ -10,6 +10,9 @@ import { IconButton } from './shared/Button'
 import HeroTokenButton from './HeroTokenButton'
 import useStakeableTokens, { StakeableToken } from 'hooks/useStakeableTokens'
 import { useTheme } from 'next-themes'
+import { WRAPPED_SOL_MINT } from '@project-serum/serum/lib/token-instructions'
+import usePositions from 'hooks/usePositions'
+import InlineNotification from './shared/InlineNotification'
 
 const set = mangoStore.getState().set
 
@@ -30,6 +33,8 @@ export const SOL_YIELD = [
 
 const Stake = () => {
   const { theme } = useTheme()
+  const { positions } = usePositions()
+  const walletTokens = mangoStore((s) => s.wallet.tokens)
   const [showTokenSelect, setShowTokenSelect] = useState(false)
   const selectedToken = mangoStore((s) => s.selectedToken)
   const { stakeableTokens } = useStakeableTokens()
@@ -48,6 +53,18 @@ const Stake = () => {
       return bApy - aApy
     })
   }, [stakeableTokens])
+
+  const solBalance = useMemo(() => {
+    if (!walletTokens?.length) return 0
+    const solInWallet = walletTokens.find(
+      (token) => token.mint.toString() === WRAPPED_SOL_MINT.toString(),
+    )
+    return solInWallet ? solInWallet.uiAmount : 0
+  }, [walletTokens])
+
+  const isExistingPosition = useMemo(() => {
+    return positions.find((p) => p.bank.name === selectedToken)
+  }, [positions, selectedToken])
 
   // const swapUrl = `https://app.mango.markets/swap?in=USDC&out=${selectedToken}&walletSwap=true`
 
@@ -144,6 +161,15 @@ const Stake = () => {
                   </IconButton>
                   <h2>Add {selectedToken}</h2>
                 </div>
+                {solBalance < MIN_SOL_BALANCE_FOR_ACCOUNT &&
+                !isExistingPosition ? (
+                  <div className="mb-4">
+                    <InlineNotification
+                      type="error"
+                      desc={`You need at least ${MIN_SOL_BALANCE_FOR_ACCOUNT} SOL. Most of this is refunded when you close your position and the rest is to pay for transactions.`}
+                    />
+                  </div>
+                ) : null}
                 {selectedToken === 'USDC' ? (
                   <DespositForm
                     token="USDC"
