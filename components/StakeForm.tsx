@@ -615,7 +615,8 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                     </div>
                   ) : null}
 
-                  {depositBank?.name === 'SOL' &&
+                  {wallet?.connected &&
+                  depositBank?.name === 'SOL' &&
                   tokenMax.maxAmount - minSol < parseFloat(inputAmount) ? (
                     <div className="mt-2">
                       <InlineNotification

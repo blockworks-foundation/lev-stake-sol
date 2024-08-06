@@ -13,6 +13,7 @@ import { useTheme } from 'next-themes'
 import { WRAPPED_SOL_MINT } from '@project-serum/serum/lib/token-instructions'
 import usePositions from 'hooks/usePositions'
 import InlineNotification from './shared/InlineNotification'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const set = mangoStore.getState().set
 
@@ -33,6 +34,7 @@ export const SOL_YIELD = [
 
 const Stake = () => {
   const { theme } = useTheme()
+  const { connected } = useWallet()
   const { positions } = usePositions()
   const walletTokens = mangoStore((s) => s.wallet.tokens)
   const [showTokenSelect, setShowTokenSelect] = useState(false)
@@ -161,7 +163,8 @@ const Stake = () => {
                   </IconButton>
                   <h2>Add {selectedToken}</h2>
                 </div>
-                {solBalance < MIN_SOL_BALANCE_FOR_ACCOUNT &&
+                {connected &&
+                solBalance < MIN_SOL_BALANCE_FOR_ACCOUNT &&
                 !isExistingPosition ? (
                   <div className="mb-4">
                     <InlineNotification
