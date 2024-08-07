@@ -2,7 +2,7 @@ import '../styles/globals.css'
 import 'react-range-slider-input/dist/style.css'
 
 import type { AppProps } from 'next/app'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Adapter,
   WalletAdapterNetwork,
@@ -132,9 +132,10 @@ function MyApp({ Component, pageProps }: AppProps) {
           >
             <MangoProvider />
             <ThemeProvider defaultTheme="Light" storageKey={THEME_KEY}>
-              <Telemetry />
               <Layout>
-                <Component {...pageProps} />
+                <Telemetry>
+                  <Component {...pageProps} />
+                </Telemetry>
               </Layout>
               <TransactionNotification />
             </ThemeProvider>
@@ -152,7 +153,7 @@ type TelemetryProps = {
   walletConnected: string
 }
 
-const Telemetry = () => {
+const Telemetry = ({ children }: { children: ReactNode }) => {
   const { wallet } = useWallet()
   const [telemetryProps, setTelemetryProps] = useState<
     TelemetryProps | undefined
@@ -183,6 +184,8 @@ const Telemetry = () => {
       scriptProps={{ id: 'plausible' }}
       pageviewProps={telemetryProps}
       trackOutboundLinks={true}
-    />
+    >
+      {children}
+    </PlausibleProvider>
   )
 }
