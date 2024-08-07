@@ -7,9 +7,11 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { Popover, Transition } from '@headlessui/react'
 import mangoStore from '@store/mangoStore'
 import { WalletName, WalletReadyState } from '@solana/wallet-adapter-base'
+import { usePlausible } from 'next-plausible'
 
 export default function ConnectWalletButton() {
   const { t } = useTranslation('common')
+  const plausible = usePlausible()
   const { wallet, wallets, select, connected, connect } = useWallet()
   const mangoAccountLoading = mangoStore((s) => s.mangoAccount.initialLoad)
   const [lastWalletName] = useLocalStorageState<WalletName | null>(
@@ -30,16 +32,31 @@ export default function ConnectWalletButton() {
     return wallet?.adapter.icon || wallets[0]?.adapter.icon
   }, [wallets, lastWalletName])
 
+  const handleConnect = () => {
+    if (wallet) {
+      connect()
+    } else {
+      if (lastWalletName) {
+        select(lastWalletName)
+      } else {
+        select(detectedWallets?.[0]?.adapter.name)
+      }
+    }
+    plausible('ConnectWallet', {
+      props: {
+        walletConnected: wallet?.adapter?.publicKey?.toString(),
+        walletProvider:
+          wallet?.adapter?.name ||
+          lastWalletName ||
+          detectedWallets?.[0]?.adapter.name,
+      },
+    })
+  }
+
   return (
     <div className="relative">
       <button
-        onClick={() => {
-          if (wallet) {
-            connect()
-          } else {
-            select(lastWalletName || detectedWallets[0].adapter.name)
-          }
-        }}
+        onClick={handleConnect}
         className="raised-button-neutral group flex h-12 w-48 items-center after:rounded-full sm:w-40 lg:w-44"
       >
         <div className="relative z-10 flex h-full items-center justify-center space-x-2 px-2.5 group-hover:mt-1 group-active:mt-2 md:px-4">
