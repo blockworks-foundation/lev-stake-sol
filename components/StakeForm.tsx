@@ -59,6 +59,7 @@ import useQuoteRoutes from 'hooks/useQuoteRoutes'
 import { YIELD_BUTTON_CLASSES } from './Stake'
 import { useTheme } from 'next-themes'
 import usePositions from 'hooks/usePositions'
+import { WRAPPED_SOL_MINT } from '@project-serum/serum/lib/token-instructions'
 
 export const MIN_SOL_BALANCE_FOR_ACCOUNT = 0.045
 
@@ -173,23 +174,30 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     bestRoute?.outAmount && stakeBank
       ? toUiDecimals(bestRoute.outAmount, stakeBank.mintDecimals) * 0.999
       : 0
+
+  const stakePrice = useMemo(() => {
+    if (!borrowBank || !stakeBank) return 0
+    if (borrowBank.mint.toString() === WRAPPED_SOL_MINT.toString()) {
+      return stakeBank.uiPrice / borrowBank.uiPrice
+    } else return stakeBank.uiPrice
+  }, [stakeBank, borrowBank])
+
   const liquidationPrice = useMemo(() => {
-    let price
-    if (borrowBank?.name == 'SOL') {
-      price = Number(stakeBank?.uiPrice) / Number(borrowBank?.uiPrice)
-    } else {
-      price = Number(stakeBank?.uiPrice)
-    }
     const borrowMaintLiabWeight = Number(borrowBank?.maintLiabWeight)
     const stakeMaintAssetWeight = Number(stakeBank?.maintAssetWeight)
     const loanOriginationFee = Number(borrowBank?.loanOriginationFeeRate)
     const liqPrice =
-      price *
+      stakePrice *
       ((borrowMaintLiabWeight * (1 + loanOriginationFee)) /
         stakeMaintAssetWeight) *
       (1 - 1 / leverage)
-    return liqPrice.toFixed(3)
-  }, [stakeBank, borrowBank, leverage])
+    return liqPrice
+  }, [stakeBank, borrowBank, leverage, stakePrice])
+
+  const changeToLiquidation = useMemo(() => {
+    const change = ((stakePrice - liquidationPrice) / stakePrice) * 100
+    return change
+  }, [liquidationPrice, stakePrice])
 
   const tokenPositionsFull = useMemo(() => {
     if (!stakeBank || !usedTokens.length || !totalTokens.length) return false
@@ -432,6 +440,8 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     setInputAmount('')
     setSizePercentage('')
   }
+
+  const roundingDecimals = borrowBank?.name === 'SOL' ? 4 : 2
 
   return (
     <>
@@ -713,6 +723,17 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                               }`}
                             >
                               <FormatNumericValue
+                                value={
+                                  leverage * Number(inputAmount) * stakePrice
+                                }
+                                decimals={roundingDecimals}
+                              />{' '}
+                              {borrowBank?.name !== 'USDC'
+                                ? borrowBank?.name
+                                : 'USDC'}
+                            </span>
+                            <p className="font-body text-xs font-normal text-th-fgd-4">
+                              <FormatNumericValue
                                 value={leverage * Number(inputAmount)}
                                 decimals={3}
                               />
@@ -720,17 +741,6 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                                 {' '}
                                 {stakeBank.name}{' '}
                               </span>
-                            </span>
-                            <p className="font-body text-xs font-normal text-th-fgd-4">
-                              <FormatNumericValue
-                                value={
-                                  leverage *
-                                  Number(inputAmount) *
-                                  stakeBank?.uiPrice
-                                }
-                                decimals={3}
-                              />{' '}
-                              {'USDC'}
                             </p>
                           </div>
                         </div>
@@ -751,21 +761,36 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                         </div>
                         <div className="flex justify-between">
                           <p className="text-th-fgd-4">{`Est. Liquidation Price`}</p>
-                          <span
-                            className={`font-bold ${
-                              amountToBorrow > 0.001
-                                ? 'text-th-fgd-1'
-                                : 'text-th-bkg-4'
-                            }`}
-                          >
-                            <FormatNumericValue
-                              value={liquidationPrice}
-                              decimals={3}
-                            />
-                            {borrowBank?.name == ' USDC'
-                              ? ' USDC'
-                              : ` ${stakeBank?.name}/${borrowBank?.name}`}
-                          </span>
+                          <div className="flex flex-col items-end">
+                            <span
+                              className={`font-bold ${
+                                amountToBorrow > 0.001
+                                  ? 'text-th-fgd-1'
+                                  : 'text-th-bkg-4'
+                              }`}
+                            >
+                              {`${
+                                borrowBank?.name === 'USDC' ? '$' : ''
+                              }${liquidationPrice.toFixed(roundingDecimals)} ${
+                                borrowBank?.name !== 'USDC'
+                                  ? borrowBank?.name
+                                  : ''
+                              }`}
+                            </span>
+                            <p className="font-body text-xs font-normal text-th-fgd-4">
+                              {`${
+                                changeToLiquidation > 0
+                                  ? `-${changeToLiquidation.toFixed(2)}`
+                                  : '0.00'
+                              }% from current price ${
+                                borrowBank?.name === 'USDC' ? '$' : ''
+                              }${stakePrice.toFixed(roundingDecimals)} ${
+                                borrowBank?.name !== 'USDC'
+                                  ? borrowBank?.name
+                                  : ''
+                              }`}
+                            </p>
+                          </div>
                         </div>
                       </div>
                       <h4 className="mb-4 border-b border-th-bkg-3 pb-2 text-sm">
