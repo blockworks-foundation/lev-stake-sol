@@ -59,6 +59,7 @@ import useQuoteRoutes from 'hooks/useQuoteRoutes'
 import { YIELD_BUTTON_CLASSES } from './Stake'
 import { useTheme } from 'next-themes'
 import usePositions from 'hooks/usePositions'
+import { usePlausible } from 'next-plausible'
 
 export const MIN_SOL_BALANCE_FOR_ACCOUNT = 0.045
 
@@ -110,6 +111,7 @@ export const walletBalanceForToken = (
 function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
   const { theme } = useTheme()
   const { positions } = usePositions()
+  const plausible = usePlausible()
   const { t } = useTranslation(['common', 'account'])
   const [depositToken, setDepositToken] = useState(selectedToken)
   const [inputAmount, setInputAmount] = useState('')
@@ -315,6 +317,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     set((state) => {
       state.submittingBoost = true
     })
+    plausible('PositionEntryStart')
     try {
       // const newAccountfNum = getNextAccountNumber(mangoAccounts)
       let stakeAmount = parseFloat(inputAmount)
@@ -363,6 +366,14 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
       })
       setInputAmount('')
       setSizePercentage('')
+      plausible('PositionEntrySuccess', {
+        props: {
+          description: `${publicKey.toString()} ${inputAmount} ${
+            stakeBank.name
+          } ${leverage}x`,
+          wallet: publicKey.toString(),
+        },
+      })
       await sleep(500)
       if (!mangoAccount) {
         await actions.fetchMangoAccounts(publicKey)
@@ -373,6 +384,12 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
       console.error('Error depositing:', e)
       set((state) => {
         state.submittingBoost = false
+      })
+      plausible('PositionEntryError', {
+        props: {
+          error: `${e}`,
+          wallet: publicKey.toString(),
+        },
       })
       if (!isMangoError(e)) return
       notify({
