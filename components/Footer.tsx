@@ -41,14 +41,18 @@ const Footer = () => {
         >
           Risks
         </Link>
-        <a
+        <Link
           className="font-bold text-th-fgd-1 md:hover:text-th-fgd-3"
-          href="https://docs.mango.markets/legal/terms-of-use"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="/terms-of-use"
         >
           Terms of Use
-        </a>
+        </Link>
+        <Link
+          className="font-bold text-th-fgd-1 md:hover:text-th-fgd-3"
+          href="/privacy-policy"
+        >
+          Privacy Policy
+        </Link>
       </div>
     </>
   )

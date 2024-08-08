@@ -268,7 +268,7 @@ export const SWAP_MARGIN_KEY = 'swapMargin-0.1'
 
 export const SHOW_SWAP_INTRO_MODAL = 'showSwapModal-0.1'
 
-export const ACCEPT_TERMS_KEY = 'termsOfUseAccepted-0.1'
+export const ACCEPT_TERMS_KEY = 'termsOfUseAccepted-0.2'
 export const YIELD_FANS_INTRO_KEY = 'YieldFansIntro-0.1'
 
 export const TRADE_LAYOUT_KEY = 'tradeLayoutKey-0.1'

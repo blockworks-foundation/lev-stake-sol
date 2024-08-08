@@ -79,16 +79,24 @@ const TermsOfUseModal = ({ isOpen, onClose }: ModalProps) => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Risks
+            Risks,
           </a>
-          and
           <a
             className="mx-1"
-            href="https://docs.mango.markets/legal/terms-of-use"
+            href="/terms-of-use"
             rel="noopener noreferrer"
             target="_blank"
           >
             {t('terms-of-use')}
+          </a>
+          and
+          <a
+            className="mx-1"
+            href="/privacy-policy"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Privacy Policy
           </a>
         </p>
       </Checkbox>

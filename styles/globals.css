@@ -460,3 +460,11 @@ table p {
 .rotate-bg-5x {
   animation: rotate-bg 3s linear infinite;
 }
+
+.terms p {
+  @apply mb-3;
+}
+
+.terms h2 {
+  @apply mb-3 mt-6;
+}

@@ -74,6 +74,8 @@ const TermsOfUse = () => {
     return (
       (!acceptTerms || acceptTerms < termsLastUpdated) &&
       asPath !== '/risks' &&
+      asPath !== '/terms-of-use' &&
+      asPath !== '/privacy-policy' &&
       yieldFansIntro
     )
   }, [acceptTerms, asPath, yieldFansIntro])
