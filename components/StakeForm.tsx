@@ -286,6 +286,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     borrowBank?.uiPrice,
     clientContext,
     leverage,
+    uiOutAmount,
   ])
 
   const availableVaultBalance = useMemo(() => {
@@ -413,11 +414,13 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     publicKey,
     clientContext,
     inputAmount,
+    leverage,
     bestRoute,
     isSwapMode,
     amountToBorrow,
     connection,
     wallet,
+    plausible,
   ])
 
   const showInsufficientBalance =
