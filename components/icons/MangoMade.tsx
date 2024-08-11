@@ -6,7 +6,7 @@ const MangoMade = ({ className }: { className?: string }) => {
       viewBox="0 0 160 20"
       fill="currentColor"
     >
-      <g clip-path="url(#clip0_238_56)">
+      <g clipPath="url(#clip0_238_56)">
         <path
           fillRule="evenodd"
           clipRule="evenodd"
@@ -72,9 +72,9 @@ const MangoMade = ({ className }: { className?: string }) => {
           y2="16.6003"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#E54033" />
-          <stop offset="0.489583" stop-color="#FECA1A" />
-          <stop offset="1" stop-color="#AFD803" />
+          <stop stopColor="#E54033" />
+          <stop offset="0.489583" stopColor="#FECA1A" />
+          <stop offset="1" stopColor="#AFD803" />
         </linearGradient>
         <linearGradient
           id="paint1_linear_238_56"
@@ -84,8 +84,8 @@ const MangoMade = ({ className }: { className?: string }) => {
           y2="-502.379"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.15" stop-color="#6CBF00" />
-          <stop offset="1" stop-color="#AFD803" />
+          <stop offset="0.15" stopColor="#6CBF00" />
+          <stop offset="1" stopColor="#AFD803" />
         </linearGradient>
         <linearGradient
           id="paint2_linear_238_56"
@@ -95,8 +95,8 @@ const MangoMade = ({ className }: { className?: string }) => {
           y2="12.9779"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.21" stop-color="#E54033" />
-          <stop offset="0.84" stop-color="#FECA1A" />
+          <stop offset="0.21" stopColor="#E54033" />
+          <stop offset="0.84" stopColor="#FECA1A" />
         </linearGradient>
         <linearGradient
           id="paint3_linear_238_56"
@@ -106,9 +106,9 @@ const MangoMade = ({ className }: { className?: string }) => {
           y2="14.7946"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FECA1A" />
-          <stop offset="0.4" stop-color="#FECA1A" />
-          <stop offset="1" stop-color="#AFD803" />
+          <stop stopColor="#FECA1A" />
+          <stop offset="0.4" stopColor="#FECA1A" />
+          <stop offset="1" stopColor="#AFD803" />
         </linearGradient>
         <linearGradient
           id="paint4_linear_238_56"
@@ -118,8 +118,8 @@ const MangoMade = ({ className }: { className?: string }) => {
           y2="6.78148"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.16" stop-color="#E54033" />
-          <stop offset="0.84" stop-color="#FECA1A" />
+          <stop offset="0.16" stopColor="#E54033" />
+          <stop offset="0.84" stopColor="#FECA1A" />
         </linearGradient>
         <linearGradient
           id="paint5_linear_238_56"
@@ -129,8 +129,8 @@ const MangoMade = ({ className }: { className?: string }) => {
           y2="12.4836"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FECA1A" />
-          <stop offset="0.76" stop-color="#E54033" />
+          <stop stopColor="#FECA1A" />
+          <stop offset="0.76" stopColor="#E54033" />
         </linearGradient>
         <linearGradient
           id="paint6_linear_238_56"
@@ -140,8 +140,8 @@ const MangoMade = ({ className }: { className?: string }) => {
           y2="11.9193"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.16" stop-color="#FECA1A" />
-          <stop offset="1" stop-color="#E54033" />
+          <stop offset="0.16" stopColor="#FECA1A" />
+          <stop offset="1" stopColor="#E54033" />
         </linearGradient>
         <linearGradient
           id="paint7_linear_238_56"
@@ -151,8 +151,8 @@ const MangoMade = ({ className }: { className?: string }) => {
           y2="4.58952"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.15" stop-color="#6CBF00" />
-          <stop offset="1" stop-color="#AFD803" />
+          <stop offset="0.15" stopColor="#6CBF00" />
+          <stop offset="1" stopColor="#AFD803" />
         </linearGradient>
         <linearGradient
           id="paint8_linear_238_56"
@@ -162,8 +162,8 @@ const MangoMade = ({ className }: { className?: string }) => {
           y2="-502.385"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.15" stop-color="#6CBF00" />
-          <stop offset="1" stop-color="#AFD803" />
+          <stop offset="0.15" stopColor="#6CBF00" />
+          <stop offset="1" stopColor="#AFD803" />
         </linearGradient>
         <clipPath id="clip0_238_56">
           <rect width="160" height="20" />

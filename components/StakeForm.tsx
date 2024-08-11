@@ -56,8 +56,7 @@ import {
 } from 'utils/constants'
 import Image from 'next/image'
 import useQuoteRoutes from 'hooks/useQuoteRoutes'
-import { YIELD_BUTTON_CLASSES } from './Stake'
-import { useTheme } from 'next-themes'
+import { YIELD_BUTTON_CLASSES, ZigZagRepeatLine } from './Stake'
 import usePositions from 'hooks/usePositions'
 import { WRAPPED_SOL_MINT } from '@project-serum/serum/lib/token-instructions'
 import { usePlausible } from 'next-plausible'
@@ -110,7 +109,6 @@ export const walletBalanceForToken = (
 // }
 
 function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
-  const { theme } = useTheme()
   const { positions } = usePositions()
   const plausible = usePlausible()
   const { t } = useTranslation(['common', 'account'])
@@ -518,13 +516,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
           </div>
         </button>
       </div>
-      <div
-        className={`bg-x-repeat h-2 w-full ${
-          theme === 'Light'
-            ? `bg-[url('/images/zigzag-repeat.svg')]`
-            : `bg-[url('/images/zigzag-repeat-dark.svg')]`
-        } bg-contain opacity-20`}
-      />
+      <ZigZagRepeatLine />
       <div className="flex flex-col justify-between pt-6 md:pt-8">
         <div className="pb-8">
           {/* <SolBalanceWarnings
@@ -669,13 +661,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
               </div>
             ) : null}
           </div>
-          <div
-            className={`bg-x-repeat h-2 w-full ${
-              theme === 'Light'
-                ? `bg-[url('/images/zigzag-repeat.svg')]`
-                : `bg-[url('/images/zigzag-repeat-dark.svg')]`
-            } bg-contain opacity-20`}
-          />
+          <ZigZagRepeatLine />
           <div className="mt-6 md:mt-8">
             <div className="flex items-center justify-between">
               <Label text="Leverage" />

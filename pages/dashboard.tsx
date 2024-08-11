@@ -1,4 +1,4 @@
-import HomePage from '@components/home/HomePage'
+import DashboardPage from '@components/DashboardPage'
 import type { NextPage } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
@@ -10,8 +10,8 @@ export async function getStaticProps({ locale }: { locale: string }) {
   }
 }
 
-const Index: NextPage = () => {
-  return <HomePage />
+const Dashboard: NextPage = () => {
+  return <DashboardPage />
 }
 
-export default Index
+export default Dashboard

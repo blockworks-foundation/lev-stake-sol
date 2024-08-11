@@ -28,8 +28,8 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import UnstakeForm from './UnstakeForm'
 import StakeForm from './StakeForm'
 import DespositForm from './DepositForm'
-import { useTheme } from 'next-themes'
 import { WRAPPED_SOL_MINT } from '@project-serum/serum/lib/token-instructions'
+import { ZigZagRepeatLine } from './Stake'
 
 const set = mangoStore.getState().set
 
@@ -150,7 +150,6 @@ const PositionItem = ({
   borrowBank: Bank | undefined
 }) => {
   const { connected } = useWallet()
-  const { theme } = useTheme()
   const { jlpGroup, lstGroup } = useMangoGroup()
   const { stakeBalance, bank, pnl, acct, solPnl } = position
   const [showEditLeverageModal, setShowEditLeverageModal] = useState(false)
@@ -178,7 +177,6 @@ const PositionItem = ({
 
   const leverage = useMemo(() => {
     if (!acct || !bank) return 1
-    const isJlpGroup = bank.name === 'JLP' || bank.name === 'USDC'
     const group = isJlpGroup ? jlpGroup : lstGroup
     if (!group) return 1
     const accountValue = toUiDecimalsForQuote(acct.getEquity(group).toNumber())
@@ -260,13 +258,7 @@ const PositionItem = ({
           </Button>
         )}
       </div>
-      <div
-        className={`bg-x-repeat h-2 w-full ${
-          theme === 'Light'
-            ? `bg-[url('/images/zigzag-repeat.svg')]`
-            : `bg-[url('/images/zigzag-repeat-dark.svg')]`
-        } bg-contain opacity-20`}
-      />
+      <ZigZagRepeatLine />
       <div className="grid grid-cols-1 gap-4 pt-6 sm:grid-cols-2">
         <div>
           <p className="mb-1 text-th-fgd-4">Position Size</p>

@@ -20,6 +20,9 @@ import { useRouter } from 'next/router'
 import Modal from './shared/Modal'
 import Button from './shared/Button'
 import Image from 'next/image'
+import ThemeToggle from './ThemeToggle'
+import ButtonLink from './shared/ButtonLink'
+import Link from 'next/link'
 
 export const NON_RESTRICTED_JURISDICTION_KEY = 'non-restricted-jurisdiction-0.1'
 
@@ -29,10 +32,15 @@ const termsLastUpdated = 1679441610978
 const Layout = ({ children }: { children: ReactNode }) => {
   const { ipCountry, loadingIpCountry } = useIpAddress()
   const themeData = mangoStore((s) => s.themeData)
+  const { asPath } = useRouter()
 
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  if (!mounted) return null
+  const isDashboardLayout = useMemo(() => {
+    return asPath === '/dashboard' || asPath === '/stats'
+  }, [asPath])
+
+  // const [mounted, setMounted] = useState(false)
+  // useEffect(() => setMounted(true), [])
+  // if (!mounted) return null
 
   return (
     <main
@@ -42,11 +50,36 @@ const Layout = ({ children }: { children: ReactNode }) => {
       <div className={`relative min-h-screen`}>
         {/* <div className="border-th-primary-4 from-th-primary-3 to-th-primary-2 absolute bottom-0 h-44 w-full border-b-[20px] bg-gradient-to-b" /> */}
         <div className="relative z-10">
-          <TopBar />
-          <div className="mx-auto max-w-3xl px-6 pb-20 md:pb-12 lg:px-12">
-            {children}
-            <Footer />
-          </div>
+          {isDashboardLayout ? (
+            <>
+              <TopBar />
+              <div className="mx-auto max-w-3xl px-6 pb-20 md:pb-12 lg:px-12">
+                {children}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-3 md:px-6 md:py-4">
+                <Link href="/" shallow={true}>
+                  <Image
+                    src="/logos/yieldfan.png"
+                    alt="Logo"
+                    height={48}
+                    width={48}
+                  />
+                </Link>
+                <div className="flex items-center space-x-4">
+                  <ThemeToggle />
+                  <ButtonLink path="/dashboard" size="small">
+                    Launch App
+                  </ButtonLink>
+                </div>
+              </div>
+              {children}
+            </>
+            // <div className="mx-auto max-w-[1440px]">{children}</div>
+          )}
+          <Footer />
           <DeployRefreshManager />
           <TermsOfUse />
           <YieldFansIntro />
@@ -98,6 +131,10 @@ const YieldFansIntro = () => {
     YIELD_FANS_INTRO_KEY,
     false,
   )
+
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  if (!mounted) return null
 
   return !yieldFansIntro ? (
     <Modal isOpen={!yieldFansIntro} onClose={() => setYieldFansIntro(true)}>

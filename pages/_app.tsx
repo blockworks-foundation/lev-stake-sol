@@ -101,7 +101,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Best Yield on Solana | Yield Fan</title>
+        <title>Solana&apos;s Best Yield Farm | Yield Fan</title>
         <link rel="icon" href="/favicon.ico" />
         <meta property="og:title" content={metaTitle} />
         <meta name="description" content={metaDescription} />

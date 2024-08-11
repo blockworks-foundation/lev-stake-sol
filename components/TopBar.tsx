@@ -28,6 +28,10 @@ const TopBar = () => {
     setTimeout(() => setCopied(''), 2000)
   }, [copied])
 
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  if (!mounted) return null
+
   return (
     <div className="mb-8 grid h-20 grid-cols-9 px-6">
       <div className="col-span-3 flex items-center sm:col-span-1 md:col-span-3">
@@ -38,18 +42,21 @@ const TopBar = () => {
       <div className="col-span-3 flex items-center space-x-4 sm:col-span-4 md:col-span-3 md:justify-center">
         {!isMobile ? (
           <>
-            <NavLink active={pathname === '/'} path="/" text="Home" />
+            <NavLink
+              active={pathname === '/dashboard'}
+              path="/dashboard"
+              text="Dashboard"
+            />
             <NavLink
               active={pathname === '/stats'}
               path="/stats"
               text="Stats"
             />
-            <NavLink active={pathname === '/faqs'} path="/faqs" text="FAQs" />
           </>
         ) : null}
       </div>
       <div className="col-span-3 flex items-center justify-end sm:col-span-4 md:col-span-3">
-        <div className="flex space-x-3">
+        <div className="flex space-x-4">
           {isMobile ? (
             <>
               {connected ? <ConnectedMenu /> : <ConnectWalletButton />}
