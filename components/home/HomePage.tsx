@@ -256,7 +256,7 @@ const WRAPPER_Y_PADDING = 'py-12 md:py-20'
 const HomePage = () => {
   return (
     <>
-      <div className={`flex flex-col items-center ${WRAPPER_Y_PADDING}`}>
+      <div className={`flex flex-col items-center ${WRAPPER_Y_PADDING} px-6`}>
         <span className="mb-8 rounded-md bg-black px-2 py-1 font-bold text-light-theme-primary-2">
           Earn up to <BestApy /> APY
         </span>
