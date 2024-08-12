@@ -1,13 +1,9 @@
-import { Fragment, ReactNode, useEffect, useMemo, useState } from 'react'
+import { Fragment, ReactNode, useMemo, useState } from 'react'
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import mangoStore from '@store/mangoStore'
 import TopBar from './TopBar'
 import useLocalStorageState from '../hooks/useLocalStorageState'
-import {
-  ACCEPT_TERMS_KEY,
-  SECONDS,
-  YIELD_FANS_INTRO_KEY,
-} from '../utils/constants'
+import { ACCEPT_TERMS_KEY, SECONDS } from '../utils/constants'
 import useInterval from './shared/useInterval'
 import { Transition } from '@headlessui/react'
 import { useTranslation } from 'next-i18next'
@@ -17,8 +13,6 @@ import Footer from './Footer'
 import useIpAddress from 'hooks/useIpAddress'
 import RestrictedCountryModal from './shared/RestrictedCountryModal'
 import { useRouter } from 'next/router'
-import Modal from './shared/Modal'
-import Button from './shared/Button'
 import Image from 'next/image'
 import ThemeToggle from './ThemeToggle'
 import ButtonLink from './shared/ButtonLink'
@@ -81,8 +75,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
           )}
           <Footer />
           <DeployRefreshManager />
-          <TermsOfUse />
-          <YieldFansIntro />
+          {isDashboardLayout ? <TermsOfUse /> : null}
           <RestrictedCountryCheck
             ipCountry={ipCountry}
             loadingIpCountry={loadingIpCountry}
@@ -101,17 +94,17 @@ const TermsOfUse = () => {
     ACCEPT_TERMS_KEY,
     '',
   )
-  const [yieldFansIntro] = useLocalStorageState(YIELD_FANS_INTRO_KEY, false)
+  // const [yieldFansIntro] = useLocalStorageState(YIELD_FANS_INTRO_KEY, false)
 
   const showTermsOfUse = useMemo(() => {
     return (
       (!acceptTerms || acceptTerms < termsLastUpdated) &&
       asPath !== '/risks' &&
       asPath !== '/terms-of-use' &&
-      asPath !== '/privacy-policy' &&
-      yieldFansIntro
+      asPath !== '/privacy-policy'
+      // && yieldFansIntro
     )
-  }, [acceptTerms, asPath, yieldFansIntro])
+  }, [acceptTerms, asPath])
 
   const handleClose = () => {
     setAcceptTerms(Date.now())
@@ -126,41 +119,41 @@ const TermsOfUse = () => {
   )
 }
 
-const YieldFansIntro = () => {
-  const [yieldFansIntro, setYieldFansIntro] = useLocalStorageState(
-    YIELD_FANS_INTRO_KEY,
-    false,
-  )
+// const YieldFansIntro = () => {
+//   const [yieldFansIntro, setYieldFansIntro] = useLocalStorageState(
+//     YIELD_FANS_INTRO_KEY,
+//     false,
+//   )
 
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  if (!mounted) return null
+//   const [mounted, setMounted] = useState(false)
+//   useEffect(() => setMounted(true), [])
+//   if (!mounted) return null
 
-  return !yieldFansIntro ? (
-    <Modal isOpen={!yieldFansIntro} onClose={() => setYieldFansIntro(true)}>
-      <div className="flex flex-col items-center">
-        <Image
-          className="mb-3"
-          src="/logos/yieldfan.png"
-          alt="Logo"
-          height={48}
-          width={48}
-        />
-        <h2 className="mb-1 text-center">New name. Same APYs.</h2>
-        <p className="text-center">
-          Are you a fan of epic yields? Boost! is now yield.fan
-        </p>
-        <Button
-          className="mt-6"
-          onClick={() => setYieldFansIntro(true)}
-          size="medium"
-        >
-          Let&apos;s Go
-        </Button>
-      </div>
-    </Modal>
-  ) : null
-}
+//   return !yieldFansIntro ? (
+//     <Modal isOpen={!yieldFansIntro} onClose={() => setYieldFansIntro(true)}>
+//       <div className="flex flex-col items-center">
+//         <Image
+//           className="mb-3"
+//           src="/logos/yieldfan.png"
+//           alt="Logo"
+//           height={48}
+//           width={48}
+//         />
+//         <h2 className="mb-1 text-center">New name. Same APYs.</h2>
+//         <p className="text-center">
+//           Are you a fan of epic yields? Boost! is now yield.fan
+//         </p>
+//         <Button
+//           className="mt-6"
+//           onClick={() => setYieldFansIntro(true)}
+//           size="medium"
+//         >
+//           Let&apos;s Go
+//         </Button>
+//       </div>
+//     </Modal>
+//   ) : null
+// }
 
 function DeployRefreshManager(): JSX.Element | null {
   const { t } = useTranslation('common')
