@@ -353,9 +353,16 @@ const HomePage = () => {
             Audits. Audits. Audits.
           </h2>
           <p className="mb-6 text-center text-xl">
-            Yield Fan is powered by Mango&apos;s extensively audited contracts.
-            Most protocals call it quits after one audit. Our contracts are
-            audited after every program change.
+            Yield Fan is powered by{' '}
+            <a
+              href="https://mango.markets"
+              target="_blank"
+              rel="noreferrer noopenner"
+            >
+              Mango&apos;s
+            </a>{' '}
+            extensively audited contracts. Most protocals call it quits after
+            one audit. Our contracts are audited after every program change.
           </p>
           <Ottersec className="h-10 w-auto text-th-fgd-1" />
         </div>
