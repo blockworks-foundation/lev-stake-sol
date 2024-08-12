@@ -7,6 +7,7 @@ import TokenParticles from './TokenParticles'
 import { Disclosure } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import BestApy from './BestApy'
+import { ZigZagLine } from '@components/NavTabs'
 
 const FAQS = [
   {
@@ -346,7 +347,7 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-      <div className={`bg-th-bkg-1 ${WRAPPER_Y_PADDING}`}>
+      <div className={`${WRAPPER_Y_PADDING}`}>
         <div className="mx-auto flex max-w-3xl flex-col items-center">
           <h2 className="text-shadow mb-4 text-center text-3xl text-th-button-text md:text-5xl">
             Audits. Audits. Audits.
@@ -395,6 +396,21 @@ const HomePage = () => {
                 </Disclosure>
               )
             })}
+          </div>
+        </div>
+      </div>
+      <div className={`${WRAPPER_Y_PADDING} px-6`}>
+        <div className="mx-auto max-w-3xl rounded-2xl bg-th-bkg-1 p-12">
+          <div className="relative flex flex-col items-center">
+            <ZigZagLine className="absolute -bottom-6 w-20" reverse />
+            <ZigZagLine className="absolute -top-4 w-20" reverse />
+            <p className="mb-2 text-th-fgd-4">Earn up to</p>
+            <span className="mb-4 text-4xl font-bold text-th-fgd-1 md:text-5xl">
+              <BestApy /> APY
+            </span>
+            <ButtonLink path="/dashboard" size="small">
+              Let&apos;s Go
+            </ButtonLink>
           </div>
         </div>
       </div>

@@ -14,7 +14,7 @@ const ButtonLink = ({
 }) => {
   return (
     <Link
-      className={`raised-button text-shadow group flex w-max items-center justify-center rounded-lg font-extrabold text-th-button-text after:rounded-lg focus:outline-none md:hover:text-th-button-text ${
+      className={`raised-button text-shadow group flex w-max items-center justify-center rounded-xl font-extrabold text-th-button-text after:rounded-xl focus:outline-none md:hover:text-th-button-text ${
         size === 'large' ? 'h-14 px-8 text-xl' : 'h-9 px-4 text-base'
       } ${className}`}
       href={path}
