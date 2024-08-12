@@ -46,9 +46,9 @@ import PlausibleProvider from 'next-plausible'
 // init react-query
 export const queryClient = new QueryClient()
 
-const metaTitle = 'Best Yield on Solana'
+const metaTitle = "Solana's Best Yield Farm | Yield Fan"
 const metaDescription =
-  'Earn leveraged returns on your favorite yield-bearing tokens. Powered by Mango.'
+  'Earn multiplied yield on your favorite liquid staking tokens.'
 
 // Do not add hooks to this component, that will cause unnecessary rerenders
 // Top level state hydrating/updating should go in MangoProvider
