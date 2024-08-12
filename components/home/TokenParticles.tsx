@@ -12,14 +12,6 @@ const TokenParticles = () => {
     await loadFull(main)
   }
 
-  //   const particlesInit = useCallback(async () => {
-  //     await loadFull(tsParticles)
-  //   }, [])
-
-  //   useEffect(() => {
-  //     particlesInit()
-  //   }, [particlesInit])
-
   useEffect(() => {
     setMounted(true) // No need to set emitters in state separately
   }, [])
@@ -32,72 +24,62 @@ const TokenParticles = () => {
       init={particlesInit}
       options={{
         fullScreen: false,
-        particles: {
-          //   interactivity: {
-          //     detectOn: 'canvas',
-          //     events: {
-          //       onHover: {
-          //         enable: true,
-          //         mode: 'attract',
-          //       },
-          //     },
-          //     modes: {
-          //       attract: {
-          //         factor: 10,
-          //         distance: 100,
-          //         duration: 0.4,
-          //       },
-          //     },
-          //   },
-          number: {
-            value: STAKEABLE_TOKENS.length,
+        interactivity: {
+          detect_on: 'canvas',
+          events: {
+            onHover: {
+              enable: true,
+              mode: 'attract',
+            },
           },
-          shape: {
-            type: 'images',
-            options: {
-              images: STAKEABLE_TOKENS.map((sym) => ({
+        },
+        manualParticles: STAKEABLE_TOKENS.map((sym) => ({
+          options: {
+            shape: {
+              type: 'image',
+              image: {
                 src: `/icons/${sym.toLowerCase()}.svg`,
                 width: 48,
                 height: 48,
-              })),
+              },
             },
-          },
-          rotate: {
-            value: 0,
-            random: true,
-            direction: 'clockwise',
-            animation: {
+            rotate: {
+              value: 0,
+              random: true,
+              direction: 'clockwise',
+              animation: {
+                enable: true,
+                speed: 15,
+                sync: false,
+              },
+            },
+            lineLinked: {
+              enable: false,
+            },
+            opacity: {
+              value: 1,
+            },
+            size: {
+              value: 16,
+              random: false,
+            },
+            move: {
               enable: true,
-              speed: 15,
-              sync: false,
+              speed: 1,
+              direction: 'bottom',
+              random: false,
+              straight: true,
+              out_mode: 'bounce',
+              gravity: {
+                enable: true,
+                acceleration: 1,
+                maxSpeed: 1,
+              },
             },
+            collisions: { enable: true },
           },
-          lineLinked: {
-            enable: false,
-          },
-          opacity: {
-            value: 1,
-          },
-          size: {
-            value: 16,
-            random: false,
-          },
-          move: {
-            enable: true,
-            speed: 1,
-            direction: 'bottom',
-            random: false,
-            straight: true,
-            out_mode: 'bounce',
-            gravity: {
-              enable: true,
-              acceleration: 1,
-              maxSpeed: 1,
-            },
-          },
-          collisions: { enable: true },
-          retina_detect: true,
-        },
+        })),
+        detectRetina: true,
       }}
     />
   )
