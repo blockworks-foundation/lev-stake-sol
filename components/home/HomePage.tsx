@@ -32,7 +32,7 @@ const HomePage = () => {
           onClick={() => {
             plausible('HomeCtaClick', {
               props: {
-                button: 'hero panel',
+                homeCtaButton: 'hero panel',
               },
             })
           }}
@@ -120,7 +120,7 @@ const HomePage = () => {
                   onClick={() => {
                     plausible('HomeCtaClick', {
                       props: {
-                        button: 'get started',
+                        homeCtaButton: 'get started',
                       },
                     })
                   }}
@@ -215,7 +215,7 @@ const HomePage = () => {
               onClick={() => {
                 plausible('HomeCtaClick', {
                   props: {
-                    button: 'top apy bottom panel',
+                    homeCtaButton: 'top apy bottom panel',
                   },
                 })
               }}

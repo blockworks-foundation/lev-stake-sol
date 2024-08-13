@@ -71,7 +71,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
                     onClick={() => {
                       plausible('HomeCtaClick', {
                         props: {
-                          button: 'top bar',
+                          homeCtaButton: 'top bar',
                         },
                       })
                     }}

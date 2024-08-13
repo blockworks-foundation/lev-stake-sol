@@ -34,6 +34,7 @@ import { toUiDecimals } from '@blockworks-foundation/mango-v4'
 import { simpleSwap } from 'utils/transactions'
 import { JLP_BORROW_TOKEN, LST_BORROW_TOKEN } from 'utils/constants'
 import { WRAPPED_SOL_MINT } from '@project-serum/serum/lib/token-instructions'
+import { usePlausible } from 'next-plausible'
 
 const set = mangoStore.getState().set
 
@@ -67,6 +68,7 @@ function EditLeverageForm({
   const { t } = useTranslation(['common', 'account'])
   const submitting = mangoStore((s) => s.submittingBoost)
   const { ipAllowed } = useIpAddress()
+  const plausible = usePlausible()
   const storedLeverage = mangoStore((s) => s.leverage)
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { jlpGroup, lstGroup } = useMangoGroup()
@@ -232,6 +234,7 @@ function EditLeverageForm({
 
     if (!group || !stakeBank || !borrowBank || !publicKey || !mangoAccount)
       return
+    plausible('EditLeverageStart')
     console.log(mangoAccounts)
     set((state) => {
       state.submittingBoost = true
@@ -280,7 +283,14 @@ function EditLeverageForm({
       set((state) => {
         state.submittingBoost = false
       })
-
+      plausible('EditLeverageSuccess', {
+        props: {
+          editLeverageDesc: `${publicKey.toString()} ${
+            stakeBank.name
+          } from ${current_leverage} to ${leverage}x`,
+          editLeverageWallet: publicKey.toString(),
+        },
+      })
       await sleep(500)
       if (!mangoAccount) {
         await actions.fetchMangoAccounts(
@@ -299,6 +309,15 @@ function EditLeverageForm({
       set((state) => {
         state.submittingBoost = false
       })
+      plausible('EditLeverageError', {
+        props: {
+          editLeverageDesc: `ERROR: ${publicKey.toString()} ${
+            stakeBank.name
+          } from ${current_leverage} to ${leverage}x ${e}`,
+          editLeverageWallet: publicKey.toString(),
+          editLeverageError: `${e}`,
+        },
+      })
       if (!isMangoError(e)) return
       notify({
         title: 'Transaction failed',
@@ -316,6 +335,9 @@ function EditLeverageForm({
     clientContext,
     onSuccess,
     changeInUSDC,
+    current_leverage,
+    leverage,
+    plausible,
   ])
 
   const tokenDepositLimitLeft = stakeBank?.getRemainingDepositLimit()
