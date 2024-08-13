@@ -33,6 +33,7 @@ import Decimal from 'decimal.js'
 import useIpAddress from 'hooks/useIpAddress'
 import { walletBalanceForToken } from './StakeForm'
 import { ClientContextKeys } from 'utils/constants'
+import { usePlausible } from 'next-plausible'
 
 const set = mangoStore.getState().set
 
@@ -63,6 +64,7 @@ function DespositForm({ token: selectedToken, clientContext }: StakeFormProps) {
   const submitting = mangoStore((s) => s.submittingBoost)
   const [refreshingWalletTokens, setRefreshingWalletTokens] = useState(false)
   const { maxSolDeposit } = useSolBalance()
+  const plausible = usePlausible()
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { jlpGroup } = useMangoGroup()
   const groupLoaded = mangoStore((s) => s.groupLoaded)
@@ -113,6 +115,7 @@ function DespositForm({ token: selectedToken, clientContext }: StakeFormProps) {
 
     if (!group || !depositBank || !publicKey) return
 
+    plausible('PositionEntryStart')
     set((state) => {
       state.submittingBoost = true
     })
@@ -139,6 +142,14 @@ function DespositForm({ token: selectedToken, clientContext }: StakeFormProps) {
       })
       setInputAmount('')
       setSizePercentage('')
+      plausible('PositionEntrySuccess', {
+        props: {
+          description: `${publicKey.toString()} ${inputAmount} ${
+            depositBank.name
+          }`,
+          wallet: publicKey.toString(),
+        },
+      })
       await sleep(500)
       if (!mangoAccount) {
         await actions.fetchMangoAccounts(publicKey)
@@ -149,6 +160,12 @@ function DespositForm({ token: selectedToken, clientContext }: StakeFormProps) {
       console.error('Error depositing:', e)
       set((state) => {
         state.submittingBoost = false
+      })
+      plausible('PositionEntryError', {
+        props: {
+          error: `${e}`,
+          wallet: publicKey.toString(),
+        },
       })
       if (!isMangoError(e)) return
       notify({

@@ -46,6 +46,7 @@ import {
   JLP_BORROW_TOKEN,
   LST_BORROW_TOKEN,
 } from 'utils/constants'
+import { usePlausible } from 'next-plausible'
 
 const set = mangoStore.getState().set
 
@@ -59,6 +60,7 @@ function UnstakeForm({
   clientContext,
 }: UnstakeFormProps) {
   const { t } = useTranslation(['common', 'account'])
+  const plausible = usePlausible()
   const [inputAmount, setInputAmount] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [refreshingWalletTokens, setRefreshingWalletTokens] = useState(false)
@@ -173,6 +175,7 @@ function UnstakeForm({
 
     if (!group || !mangoAccount) return
 
+    plausible('PositionExitStart')
     setSubmitting(true)
     try {
       if (mangoAccount.getTokenBalanceUi(borrowBank) < 0) {
@@ -223,6 +226,14 @@ function UnstakeForm({
         type: 'success',
         txid: tx2,
       })
+      plausible('PositionExitSuccess', {
+        props: {
+          description: `${publicKey.toString()} ${inputAmount} ${
+            stakeBank.name
+          } ${leverage}x`,
+          wallet: publicKey.toString(),
+        },
+      })
       setSubmitting(false)
       setInputAmount('')
       setSizePercentage('')
@@ -236,6 +247,12 @@ function UnstakeForm({
         title: 'Error withdrawing',
         description: `${e}`,
         type: 'error',
+      })
+      plausible('PositionExitError', {
+        props: {
+          error: `${e}`,
+          wallet: publicKey.toString(),
+        },
       })
       setSubmitting(false)
       if (!isMangoError(e)) return
@@ -254,6 +271,7 @@ function UnstakeForm({
     inputAmount,
     leverage,
     clientContext,
+    plausible,
   ])
 
   const maxWithdraw = useMemo(() => {

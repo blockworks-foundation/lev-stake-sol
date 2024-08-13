@@ -28,7 +28,8 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import UnstakeForm from './UnstakeForm'
 import StakeForm from './StakeForm'
 import DespositForm from './DepositForm'
-import { useTheme } from 'next-themes'
+import { WRAPPED_SOL_MINT } from '@project-serum/serum/lib/token-instructions'
+import { ZigZagRepeatLine } from './Stake'
 
 const set = mangoStore.getState().set
 
@@ -149,7 +150,6 @@ const PositionItem = ({
   borrowBank: Bank | undefined
 }) => {
   const { connected } = useWallet()
-  const { theme } = useTheme()
   const { jlpGroup, lstGroup } = useMangoGroup()
   const { stakeBalance, bank, pnl, acct, solPnl } = position
   const [showEditLeverageModal, setShowEditLeverageModal] = useState(false)
@@ -162,6 +162,7 @@ const PositionItem = ({
     })
   }
   const handleAddPosition = (token: string) => {
+    setActiveTab('Earn')
     setShowAddRemove('add')
     set((state) => {
       state.selectedToken = token
@@ -176,7 +177,6 @@ const PositionItem = ({
 
   const leverage = useMemo(() => {
     if (!acct || !bank) return 1
-    const isJlpGroup = bank.name === 'JLP' || bank.name === 'USDC'
     const group = isJlpGroup ? jlpGroup : lstGroup
     if (!group) return 1
     const accountValue = toUiDecimalsForQuote(acct.getEquity(group).toNumber())
@@ -192,23 +192,29 @@ const PositionItem = ({
     }
   }, [acct, bank, jlpGroup, lstGroup, isJlpGroup])
 
+  const stakePrice = useMemo(() => {
+    if (!borrowBank) return 0
+    if (borrowBank.mint.toString() === WRAPPED_SOL_MINT.toString()) {
+      return bank.uiPrice / borrowBank.uiPrice
+    } else return bank.uiPrice
+  }, [bank, borrowBank])
+
   const liquidationPrice = useMemo(() => {
-    let price
-    if (borrowBank?.name == 'SOL') {
-      price = Number(bank?.uiPrice) / Number(borrowBank?.uiPrice)
-    } else {
-      price = Number(bank?.uiPrice)
-    }
     const borrowMaintLiabWeight = Number(borrowBank?.maintLiabWeight)
     const stakeMaintAssetWeight = Number(bank?.maintAssetWeight)
     const loanOriginationFee = Number(borrowBank?.loanOriginationFeeRate)
     const liqPrice =
-      price *
+      stakePrice *
       ((borrowMaintLiabWeight * (1 + loanOriginationFee)) /
         stakeMaintAssetWeight) *
       (1 - 1 / leverage)
-    return liqPrice.toFixed(2)
-  }, [bank, borrowBank, leverage])
+    return liqPrice
+  }, [bank, borrowBank, leverage, stakePrice])
+
+  const changeToLiquidation = useMemo(() => {
+    const change = ((stakePrice - liquidationPrice) / stakePrice) * 100
+    return change
+  }, [liquidationPrice, stakePrice])
 
   const { financialMetrics, stakeBankDepositRate, borrowBankBorrowRate } =
     useBankRates(bank.name, leverage)
@@ -219,6 +225,7 @@ const PositionItem = ({
     bank.name == 'USDC' ? APY_Daily_Compound * 100 : financialMetrics.APY
 
   const currentPnl = isJlpGroup ? pnl : solPnl
+  const roundingDecimals = borrowBank?.name === 'SOL' ? 4 : 2
 
   return (
     <div className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
@@ -227,7 +234,9 @@ const PositionItem = ({
           <TokenLogo bank={bank} size={40} />
           <div>
             <h3>{formatTokenSymbol(bank.name)}</h3>
-            <p>${bank.uiPrice.toFixed(2)}</p>
+            <p>{`${borrowBank?.name === 'USDC' ? '$' : ''}${stakePrice.toFixed(
+              roundingDecimals,
+            )} ${borrowBank?.name !== 'USDC' ? borrowBank?.name : ''}`}</p>
           </div>
         </div>
         {stakeBalance ? (
@@ -249,29 +258,23 @@ const PositionItem = ({
           </Button>
         )}
       </div>
-      <div
-        className={`bg-x-repeat h-2 w-full ${
-          theme === 'Light'
-            ? `bg-[url('/images/zigzag-repeat.svg')]`
-            : `bg-[url('/images/zigzag-repeat-dark.svg')]`
-        } bg-contain opacity-20`}
-      />
+      <ZigZagRepeatLine />
       <div className="grid grid-cols-1 gap-4 pt-6 sm:grid-cols-2">
         <div>
           <p className="mb-1 text-th-fgd-4">Position Size</p>
           <span className="text-xl font-bold text-th-fgd-1">
             <FormatNumericValue
-              value={stakeBalance * (bank.name != 'USDC' ? bank?.uiPrice : 1)}
-              decimals={2}
+              value={stakeBalance * stakePrice}
+              decimals={roundingDecimals}
             />{' '}
-            {'USDC'}
+            {borrowBank?.name !== 'USDC' ? borrowBank?.name : 'USDC'}
           </span>
           {bank.name !== 'USDC' ? (
-            <p className="text-th-fgd-4">
+            <p className="text-sm text-th-fgd-4">
               <FormatNumericValue
-                roundUp={true}
+                // roundUp={true}
                 value={stakeBalance}
-                decimals={3}
+                decimals={4}
               />{' '}
               {formatTokenSymbol(bank.name)}
             </p>
@@ -412,21 +415,24 @@ const PositionItem = ({
             </div>
             <div>
               <p className="mb-1 text-th-fgd-4">Est. Liquidation Price</p>
-              <div className="flex flex-wrap items-end">
+              <div>
                 <span className="mr-2 whitespace-nowrap text-xl font-bold text-th-fgd-1">
-                  {liquidationPrice}
-                  {borrowBank?.name == ' USDC'
-                    ? ' USDC'
-                    : ` ${bank?.name}/${borrowBank?.name}`}
+                  {`${
+                    borrowBank?.name === 'USDC' ? '$' : ''
+                  }${liquidationPrice.toFixed(roundingDecimals)} ${
+                    borrowBank?.name !== 'USDC' ? borrowBank?.name : ''
+                  }`}
                 </span>
+                <p className="text-sm text-th-fgd-4">{`${
+                  changeToLiquidation > 0
+                    ? `-${changeToLiquidation.toFixed(2)}`
+                    : '0.00'
+                }% from current price ${
+                  borrowBank?.name === 'USDC' ? '$' : ''
+                }${stakePrice.toFixed(roundingDecimals)} ${
+                  borrowBank?.name !== 'USDC' ? borrowBank?.name : ''
+                }`}</p>
               </div>
-              {/* {liqPriceChangePercentage ? (
-                <Tooltip content="Estimated price change required for liquidation.">
-                  <p className="tooltip-underline mb-0.5 text-th-fgd-4">
-                    {liqPriceChangePercentage}%
-                  </p>
-                </Tooltip>
-              ) : null} */}
             </div>
           </>
         )}

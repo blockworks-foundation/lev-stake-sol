@@ -33,6 +33,8 @@ import useLeverageMax from 'hooks/useLeverageMax'
 import { toUiDecimals } from '@blockworks-foundation/mango-v4'
 import { simpleSwap } from 'utils/transactions'
 import { JLP_BORROW_TOKEN, LST_BORROW_TOKEN } from 'utils/constants'
+import { WRAPPED_SOL_MINT } from '@project-serum/serum/lib/token-instructions'
+import { usePlausible } from 'next-plausible'
 
 const set = mangoStore.getState().set
 
@@ -66,6 +68,7 @@ function EditLeverageForm({
   const { t } = useTranslation(['common', 'account'])
   const submitting = mangoStore((s) => s.submittingBoost)
   const { ipAllowed } = useIpAddress()
+  const plausible = usePlausible()
   const storedLeverage = mangoStore((s) => s.leverage)
   const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { jlpGroup, lstGroup } = useMangoGroup()
@@ -125,23 +128,24 @@ function EditLeverageForm({
     leverage,
   )
 
+  const stakePrice = useMemo(() => {
+    if (!borrowBank || !stakeBank) return 0
+    if (borrowBank.mint.toString() === WRAPPED_SOL_MINT.toString()) {
+      return stakeBank.uiPrice / borrowBank.uiPrice
+    } else return stakeBank.uiPrice
+  }, [stakeBank, borrowBank])
+
   const liquidationPrice = useMemo(() => {
-    let price
-    if (borrowBank?.name == 'SOL') {
-      price = Number(stakeBank?.uiPrice) / Number(borrowBank?.uiPrice)
-    } else {
-      price = Number(stakeBank?.uiPrice)
-    }
     const borrowMaintLiabWeight = Number(borrowBank?.maintLiabWeight)
     const stakeMaintAssetWeight = Number(stakeBank?.maintAssetWeight)
     const loanOriginationFee = Number(borrowBank?.loanOriginationFeeRate)
     const liqPrice =
-      price *
+      stakePrice *
       ((borrowMaintLiabWeight * (1 + loanOriginationFee)) /
         stakeMaintAssetWeight) *
       (1 - 1 / leverage)
-    return liqPrice.toFixed(3)
-  }, [stakeBank, borrowBank, leverage])
+    return liqPrice
+  }, [stakeBank, borrowBank, leverage, stakePrice])
 
   const tokenPositionsFull = useMemo(() => {
     if (!stakeBank || !usedTokens.length || !totalTokens.length) return false
@@ -230,6 +234,7 @@ function EditLeverageForm({
 
     if (!group || !stakeBank || !borrowBank || !publicKey || !mangoAccount)
       return
+    plausible('EditLeverageStart')
     console.log(mangoAccounts)
     set((state) => {
       state.submittingBoost = true
@@ -278,7 +283,14 @@ function EditLeverageForm({
       set((state) => {
         state.submittingBoost = false
       })
-
+      plausible('EditLeverageSuccess', {
+        props: {
+          editLeverageDesc: `${publicKey.toString()} ${
+            stakeBank.name
+          } from ${current_leverage} to ${leverage}x`,
+          editLeverageWallet: publicKey.toString(),
+        },
+      })
       await sleep(500)
       if (!mangoAccount) {
         await actions.fetchMangoAccounts(
@@ -297,6 +309,15 @@ function EditLeverageForm({
       set((state) => {
         state.submittingBoost = false
       })
+      plausible('EditLeverageError', {
+        props: {
+          editLeverageDesc: `ERROR: ${publicKey.toString()} ${
+            stakeBank.name
+          } from ${current_leverage} to ${leverage}x ${e}`,
+          editLeverageWallet: publicKey.toString(),
+          editLeverageError: `${e}`,
+        },
+      })
       if (!isMangoError(e)) return
       notify({
         title: 'Transaction failed',
@@ -314,6 +335,9 @@ function EditLeverageForm({
     clientContext,
     onSuccess,
     changeInUSDC,
+    current_leverage,
+    leverage,
+    plausible,
   ])
 
   const tokenDepositLimitLeft = stakeBank?.getRemainingDepositLimit()
@@ -343,6 +367,8 @@ function EditLeverageForm({
         group[clientContext]?.banksMapByName.get(selectedToken)?.[0]
     })
   }, [selectedToken, clientContext])
+
+  const roundingDecimals = borrowBank?.name === 'SOL' ? 4 : 2
 
   return (
     <>
@@ -448,32 +474,26 @@ function EditLeverageForm({
                               }`}
                             >
                               <FormatNumericValue
+                                value={
+                                  leverage *
+                                  Number(tokenMax.maxAmount) *
+                                  stakePrice
+                                }
+                                decimals={roundingDecimals}
+                              />{' '}
+                              {borrowBank?.name !== 'USDC'
+                                ? borrowBank?.name
+                                : 'USDC'}
+                            </span>
+                            <p className="font-body text-xs font-normal text-th-fgd-4">
+                              <FormatNumericValue
                                 value={leverage * Number(tokenMax.maxAmount)}
                                 decimals={3}
-                              />{' '}
-                              {/* ({changeInJLP > 0 ? '+' : ''}
-                              <FormatNumericValue
-                                value={
-                                  changeInJLP > 0 ? changeInJLP : changeInJLP
-                                }
-                                decimals={3}
                               />
-                              ) */}
                               <span className="font-body text-th-fgd-4">
                                 {' '}
                                 {stakeBank.name}{' '}
                               </span>
-                            </span>
-                            <p className="font-body text-xs font-normal text-th-fgd-4">
-                              <FormatNumericValue
-                                value={
-                                  leverage *
-                                  Number(tokenMax.maxAmount) *
-                                  stakeBank?.uiPrice
-                                }
-                                decimals={3}
-                              />{' '}
-                              {borrowBank.name}
                             </p>
                           </div>
                         </div>
@@ -509,11 +529,13 @@ function EditLeverageForm({
                                 : 'text-th-bkg-4'
                             }`}
                           >
-                            $
-                            <FormatNumericValue
-                              value={liquidationPrice}
-                              decimals={3}
-                            />
+                            {`${
+                              borrowBank?.name === 'USDC' ? '$' : ''
+                            }${liquidationPrice.toFixed(roundingDecimals)} ${
+                              borrowBank?.name !== 'USDC'
+                                ? borrowBank?.name
+                                : ''
+                            }`}
                           </span>
                         </div>
                       </div>

@@ -1,4 +1,5 @@
 import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
 
 type Values = string | number
 
@@ -52,12 +53,25 @@ const NavTabs = <T extends Values>({
 
 export default NavTabs
 
-const ZigZagLine = ({ className }: { className?: string }) => {
+export const ZigZagLine = ({
+  className,
+  reverse,
+}: {
+  className?: string
+  reverse?: boolean
+}) => {
   const { theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  if (!mounted) return null
   return (
     <div
       className={`h-2 ${
         theme === 'Light'
+          ? reverse
+            ? `bg-[url('/images/zigzag-dark.svg')]`
+            : `bg-[url('/images/zigzag.svg')]`
+          : reverse
           ? `bg-[url('/images/zigzag.svg')]`
           : `bg-[url('/images/zigzag-dark.svg')]`
       } bg-contain  bg-no-repeat ${className}`}

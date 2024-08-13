@@ -18,7 +18,6 @@ import Button, { IconButton } from './shared/Button'
 import Loading from './shared/Loading'
 import MaxAmountButton from '@components/shared/MaxAmountButton'
 import Tooltip from '@components/shared/Tooltip'
-import SolBalanceWarnings from '@components/shared/SolBalanceWarnings'
 import useSolBalance from 'hooks/useSolBalance'
 import {
   floorToDecimal,
@@ -28,9 +27,7 @@ import {
 import { isMangoError } from 'types'
 import TokenLogo from './shared/TokenLogo'
 import SecondaryConnectButton from './shared/SecondaryConnectButton'
-import useMangoAccountAccounts from 'hooks/useMangoAccountAccounts'
 import InlineNotification from './shared/InlineNotification'
-import Link from 'next/link'
 import LeverageSlider from './shared/LeverageSlider'
 import useMangoGroup from 'hooks/useMangoGroup'
 import FormatNumericValue from './shared/FormatNumericValue'
@@ -53,11 +50,16 @@ import {
   ClientContextKeys,
   JLP_BORROW_TOKEN,
   LST_BORROW_TOKEN,
+  MIN_SOL_BALANCE,
 } from 'utils/constants'
 import Image from 'next/image'
 import useQuoteRoutes from 'hooks/useQuoteRoutes'
-import { YIELD_BUTTON_CLASSES } from './Stake'
-import { useTheme } from 'next-themes'
+import { YIELD_BUTTON_CLASSES, ZigZagRepeatLine } from './Stake'
+import usePositions from 'hooks/usePositions'
+import { WRAPPED_SOL_MINT } from '@project-serum/serum/lib/token-instructions'
+import { usePlausible } from 'next-plausible'
+
+export const MIN_SOL_BALANCE_FOR_ACCOUNT = 0.045
 
 const set = mangoStore.getState().set
 
@@ -105,7 +107,8 @@ export const walletBalanceForToken = (
 // }
 
 function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
-  const { theme } = useTheme()
+  const { positions } = usePositions()
+  const plausible = usePlausible()
   const { t } = useTranslation(['common', 'account'])
   const [depositToken, setDepositToken] = useState(selectedToken)
   const [inputAmount, setInputAmount] = useState('')
@@ -118,7 +121,6 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
   const wallet = useWallet()
   const connection = mangoStore((s) => s.connection)
   const storedLeverage = mangoStore((s) => s.leverage)
-  const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { jlpGroup, lstGroup } = useMangoGroup()
   const groupLoaded = mangoStore((s) => s.groupLoaded)
   const { financialMetrics, borrowBankBorrowRate } = useBankRates(
@@ -169,49 +171,61 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     bestRoute?.outAmount && stakeBank
       ? toUiDecimals(bestRoute.outAmount, stakeBank.mintDecimals) * 0.999
       : 0
+
+  const stakePrice = useMemo(() => {
+    if (!borrowBank || !stakeBank) return 0
+    if (borrowBank.mint.toString() === WRAPPED_SOL_MINT.toString()) {
+      return stakeBank.uiPrice / borrowBank.uiPrice
+    } else return stakeBank.uiPrice
+  }, [stakeBank, borrowBank])
+
   const liquidationPrice = useMemo(() => {
-    let price
-    if (borrowBank?.name == 'SOL') {
-      price = Number(stakeBank?.uiPrice) / Number(borrowBank?.uiPrice)
-    } else {
-      price = Number(stakeBank?.uiPrice)
-    }
     const borrowMaintLiabWeight = Number(borrowBank?.maintLiabWeight)
     const stakeMaintAssetWeight = Number(stakeBank?.maintAssetWeight)
     const loanOriginationFee = Number(borrowBank?.loanOriginationFeeRate)
     const liqPrice =
-      price *
+      stakePrice *
       ((borrowMaintLiabWeight * (1 + loanOriginationFee)) /
         stakeMaintAssetWeight) *
       (1 - 1 / leverage)
-    return liqPrice.toFixed(3)
-  }, [stakeBank, borrowBank, leverage])
+    return liqPrice
+  }, [stakeBank, borrowBank, leverage, stakePrice])
 
-  const tokenPositionsFull = useMemo(() => {
-    if (!stakeBank || !usedTokens.length || !totalTokens.length) return false
-    const hasTokenPosition = usedTokens.find(
-      (token) => token.tokenIndex === stakeBank.tokenIndex,
-    )
-    return hasTokenPosition ? false : usedTokens.length >= totalTokens.length
-  }, [stakeBank, usedTokens, totalTokens])
+  const changeToLiquidation = useMemo(() => {
+    const change = ((stakePrice - liquidationPrice) / stakePrice) * 100
+    return change
+  }, [liquidationPrice, stakePrice])
 
   const tokenMax = useMemo(() => {
     if (!depositBank) return { maxAmount: 0, maxDecimals: 0 }
     return walletBalanceForToken(walletTokens, depositBank.name, clientContext)
   }, [walletTokens, depositBank, clientContext])
 
+  const isExistingPosition = useMemo(() => {
+    return positions.find((p) => p.bank.name === selectedToken)
+  }, [positions, selectedToken])
+
+  const minSol = useMemo(() => {
+    return isExistingPosition ? MIN_SOL_BALANCE : MIN_SOL_BALANCE_FOR_ACCOUNT
+  }, [isExistingPosition])
+
   const setMax = useCallback(() => {
     if (!depositBank) return
     let max = new Decimal(0)
 
     if (depositBank.name === 'SOL') {
-      max = floorToDecimal(tokenMax.maxAmount - 0.01, depositBank.mintDecimals)
+      if (tokenMax.maxAmount > minSol) {
+        max = floorToDecimal(
+          tokenMax.maxAmount - minSol,
+          depositBank.mintDecimals,
+        )
+      }
     } else {
       max = floorToDecimal(tokenMax.maxAmount, depositBank.mintDecimals)
     }
     setInputAmount(max.toFixed())
     setSizePercentage('100')
-  }, [depositBank, tokenMax])
+  }, [depositBank, minSol, tokenMax])
 
   const handleSizePercentage = useCallback(
     (percentage: string) => {
@@ -219,10 +233,12 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
       setSizePercentage(percentage)
       let amount = new Decimal(0)
       if (depositBank.name === 'SOL' && percentage === '100') {
-        amount = floorToDecimal(
-          new Decimal(percentage).div(100).mul(tokenMax.maxAmount),
-          depositBank.mintDecimals,
-        ).sub(0.01)
+        if (tokenMax.maxAmount > minSol) {
+          amount = floorToDecimal(
+            new Decimal(percentage).div(100).mul(tokenMax.maxAmount),
+            depositBank.mintDecimals,
+          ).sub(minSol)
+        }
       } else {
         amount = floorToDecimal(
           new Decimal(percentage).div(100).mul(tokenMax.maxAmount),
@@ -231,7 +247,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
       }
       setInputAmount(amount.toFixed())
     },
-    [tokenMax, depositBank],
+    [tokenMax, depositBank, minSol],
   )
 
   const amountToBorrow = useMemo(() => {
@@ -258,6 +274,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     borrowBank?.uiPrice,
     clientContext,
     leverage,
+    uiOutAmount,
   ])
 
   const availableVaultBalance = useMemo(() => {
@@ -297,6 +314,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     set((state) => {
       state.submittingBoost = true
     })
+    plausible('PositionEntryStart')
     try {
       // const newAccountfNum = getNextAccountNumber(mangoAccounts)
       let stakeAmount = parseFloat(inputAmount)
@@ -345,6 +363,14 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
       })
       setInputAmount('')
       setSizePercentage('')
+      plausible('PositionEntrySuccess', {
+        props: {
+          description: `${publicKey.toString()} ${inputAmount} ${
+            stakeBank.name
+          } ${leverage}x`,
+          wallet: publicKey.toString(),
+        },
+      })
       await sleep(500)
       if (!mangoAccount) {
         await actions.fetchMangoAccounts(publicKey)
@@ -355,6 +381,15 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
       console.error('Error depositing:', e)
       set((state) => {
         state.submittingBoost = false
+      })
+      plausible('PositionEntryError', {
+        props: {
+          error: `${e}`,
+          description: `ERROR: ${publicKey.toString()} ${inputAmount} ${
+            stakeBank.name
+          } ${leverage}x ${e}`,
+          wallet: publicKey.toString(),
+        },
       })
       if (!isMangoError(e)) return
       notify({
@@ -370,11 +405,13 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     publicKey,
     clientContext,
     inputAmount,
+    leverage,
     bestRoute,
     isSwapMode,
     amountToBorrow,
     connection,
     wallet,
+    plausible,
   ])
 
   const showInsufficientBalance =
@@ -414,6 +451,8 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     setInputAmount('')
     setSizePercentage('')
   }
+
+  const roundingDecimals = borrowBank?.name === 'SOL' ? 4 : 2
 
   return (
     <>
@@ -470,21 +509,15 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
           </div>
         </button>
       </div>
-      <div
-        className={`bg-x-repeat h-2 w-full ${
-          theme === 'Light'
-            ? `bg-[url('/images/zigzag-repeat.svg')]`
-            : `bg-[url('/images/zigzag-repeat-dark.svg')]`
-        } bg-contain opacity-20`}
-      />
+      <ZigZagRepeatLine />
       <div className="flex flex-col justify-between pt-6 md:pt-8">
         <div className="pb-8">
-          <SolBalanceWarnings
+          {/* <SolBalanceWarnings
             amount={inputAmount}
             className="mb-4"
             setAmount={setInputAmount}
             selectedToken={selectedToken}
-          />
+          /> */}
           {availableVaultBalance < amountToBorrow && borrowBank && (
             <div className="mb-4">
               <InlineNotification
@@ -596,6 +629,17 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                       )}
                     </div>
                   ) : null}
+
+                  {wallet?.connected &&
+                  depositBank?.name === 'SOL' &&
+                  tokenMax.maxAmount - minSol < parseFloat(inputAmount) ? (
+                    <div className="mt-2">
+                      <InlineNotification
+                        type="error"
+                        desc={`Max exceeded. You need ${minSol} SOL for this transaction. Most of this will be refunded when you close your position.`}
+                      />
+                    </div>
+                  ) : null}
                 </>
               )}
             </div>
@@ -610,13 +654,7 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
               </div>
             ) : null}
           </div>
-          <div
-            className={`bg-x-repeat h-2 w-full ${
-              theme === 'Light'
-                ? `bg-[url('/images/zigzag-repeat.svg')]`
-                : `bg-[url('/images/zigzag-repeat-dark.svg')]`
-            } bg-contain opacity-20`}
-          />
+          <ZigZagRepeatLine />
           <div className="mt-6 md:mt-8">
             <div className="flex items-center justify-between">
               <Label text="Leverage" />
@@ -684,6 +722,17 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                               }`}
                             >
                               <FormatNumericValue
+                                value={
+                                  leverage * Number(inputAmount) * stakePrice
+                                }
+                                decimals={roundingDecimals}
+                              />{' '}
+                              {borrowBank?.name !== 'USDC'
+                                ? borrowBank?.name
+                                : 'USDC'}
+                            </span>
+                            <p className="font-body text-xs font-normal text-th-fgd-4">
+                              <FormatNumericValue
                                 value={leverage * Number(inputAmount)}
                                 decimals={3}
                               />
@@ -691,17 +740,6 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                                 {' '}
                                 {stakeBank.name}{' '}
                               </span>
-                            </span>
-                            <p className="font-body text-xs font-normal text-th-fgd-4">
-                              <FormatNumericValue
-                                value={
-                                  leverage *
-                                  Number(inputAmount) *
-                                  stakeBank?.uiPrice
-                                }
-                                decimals={3}
-                              />{' '}
-                              {'USDC'}
                             </p>
                           </div>
                         </div>
@@ -722,21 +760,36 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
                         </div>
                         <div className="flex justify-between">
                           <p className="text-th-fgd-4">{`Est. Liquidation Price`}</p>
-                          <span
-                            className={`font-bold ${
-                              amountToBorrow > 0.001
-                                ? 'text-th-fgd-1'
-                                : 'text-th-bkg-4'
-                            }`}
-                          >
-                            <FormatNumericValue
-                              value={liquidationPrice}
-                              decimals={3}
-                            />
-                            {borrowBank?.name == ' USDC'
-                              ? ' USDC'
-                              : ` ${stakeBank?.name}/${borrowBank?.name}`}
-                          </span>
+                          <div className="flex flex-col items-end">
+                            <span
+                              className={`font-bold ${
+                                amountToBorrow > 0.001
+                                  ? 'text-th-fgd-1'
+                                  : 'text-th-bkg-4'
+                              }`}
+                            >
+                              {`${
+                                borrowBank?.name === 'USDC' ? '$' : ''
+                              }${liquidationPrice.toFixed(roundingDecimals)} ${
+                                borrowBank?.name !== 'USDC'
+                                  ? borrowBank?.name
+                                  : ''
+                              }`}
+                            </span>
+                            <p className="font-body text-xs font-normal text-th-fgd-4">
+                              {`${
+                                changeToLiquidation > 0
+                                  ? `-${changeToLiquidation.toFixed(2)}`
+                                  : '0.00'
+                              }% from current price ${
+                                borrowBank?.name === 'USDC' ? '$' : ''
+                              }${stakePrice.toFixed(roundingDecimals)} ${
+                                borrowBank?.name !== 'USDC'
+                                  ? borrowBank?.name
+                                  : ''
+                              }`}
+                            </p>
+                          </div>
                         </div>
                       </div>
                       <h4 className="mb-4 border-b border-th-bkg-3 pb-2 text-sm">
@@ -842,53 +895,50 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
           ) : null}
         </div>
         {connected ? (
-          <Button
-            onClick={handleDeposit}
-            className="w-full"
-            disabled={
-              connected &&
-              (!inputAmount ||
-                Number(inputAmount) == 0 ||
-                showInsufficientBalance ||
-                (borrowBank && availableVaultBalance < amountToBorrow) ||
-                depositLimitExceeded ||
-                !ipAllowed)
-            }
-            size="large"
-          >
-            {submitting ? (
-              <Loading className="mr-2 h-5 w-5" />
-            ) : showInsufficientBalance ? (
-              <div className="flex items-center">
-                <ExclamationCircleIcon className="icon-shadow mr-2 h-5 w-5 shrink-0" />
-                {t('swap:insufficient-balance', {
-                  symbol: selectedToken,
-                })}
+          <>
+            <Button
+              onClick={handleDeposit}
+              className="w-full"
+              disabled={
+                connected &&
+                (!inputAmount ||
+                  Number(inputAmount) == 0 ||
+                  showInsufficientBalance ||
+                  (borrowBank && availableVaultBalance < amountToBorrow) ||
+                  depositLimitExceeded ||
+                  !ipAllowed)
+              }
+              size="large"
+            >
+              {submitting ? (
+                <Loading className="mr-2 h-5 w-5" />
+              ) : showInsufficientBalance ? (
+                <div className="flex items-center">
+                  <ExclamationCircleIcon className="icon-shadow mr-2 h-5 w-5 shrink-0" />
+                  {t('swap:insufficient-balance', {
+                    symbol: selectedToken,
+                  })}
+                </div>
+              ) : ipAllowed ? (
+                `Add ${
+                  isSwapMode && uiOutAmount ? uiOutAmount : inputAmount
+                } ${formatTokenSymbol(selectedToken)}`
+              ) : (
+                'Country not allowed'
+              )}
+            </Button>
+            {!isExistingPosition ? (
+              <div className="mt-4">
+                <InlineNotification
+                  type="info"
+                  desc="It costs a small amount of SOL to open a new position. This is fully refunded when you close your position."
+                />
               </div>
-            ) : ipAllowed ? (
-              `Add ${
-                isSwapMode && uiOutAmount ? uiOutAmount : inputAmount
-              } ${formatTokenSymbol(selectedToken)}`
-            ) : (
-              'Country not allowed'
-            )}
-          </Button>
+            ) : null}
+          </>
         ) : (
           <SecondaryConnectButton className="w-full" isLarge />
         )}
-        {tokenPositionsFull ? (
-          <InlineNotification
-            type="error"
-            desc={
-              <>
-                {t('error-token-positions-full')}{' '}
-                <Link href="/settings" shallow>
-                  {t('manage')}
-                </Link>
-              </>
-            }
-          />
-        ) : null}
       </div>
     </>
   )

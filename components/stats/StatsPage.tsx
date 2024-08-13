@@ -1,26 +1,9 @@
-import useMangoGroup from 'hooks/useMangoGroup'
-import { useMemo } from 'react'
-import { STAKEABLE_TOKENS } from 'utils/constants'
 import HistoricalStats from './HistoricalStats'
 import StatsTable from './StatsTable'
+import useBanks from 'hooks/useBanks'
 
 const StatsPage = () => {
-  const { jlpGroup, lstGroup } = useMangoGroup()
-
-  const [jlpBanks, lstBanks] = useMemo(() => {
-    const jlpBanks = []
-    const lstBanks = []
-    for (const token of STAKEABLE_TOKENS) {
-      const isJlpGroup = token === 'JLP' || token === 'USDC'
-      const bank = isJlpGroup
-        ? jlpGroup?.banksMapByName.get(token)?.[0]
-        : lstGroup?.banksMapByName.get(token)?.[0]
-      if (bank !== undefined) {
-        isJlpGroup ? jlpBanks.push(bank) : lstBanks.push(bank)
-      }
-    }
-    return [jlpBanks, lstBanks]
-  }, [jlpGroup, lstGroup])
+  const { jlpBanks, lstBanks } = useBanks()
 
   return (
     <div className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">

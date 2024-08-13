@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useState } from 'react'
-import StakeForm from '@components/StakeForm'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import StakeForm, { MIN_SOL_BALANCE_FOR_ACCOUNT } from '@components/StakeForm'
 import mangoStore from '@store/mangoStore'
 import { getStakableTokensDataForTokenName } from 'utils/tokens'
 import { ArrowLeftIcon, XMarkIcon } from '@heroicons/react/20/solid'
@@ -10,6 +10,10 @@ import { IconButton } from './shared/Button'
 import HeroTokenButton from './HeroTokenButton'
 import useStakeableTokens, { StakeableToken } from 'hooks/useStakeableTokens'
 import { useTheme } from 'next-themes'
+import { WRAPPED_SOL_MINT } from '@project-serum/serum/lib/token-instructions'
+import usePositions from 'hooks/usePositions'
+import InlineNotification from './shared/InlineNotification'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const set = mangoStore.getState().set
 
@@ -30,7 +34,9 @@ export const SOL_YIELD = [
 ]
 
 const Stake = () => {
-  const { theme } = useTheme()
+  const { connected } = useWallet()
+  const { positions } = usePositions()
+  const walletTokens = mangoStore((s) => s.wallet.tokens)
   const [showTokenSelect, setShowTokenSelect] = useState(false)
   const selectedToken = mangoStore((s) => s.selectedToken)
   const { stakeableTokens } = useStakeableTokens()
@@ -49,6 +55,18 @@ const Stake = () => {
       return bApy - aApy
     })
   }, [stakeableTokens])
+
+  const solBalance = useMemo(() => {
+    if (!walletTokens?.length) return 0
+    const solInWallet = walletTokens.find(
+      (token) => token.mint.toString() === WRAPPED_SOL_MINT.toString(),
+    )
+    return solInWallet ? solInWallet.uiAmount : 0
+  }, [walletTokens])
+
+  const isExistingPosition = useMemo(() => {
+    return positions.find((p) => p.bank.name === selectedToken)
+  }, [positions, selectedToken])
 
   // const swapUrl = `https://app.mango.markets/swap?in=USDC&out=${selectedToken}&walletSwap=true`
 
@@ -97,17 +115,9 @@ const Stake = () => {
                 <div className="flex flex-col items-center">
                   <div className="w-full pb-6 text-center md:pb-8">
                     <h1 className="mb-1">Welcome yield fan 👋</h1>
-                    <p>
-                      It&apos;s time to leverage up your liquid staking yield.
-                    </p>
+                    <p>It&apos;s time to multiply your liquid staking yield.</p>
                   </div>
-                  <div
-                    className={`bg-x-repeat h-2 w-full ${
-                      theme === 'Light'
-                        ? `bg-[url('/images/zigzag-repeat.svg')]`
-                        : `bg-[url('/images/zigzag-repeat-dark.svg')]`
-                    } bg-contain opacity-20`}
-                  />
+                  <ZigZagRepeatLine />
                 </div>
                 <div className="space-y-3 pt-6 md:pt-8">
                   <h2 className="text-center text-lg font-normal">
@@ -145,6 +155,16 @@ const Stake = () => {
                   </IconButton>
                   <h2>Add {selectedToken}</h2>
                 </div>
+                {connected &&
+                solBalance < MIN_SOL_BALANCE_FOR_ACCOUNT &&
+                !isExistingPosition ? (
+                  <div className="mb-4">
+                    <InlineNotification
+                      type="error"
+                      desc={`You need at least ${MIN_SOL_BALANCE_FOR_ACCOUNT} SOL. Most of this is refunded when you close your position and the rest is to pay for transactions.`}
+                    />
+                  </div>
+                ) : null}
                 {selectedToken === 'USDC' ? (
                   <DespositForm
                     token="USDC"
@@ -177,3 +197,19 @@ const Stake = () => {
 }
 
 export default Stake
+
+export const ZigZagRepeatLine = () => {
+  const { theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  if (!mounted) return null
+  return (
+    <div
+      className={`bg-x-repeat h-2 w-full ${
+        theme === 'Light'
+          ? `bg-[url('/images/zigzag-repeat.svg')]`
+          : `bg-[url('/images/zigzag-repeat-dark.svg')]`
+      } bg-contain opacity-20`}
+    />
+  )
+}

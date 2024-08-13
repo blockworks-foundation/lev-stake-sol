@@ -1,41 +1,19 @@
 import { Disclosure } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
-const FAQS = [
-  {
-    question: 'Why would I want to add leverage?',
-    answer: (
-      <>
-        <h3>JLP/Liquid staking tokens</h3>
-        <p>
-          The tokens listed on yield.fan (excluding USDC) all have native yield
-          so in the right market conditions you can borrow to increase your
-          exposure to this native yield. When the extra yield is larger than
-          your cost of borrowing you earn more yield than you would by simply
-          holding the token.
-        </p>
-        <h3>USDC</h3>
-        <p>
-          USDC is different in that when you deposit USDC you are adding it to
-          the lending pool for users adding leverage to JLP. There is no
-          leverage involved and JLP borrowers pay a variable interest rate to
-          borrow your USDC.
-        </p>
-      </>
-    ),
-  },
+export const FAQS = [
   {
     question: 'How does it work?',
     answer: (
       <>
-        <h3>JLP</h3>
+        <h4>JLP</h4>
         <p>
           Adding leverage to JLP works by using your deposited JLP as collateral
           to borrow USDC which is then swapped to JLP. This leaves you with an
           increased balance of JLP and a borrowed amount of USDC.
         </p>
         <p>The JLP pool is completely isolated from Mango v4.</p>
-        <h3>Liquid staking tokens (LSTs)</h3>
+        <h4>Liquid staking tokens (LSTs)</h4>
         <p>
           Adding leverage to liquid staking tokens (mSOL, JitoSOL, bSOL etc)
           works by using your deposited token as collateral to borrow SOL which
@@ -46,7 +24,7 @@ const FAQS = [
           The pools for LSTs on yield.fan draw from the same liquidity available
           on Mango v4.
         </p>
-        <h3>USDC</h3>
+        <h4>USDC</h4>
         <p>
           USDC is part of the isolated JLP group. When you deposit USDC it will
           be lent out to users adding leverage to JLP. You earn a varialbe
@@ -60,7 +38,7 @@ const FAQS = [
     question: 'How do I withdraw?',
     answer: (
       <>
-        <h3>JLP/Liquid staking tokens</h3>
+        <h4>JLP/Liquid staking tokens</h4>
         <p>
           Withdrawals work by unwinding your leveraged position. Your borrow
           will be repaid by swapping the token you leveraged to the token you
@@ -70,7 +48,7 @@ const FAQS = [
           There are no fees associated with withdrawals however, there could be
           up to 1% slippage when swapping to repay your loan.
         </p>
-        <h3>USDC</h3>
+        <h4>USDC</h4>
         <p>
           Withdrawing USDC removes it from the lending pool and withdraws it to
           your wallet.
@@ -80,10 +58,42 @@ const FAQS = [
     ),
   },
   {
+    question: 'Why does it cost SOL to open a position?',
+    answer: (
+      <p>
+        Solana requires rent to store data on-chain. In this case it&apos;s the
+        rent to create an account for your position. This cost is fully refunded
+        when you close your position.
+      </p>
+    ),
+  },
+  {
+    question: 'Why would I want to add leverage?',
+    answer: (
+      <>
+        <h4>JLP/Liquid staking tokens</h4>
+        <p>
+          The tokens listed on yield.fan (excluding USDC) all have native yield
+          so in the right market conditions you can borrow to increase your
+          exposure to this native yield. When the extra yield is larger than
+          your cost of borrowing you earn more yield than you would by simply
+          holding the token.
+        </p>
+        <h4>USDC</h4>
+        <p>
+          USDC is different in that when you deposit USDC you are adding it to
+          the lending pool for users adding leverage to JLP. There is no
+          leverage involved and JLP borrowers pay a variable interest rate to
+          borrow your USDC.
+        </p>
+      </>
+    ),
+  },
+  {
     question: 'Is adding leverage always profitable?',
     answer: (
       <>
-        <h3>JLP/Liquid staking tokens</h3>
+        <h4>JLP/Liquid staking tokens</h4>
         <p>
           No. For one, there is a risk of liquidation (especially when
           leveraging JLP). If the price of your leveraged token drops below your
@@ -96,7 +106,7 @@ const FAQS = [
           an LST the cost of borrowing needs to be less than the additional
           yield you earn.
         </p>
-        <h3>USDC</h3>
+        <h4>USDC</h4>
         <p>
           Depositing USDC is always profitable unless there is a systemic
           failure that results in loss of funds. See the risks FAQ to learn
@@ -110,7 +120,7 @@ const FAQS = [
     answer: (
       <>
         <p>The costs and fees depend on the token you are leveraging.</p>
-        <h3>JLP/Liquid staking tokens</h3>
+        <h4>JLP/Liquid staking tokens</h4>
         <p className="font-bold">Borrow Interest Rate</p>
         <p>
           This variable APR can change significantly and frequently depending on
@@ -152,7 +162,7 @@ const FAQS = [
           to more of your leveraged token. This can incur up to 1% slippage
           resulting in an entry price worse than expected.
         </p>
-        <h3>USDC</h3>
+        <h4>USDC</h4>
         <p>There are no fees associated with depositing USDC.</p>
       </>
     ),
@@ -180,7 +190,7 @@ const FAQS = [
           good understanding of these risks and how yield.fan works before
           depositing any funds
         </p>
-        <h3>Code</h3>
+        <h4>Code</h4>
         <p>
           yield.fan is an integration with the Mango v4 program. Although it is
           open source and has been audited extensively, it&apos;s possible bugs
@@ -188,27 +198,27 @@ const FAQS = [
           also possible for a bug in the UI to affect the ability to open and
           close positions in a timely manner.
         </p>
-        <h3>Price Depeg</h3>
+        <h4>Price Depeg</h4>
         <p>
           It&apos;s possible for the staking token price to diverge
           significantly from the USDC price. A large drop in price could result
           in postions being liquidated. Positions with higher leverage are more
           exposed to this risk.
         </p>
-        <h3>Liquidity</h3>
+        <h4>Liquidity</h4>
         <p>
           Opening and closing positions relies on swapping between the staking
           tokens and USDC without significant price impact. During an extreme
           market event there could be issues liquidating positions effectively.
           This could affect the liquidity available to open/close positions.
         </p>
-        <h3>Oracles</h3>
+        <h4>Oracles</h4>
         <p>
           The price data comes from third party oracle providers. It&apos;s
           possible for the data to be incorrect due to a failure with the oracle
           provider. This could result in bad liquidations and loss of funds.
         </p>
-        <h3>Yield Duration</h3>
+        <h4>Yield Duration</h4>
         <p>
           When you borrow USDC or SOL to open a position you&apos;ll be paying
           an initial loan origination fee, interest on the borrowed amount, and
@@ -238,22 +248,6 @@ const FAQS = [
       <p>
         If your Ledger isn&apos;t working it&apos;s most likely because it
         doesn&apos;t support versioned transactions.
-      </p>
-    ),
-  },
-  {
-    question: 'Who made this?',
-    answer: (
-      <p>
-        yield.fan is made and maintained by long-term contributors to{' '}
-        <a
-          href="https://dao.mango.markets"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Mango DAO
-        </a>
-        .
       </p>
     ),
   },

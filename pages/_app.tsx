@@ -2,7 +2,7 @@ import '../styles/globals.css'
 import 'react-range-slider-input/dist/style.css'
 
 import type { AppProps } from 'next/app'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Adapter,
   WalletAdapterNetwork,
@@ -46,9 +46,9 @@ import PlausibleProvider from 'next-plausible'
 // init react-query
 export const queryClient = new QueryClient()
 
-const metaTitle = 'Best Yield on Solana'
+const metaTitle = "Solana's Best Yield Farm | Yield Fan"
 const metaDescription =
-  'Earn leveraged returns on your favorite yield-bearing tokens. Powered by Mango.'
+  'Earn multiplied yield on your favorite liquid staking tokens.'
 
 // Do not add hooks to this component, that will cause unnecessary rerenders
 // Top level state hydrating/updating should go in MangoProvider
@@ -101,7 +101,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Best Yield on Solana | Yield Fan</title>
+        <title>Solana&apos;s Best Yield Farm | Yield Fan</title>
         <link rel="icon" href="/favicon.ico" />
         <meta property="og:title" content={metaTitle} />
         <meta name="description" content={metaDescription} />
@@ -132,9 +132,10 @@ function MyApp({ Component, pageProps }: AppProps) {
           >
             <MangoProvider />
             <ThemeProvider defaultTheme="Light" storageKey={THEME_KEY}>
-              <Telemetry />
               <Layout>
-                <Component {...pageProps} />
+                <Telemetry>
+                  <Component {...pageProps} />
+                </Telemetry>
               </Layout>
               <TransactionNotification />
             </ThemeProvider>
@@ -152,7 +153,7 @@ type TelemetryProps = {
   walletConnected: string
 }
 
-const Telemetry = () => {
+const Telemetry = ({ children }: { children: ReactNode }) => {
   const { wallet } = useWallet()
   const [telemetryProps, setTelemetryProps] = useState<
     TelemetryProps | undefined
@@ -183,6 +184,8 @@ const Telemetry = () => {
       scriptProps={{ id: 'plausible' }}
       pageviewProps={telemetryProps}
       trackOutboundLinks={true}
-    />
+    >
+      {children}
+    </PlausibleProvider>
   )
 }

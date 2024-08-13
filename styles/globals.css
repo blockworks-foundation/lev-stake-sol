@@ -460,3 +460,21 @@ table p {
 .rotate-bg-5x {
   animation: rotate-bg 3s linear infinite;
 }
+
+.terms p {
+  @apply mb-3;
+}
+
+.terms h2 {
+  @apply mb-3 mt-6;
+}
+
+#tsparticles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  padding: 0;
+  margin: 0;
+}

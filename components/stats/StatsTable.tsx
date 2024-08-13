@@ -3,6 +3,7 @@ import FormatNumericValue from '@components/shared/FormatNumericValue'
 import { Table, Td, Th, TrBody, TrHead } from '@components/shared/TableElements'
 import TokenLogo from '@components/shared/TokenLogo'
 import { useViewport } from 'hooks/useViewport'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { formatCurrencyValue } from 'utils/numbers'
 import { formatTokenSymbol } from 'utils/tokens'
@@ -10,6 +11,11 @@ import { formatTokenSymbol } from 'utils/tokens'
 const StatsTable = ({ banks }: { banks: Bank[] }) => {
   const { t } = useTranslation('common')
   const { isMobile } = useViewport()
+
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  if (!mounted) return null
+
   return !isMobile ? (
     <Table>
       <thead>

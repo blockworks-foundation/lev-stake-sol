@@ -10,7 +10,7 @@ import { BOOST_ACCOUNT_PREFIX } from 'utils/constants'
 
 const set = mangoStore.getState().set
 
-const HomePage = () => {
+const DashboardPage = () => {
   const activeTab = mangoStore((s) => s.activeTab)
   const selectedToken = mangoStore((s) => s.selectedToken)
   const { positions } = usePositions()
@@ -60,7 +60,7 @@ const HomePage = () => {
   )
 }
 
-export default HomePage
+export default DashboardPage
 
 const TabContent = ({
   activeTab,
