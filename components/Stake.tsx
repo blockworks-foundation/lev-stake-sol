@@ -26,6 +26,7 @@ export const SOL_YIELD = [
   'dualSOL',
   'mangoSOL',
   'compassSOL',
+  'stepSOL',
 ]
 
 const Stake = () => {

@@ -151,6 +151,20 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
     },
   },
   {
+    name: 'Step Finance Staked SOL',
+    symbol: 'stepSOL',
+    description: 'LST for the Step Community with Rewards',
+    id: 1252,
+    active: true,
+    mint_address: 'StPsoHokZryePePFV8N7iXvfEmgUoJ87rivABX7gaW6',
+    clientContext: 'lst',
+    borrowToken: 'SOL',
+    links: {
+      website: 'https://step.finance/',
+      twitter: 'https://twitter.com/StepFinance_',
+    },
+  },
+  {
     name: 'Dual Finance Staked SOL',
     symbol: 'dualSOL',
     description: 'The LST to grow onchain options',
@@ -367,6 +381,7 @@ export const CUSTOM_TOKEN_ICONS: { [key: string]: boolean } = {
   dualsol: true,
   digitsol: true,
   compasssol: true,
+  stepsol: true,
 }
 
 export const DEFAULT_FAVORITE_MKTS = [
