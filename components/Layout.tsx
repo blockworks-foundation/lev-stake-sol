@@ -1,4 +1,4 @@
-import { Fragment, ReactNode, useMemo, useState } from 'react'
+import { Fragment, ReactNode, useEffect, useMemo, useState } from 'react'
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import mangoStore from '@store/mangoStore'
 import TopBar from './TopBar'
@@ -32,9 +32,8 @@ const Layout = ({ children }: { children: ReactNode }) => {
     return asPath === '/dashboard' || asPath === '/stats'
   }, [asPath])
 
-  // const [mounted, setMounted] = useState(false)
-  // useEffect(() => setMounted(true), [])
-  // if (!mounted) return null
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
 
   return (
     <main
@@ -71,11 +70,10 @@ const Layout = ({ children }: { children: ReactNode }) => {
               </div>
               {children}
             </>
-            // <div className="mx-auto max-w-[1440px]">{children}</div>
           )}
           <Footer />
           <DeployRefreshManager />
-          {isDashboardLayout ? <TermsOfUse /> : null}
+          {isDashboardLayout && mounted ? <TermsOfUse /> : null}
           <RestrictedCountryCheck
             ipCountry={ipCountry}
             loadingIpCountry={loadingIpCountry}

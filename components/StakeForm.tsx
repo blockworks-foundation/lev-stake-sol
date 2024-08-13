@@ -27,9 +27,7 @@ import {
 import { isMangoError } from 'types'
 import TokenLogo from './shared/TokenLogo'
 import SecondaryConnectButton from './shared/SecondaryConnectButton'
-import useMangoAccountAccounts from 'hooks/useMangoAccountAccounts'
 import InlineNotification from './shared/InlineNotification'
-import Link from 'next/link'
 import LeverageSlider from './shared/LeverageSlider'
 import useMangoGroup from 'hooks/useMangoGroup'
 import FormatNumericValue from './shared/FormatNumericValue'
@@ -123,7 +121,6 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
   const wallet = useWallet()
   const connection = mangoStore((s) => s.connection)
   const storedLeverage = mangoStore((s) => s.leverage)
-  const { usedTokens, totalTokens } = useMangoAccountAccounts()
   const { jlpGroup, lstGroup } = useMangoGroup()
   const groupLoaded = mangoStore((s) => s.groupLoaded)
   const { financialMetrics, borrowBankBorrowRate } = useBankRates(
@@ -199,25 +196,18 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
     return change
   }, [liquidationPrice, stakePrice])
 
-  const tokenPositionsFull = useMemo(() => {
-    if (!stakeBank || !usedTokens.length || !totalTokens.length) return false
-    const hasTokenPosition = usedTokens.find(
-      (token) => token.tokenIndex === stakeBank.tokenIndex,
-    )
-    return hasTokenPosition ? false : usedTokens.length >= totalTokens.length
-  }, [stakeBank, usedTokens, totalTokens])
-
   const tokenMax = useMemo(() => {
     if (!depositBank) return { maxAmount: 0, maxDecimals: 0 }
     return walletBalanceForToken(walletTokens, depositBank.name, clientContext)
   }, [walletTokens, depositBank, clientContext])
 
-  const minSol = useMemo(() => {
-    const isExistingPosition = positions.find(
-      (p) => p.bank.name === selectedToken,
-    )
-    return isExistingPosition ? MIN_SOL_BALANCE : MIN_SOL_BALANCE_FOR_ACCOUNT
+  const isExistingPosition = useMemo(() => {
+    return positions.find((p) => p.bank.name === selectedToken)
   }, [positions, selectedToken])
+
+  const minSol = useMemo(() => {
+    return isExistingPosition ? MIN_SOL_BALANCE : MIN_SOL_BALANCE_FOR_ACCOUNT
+  }, [isExistingPosition])
 
   const setMax = useCallback(() => {
     if (!depositBank) return
@@ -902,53 +892,50 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
           ) : null}
         </div>
         {connected ? (
-          <Button
-            onClick={handleDeposit}
-            className="w-full"
-            disabled={
-              connected &&
-              (!inputAmount ||
-                Number(inputAmount) == 0 ||
-                showInsufficientBalance ||
-                (borrowBank && availableVaultBalance < amountToBorrow) ||
-                depositLimitExceeded ||
-                !ipAllowed)
-            }
-            size="large"
-          >
-            {submitting ? (
-              <Loading className="mr-2 h-5 w-5" />
-            ) : showInsufficientBalance ? (
-              <div className="flex items-center">
-                <ExclamationCircleIcon className="icon-shadow mr-2 h-5 w-5 shrink-0" />
-                {t('swap:insufficient-balance', {
-                  symbol: selectedToken,
-                })}
+          <>
+            <Button
+              onClick={handleDeposit}
+              className="w-full"
+              disabled={
+                connected &&
+                (!inputAmount ||
+                  Number(inputAmount) == 0 ||
+                  showInsufficientBalance ||
+                  (borrowBank && availableVaultBalance < amountToBorrow) ||
+                  depositLimitExceeded ||
+                  !ipAllowed)
+              }
+              size="large"
+            >
+              {submitting ? (
+                <Loading className="mr-2 h-5 w-5" />
+              ) : showInsufficientBalance ? (
+                <div className="flex items-center">
+                  <ExclamationCircleIcon className="icon-shadow mr-2 h-5 w-5 shrink-0" />
+                  {t('swap:insufficient-balance', {
+                    symbol: selectedToken,
+                  })}
+                </div>
+              ) : ipAllowed ? (
+                `Add ${
+                  isSwapMode && uiOutAmount ? uiOutAmount : inputAmount
+                } ${formatTokenSymbol(selectedToken)}`
+              ) : (
+                'Country not allowed'
+              )}
+            </Button>
+            {!isExistingPosition ? (
+              <div className="mt-4">
+                <InlineNotification
+                  type="info"
+                  desc="It costs a small amount of SOL to open a new position. This is fully refunded when you close your position."
+                />
               </div>
-            ) : ipAllowed ? (
-              `Add ${
-                isSwapMode && uiOutAmount ? uiOutAmount : inputAmount
-              } ${formatTokenSymbol(selectedToken)}`
-            ) : (
-              'Country not allowed'
-            )}
-          </Button>
+            ) : null}
+          </>
         ) : (
           <SecondaryConnectButton className="w-full" isLarge />
         )}
-        {tokenPositionsFull ? (
-          <InlineNotification
-            type="error"
-            desc={
-              <>
-                {t('error-token-positions-full')}{' '}
-                <Link href="/settings" shallow>
-                  {t('manage')}
-                </Link>
-              </>
-            }
-          />
-        ) : null}
       </div>
     </>
   )
