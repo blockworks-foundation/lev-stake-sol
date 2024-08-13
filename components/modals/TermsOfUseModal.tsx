@@ -5,11 +5,10 @@ import Button from '@components/shared/Button'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import { useState } from 'react'
 import Checkbox from '@components/forms/Checkbox'
-import { useTheme } from 'next-themes'
+import { ZigZagRepeatLine } from '@components/Stake'
 
 const TermsOfUseModal = ({ isOpen, onClose }: ModalProps) => {
   const { t } = useTranslation('common')
-  const { theme } = useTheme()
   const [acceptTerms, setAcceptTerms] = useState(false)
 
   return (
@@ -24,13 +23,7 @@ const TermsOfUseModal = ({ isOpen, onClose }: ModalProps) => {
         <div className="flex flex-col items-center pb-4">
           <h2 className="mt-2 text-xl">Accept terms</h2>
         </div>
-        <div
-          className={`bg-x-repeat h-2 w-full ${
-            theme === 'Light'
-              ? `bg-[url('/images/zigzag-repeat.svg')]`
-              : `bg-[url('/images/zigzag-repeat-dark.svg')]`
-          } bg-contain opacity-20`}
-        />
+        <ZigZagRepeatLine />
         <ul className="space-y-3 py-4">
           <li className="flex items-center">
             <CheckCircleIcon className="mr-2 h-5 w-5 shrink-0 text-th-success" />
@@ -59,13 +52,7 @@ const TermsOfUseModal = ({ isOpen, onClose }: ModalProps) => {
             </span>
           </li>
         </ul>
-        <div
-          className={`bg-x-repeat h-2 w-full ${
-            theme === 'Light'
-              ? `bg-[url('/images/zigzag-repeat.svg')]`
-              : `bg-[url('/images/zigzag-repeat-dark.svg')]`
-          } bg-contain opacity-20`}
-        />
+        <ZigZagRepeatLine />
       </div>
       <Checkbox
         checked={acceptTerms}

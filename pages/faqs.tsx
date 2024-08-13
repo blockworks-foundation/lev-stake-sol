@@ -11,7 +11,11 @@ export async function getStaticProps({ locale }: { locale: string }) {
 }
 
 const Faqs: NextPage = () => {
-  return <FaqsPage />
+  return (
+    <div className="mx-4 max-w-3xl py-10 md:mx-auto">
+      <FaqsPage />
+    </div>
+  )
 }
 
 export default Faqs

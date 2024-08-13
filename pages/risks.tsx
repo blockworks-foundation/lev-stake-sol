@@ -11,7 +11,7 @@ export async function getStaticProps({ locale }: { locale: string }) {
 
 const Risks: NextPage = () => {
   return (
-    <div className="rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6">
+    <div className="mx-4 my-10 max-w-3xl rounded-2xl border-2 border-th-fgd-1 bg-th-bkg-1 p-6 md:mx-auto">
       <h1 className="mb-4">Risks</h1>
       <p className="mb-3">
         <b>KEY INVESTOR INFORMATION:</b> This document provides you with key

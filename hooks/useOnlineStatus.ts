@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 const useOnlineStatus = () => {
-  const [online, isOnline] = useState(navigator.onLine)
+  const [online, isOnline] = useState(true)
 
   const setOnline = () => {
     isOnline(true)
@@ -9,6 +9,12 @@ const useOnlineStatus = () => {
   const setOffline = () => {
     isOnline(false)
   }
+
+  useEffect(() => {
+    if (navigator) {
+      isOnline(navigator.onLine)
+    }
+  }, [])
 
   // Register the event listeners
   useEffect(() => {

@@ -1,11 +1,12 @@
 import { useTheme } from 'next-themes'
 import { IconButton } from './shared/Button'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { MoonIcon, SunIcon } from '@heroicons/react/20/solid'
 
 const ThemeToggle = () => {
   const { setTheme } = useTheme()
   const [isDarkTheme, setIsDarkTheme] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   const handleToggleTheme = (isDark: boolean) => {
     setIsDarkTheme(!isDark)
@@ -15,6 +16,9 @@ const ThemeToggle = () => {
       setTheme('Dark')
     }
   }
+
+  useEffect(() => setMounted(true), [])
+  if (!mounted) return null
 
   return (
     <IconButton onClick={() => handleToggleTheme(isDarkTheme)} size="large">

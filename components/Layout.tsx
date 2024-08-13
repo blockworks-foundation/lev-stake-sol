@@ -3,11 +3,7 @@ import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import mangoStore from '@store/mangoStore'
 import TopBar from './TopBar'
 import useLocalStorageState from '../hooks/useLocalStorageState'
-import {
-  ACCEPT_TERMS_KEY,
-  SECONDS,
-  YIELD_FANS_INTRO_KEY,
-} from '../utils/constants'
+import { ACCEPT_TERMS_KEY, SECONDS } from '../utils/constants'
 import useInterval from './shared/useInterval'
 import { Transition } from '@headlessui/react'
 import { useTranslation } from 'next-i18next'
@@ -17,9 +13,10 @@ import Footer from './Footer'
 import useIpAddress from 'hooks/useIpAddress'
 import RestrictedCountryModal from './shared/RestrictedCountryModal'
 import { useRouter } from 'next/router'
-import Modal from './shared/Modal'
-import Button from './shared/Button'
 import Image from 'next/image'
+import ThemeToggle from './ThemeToggle'
+import ButtonLink from './shared/ButtonLink'
+import Link from 'next/link'
 
 export const NON_RESTRICTED_JURISDICTION_KEY = 'non-restricted-jurisdiction-0.1'
 
@@ -29,10 +26,14 @@ const termsLastUpdated = 1679441610978
 const Layout = ({ children }: { children: ReactNode }) => {
   const { ipCountry, loadingIpCountry } = useIpAddress()
   const themeData = mangoStore((s) => s.themeData)
+  const { asPath } = useRouter()
+
+  const isDashboardLayout = useMemo(() => {
+    return asPath === '/dashboard' || asPath === '/stats'
+  }, [asPath])
 
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
-  if (!mounted) return null
 
   return (
     <main
@@ -42,14 +43,37 @@ const Layout = ({ children }: { children: ReactNode }) => {
       <div className={`relative min-h-screen`}>
         {/* <div className="border-th-primary-4 from-th-primary-3 to-th-primary-2 absolute bottom-0 h-44 w-full border-b-[20px] bg-gradient-to-b" /> */}
         <div className="relative z-10">
-          <TopBar />
-          <div className="mx-auto max-w-3xl px-6 pb-20 md:pb-12 lg:px-12">
-            {children}
-            <Footer />
-          </div>
+          {isDashboardLayout ? (
+            <>
+              <TopBar />
+              <div className="mx-auto max-w-3xl px-6 pb-20 md:pb-12 lg:px-12">
+                {children}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-3 md:px-6 md:py-4">
+                <Link href="/" shallow={true}>
+                  <Image
+                    src="/logos/yieldfan.png"
+                    alt="Logo"
+                    height={48}
+                    width={48}
+                  />
+                </Link>
+                <div className="flex items-center space-x-4">
+                  <ThemeToggle />
+                  <ButtonLink path="/dashboard" size="small">
+                    Launch App
+                  </ButtonLink>
+                </div>
+              </div>
+              {children}
+            </>
+          )}
+          <Footer />
           <DeployRefreshManager />
-          <TermsOfUse />
-          <YieldFansIntro />
+          {isDashboardLayout && mounted ? <TermsOfUse /> : null}
           <RestrictedCountryCheck
             ipCountry={ipCountry}
             loadingIpCountry={loadingIpCountry}
@@ -68,17 +92,17 @@ const TermsOfUse = () => {
     ACCEPT_TERMS_KEY,
     '',
   )
-  const [yieldFansIntro] = useLocalStorageState(YIELD_FANS_INTRO_KEY, false)
+  // const [yieldFansIntro] = useLocalStorageState(YIELD_FANS_INTRO_KEY, false)
 
   const showTermsOfUse = useMemo(() => {
     return (
       (!acceptTerms || acceptTerms < termsLastUpdated) &&
       asPath !== '/risks' &&
       asPath !== '/terms-of-use' &&
-      asPath !== '/privacy-policy' &&
-      yieldFansIntro
+      asPath !== '/privacy-policy'
+      // && yieldFansIntro
     )
-  }, [acceptTerms, asPath, yieldFansIntro])
+  }, [acceptTerms, asPath])
 
   const handleClose = () => {
     setAcceptTerms(Date.now())
@@ -93,37 +117,41 @@ const TermsOfUse = () => {
   )
 }
 
-const YieldFansIntro = () => {
-  const [yieldFansIntro, setYieldFansIntro] = useLocalStorageState(
-    YIELD_FANS_INTRO_KEY,
-    false,
-  )
+// const YieldFansIntro = () => {
+//   const [yieldFansIntro, setYieldFansIntro] = useLocalStorageState(
+//     YIELD_FANS_INTRO_KEY,
+//     false,
+//   )
 
-  return !yieldFansIntro ? (
-    <Modal isOpen={!yieldFansIntro} onClose={() => setYieldFansIntro(true)}>
-      <div className="flex flex-col items-center">
-        <Image
-          className="mb-3"
-          src="/logos/yieldfan.png"
-          alt="Logo"
-          height={48}
-          width={48}
-        />
-        <h2 className="mb-1 text-center">New name. Same APYs.</h2>
-        <p className="text-center">
-          Are you a fan of epic yields? Boost! is now yield.fan
-        </p>
-        <Button
-          className="mt-6"
-          onClick={() => setYieldFansIntro(true)}
-          size="medium"
-        >
-          Let&apos;s Go
-        </Button>
-      </div>
-    </Modal>
-  ) : null
-}
+//   const [mounted, setMounted] = useState(false)
+//   useEffect(() => setMounted(true), [])
+//   if (!mounted) return null
+
+//   return !yieldFansIntro ? (
+//     <Modal isOpen={!yieldFansIntro} onClose={() => setYieldFansIntro(true)}>
+//       <div className="flex flex-col items-center">
+//         <Image
+//           className="mb-3"
+//           src="/logos/yieldfan.png"
+//           alt="Logo"
+//           height={48}
+//           width={48}
+//         />
+//         <h2 className="mb-1 text-center">New name. Same APYs.</h2>
+//         <p className="text-center">
+//           Are you a fan of epic yields? Boost! is now yield.fan
+//         </p>
+//         <Button
+//           className="mt-6"
+//           onClick={() => setYieldFansIntro(true)}
+//           size="medium"
+//         >
+//           Let&apos;s Go
+//         </Button>
+//       </div>
+//     </Modal>
+//   ) : null
+// }
 
 function DeployRefreshManager(): JSX.Element | null {
   const { t } = useTranslation('common')
