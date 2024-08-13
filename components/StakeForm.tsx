@@ -385,6 +385,9 @@ function StakeForm({ token: selectedToken, clientContext }: StakeFormProps) {
       plausible('PositionEntryError', {
         props: {
           error: `${e}`,
+          description: `ERROR: ${publicKey.toString()} ${inputAmount} ${
+            stakeBank.name
+          } ${leverage}x ${e}`,
           wallet: publicKey.toString(),
         },
       })

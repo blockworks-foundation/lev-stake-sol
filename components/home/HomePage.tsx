@@ -9,10 +9,12 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import BestApy from './BestApy'
 import { ZigZagLine } from '@components/NavTabs'
 import { FAQS } from '@components/faqs/FaqsPage'
+import { usePlausible } from 'next-plausible'
 
 const WRAPPER_Y_PADDING = 'py-12 md:py-20'
 
 const HomePage = () => {
+  const plausible = usePlausible()
   return (
     <>
       <div className={`flex flex-col items-center ${WRAPPER_Y_PADDING} px-6`}>
@@ -25,7 +27,18 @@ const HomePage = () => {
         <p className="mb-8 text-center text-xl">
           Multiply your yield on Solana&apos;s best yield farm.
         </p>
-        <ButtonLink path="/dashboard">Launch App</ButtonLink>
+        <ButtonLink
+          path="/dashboard"
+          onClick={() => {
+            plausible('HomeCtaClick', {
+              props: {
+                button: 'hero panel',
+              },
+            })
+          }}
+        >
+          Launch App
+        </ButtonLink>
       </div>
       <div
         className={`flex flex-col items-center bg-th-bkg-1 ${WRAPPER_Y_PADDING} relative`}
@@ -102,7 +115,18 @@ const HomePage = () => {
                 </div>
               </div>
               <div className="pt-2">
-                <ButtonLink path="/dashboard">Get Started</ButtonLink>
+                <ButtonLink
+                  path="/dashboard"
+                  onClick={() => {
+                    plausible('HomeCtaClick', {
+                      props: {
+                        button: 'get started',
+                      },
+                    })
+                  }}
+                >
+                  Get Started
+                </ButtonLink>
               </div>
             </div>
           </div>
@@ -146,6 +170,15 @@ const HomePage = () => {
                             ? 'rounded-b-none border-b-0'
                             : 'inner-shadow-bottom-sm md:hover:bg-th-bkg-2'
                         }`}
+                        onClick={() => {
+                          if (!open) {
+                            plausible('FaqClick', {
+                              props: {
+                                faqClicked: question,
+                              },
+                            })
+                          }
+                        }}
                       >
                         <div className="flex items-center justify-between">
                           <p className="font-bold">{question}</p>
@@ -176,7 +209,17 @@ const HomePage = () => {
             <span className="mb-4 text-4xl font-bold text-th-fgd-1 md:text-5xl">
               <BestApy /> APY
             </span>
-            <ButtonLink path="/dashboard" size="small">
+            <ButtonLink
+              path="/dashboard"
+              size="small"
+              onClick={() => {
+                plausible('HomeCtaClick', {
+                  props: {
+                    button: 'top apy bottom panel',
+                  },
+                })
+              }}
+            >
               Let&apos;s Go
             </ButtonLink>
           </div>

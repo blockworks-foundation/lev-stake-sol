@@ -6,11 +6,13 @@ const ButtonLink = ({
   children,
   size = 'large',
   className,
+  onClick,
 }: {
   path: string
   children: ReactNode
   size?: 'small' | 'large'
   className?: string
+  onClick?: () => void
 }) => {
   return (
     <Link
@@ -18,6 +20,7 @@ const ButtonLink = ({
         size === 'large' ? 'h-14 px-8 text-xl' : 'h-9 px-4 text-base'
       } ${className}`}
       href={path}
+      onClick={onClick}
     >
       <span className="group-hover:mt-1 group-active:mt-2">{children}</span>
     </Link>

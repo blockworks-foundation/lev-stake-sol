@@ -17,6 +17,7 @@ import Image from 'next/image'
 import ThemeToggle from './ThemeToggle'
 import ButtonLink from './shared/ButtonLink'
 import Link from 'next/link'
+import { usePlausible } from 'next-plausible'
 
 export const NON_RESTRICTED_JURISDICTION_KEY = 'non-restricted-jurisdiction-0.1'
 
@@ -25,6 +26,7 @@ const termsLastUpdated = 1679441610978
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const { ipCountry, loadingIpCountry } = useIpAddress()
+  const plausible = usePlausible()
   const themeData = mangoStore((s) => s.themeData)
   const { asPath } = useRouter()
 
@@ -63,7 +65,17 @@ const Layout = ({ children }: { children: ReactNode }) => {
                 </Link>
                 <div className="flex items-center space-x-4">
                   <ThemeToggle />
-                  <ButtonLink path="/dashboard" size="small">
+                  <ButtonLink
+                    path="/dashboard"
+                    size="small"
+                    onClick={() => {
+                      plausible('HomeCtaClick', {
+                        props: {
+                          button: 'top bar',
+                        },
+                      })
+                    }}
+                  >
                     Launch App
                   </ButtonLink>
                 </div>
