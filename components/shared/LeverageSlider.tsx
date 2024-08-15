@@ -19,9 +19,10 @@ const LeverageSlider = ({
   // if leverageMax changes, force rerender
   useEffect(() => {
     if (prevMax !== leverageMax) {
-      window.dispatchEvent(new Event('resize'))
+      // window.dispatchEvent(new Event('resize'))
+      setValue([1, startingValue])
     }
-  }, [leverageMax, prevMax])
+  }, [leverageMax, prevMax, startingValue])
 
   const handleSliderChange = (v: number[]) => {
     setValue(v)
