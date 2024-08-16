@@ -35,12 +35,12 @@ const Select = <T extends Values>({
         {({ open }) => (
           <>
             <Listbox.Button
-              className={`h-full w-full rounded-md bg-th-input-bkg py-2.5 font-normal ring-1 ring-inset ring-th-input-border focus:outline-none focus-visible:ring-th-fgd-4 md:hover:ring-th-input-border-hover ${buttonClassName}`}
+              className={`default-transition h-12 w-full rounded-md border border-th-bkg-3 bg-th-bkg-1 font-normal focus:outline-none md:hover:bg-th-bkg-2 ${buttonClassName}`}
             >
               <div
                 className={`flex items-center justify-between space-x-2 px-3 text-th-fgd-1`}
               >
-                <div className="flex items-center">
+                <div className="flex items-center font-semibold">
                   {icon ? icon : null}
                   {value ? (
                     value

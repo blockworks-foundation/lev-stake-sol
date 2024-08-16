@@ -10,6 +10,8 @@ import BestApy from './BestApy'
 import { ZigZagLine } from '@components/NavTabs'
 import { FAQS } from '@components/faqs/FaqsPage'
 import { usePlausible } from 'next-plausible'
+import YieldCalculator from './YieldCalculator'
+import Link from 'next/link'
 
 const WRAPPER_Y_PADDING = 'py-12 md:py-20'
 
@@ -150,6 +152,25 @@ const HomePage = () => {
             one audit. Our contracts are audited after every program change.
           </p>
           <Ottersec className="h-10 w-auto text-th-fgd-1" />
+        </div>
+      </div>
+      <div className={`bg-th-primary-2 ${WRAPPER_Y_PADDING}`}>
+        <div className="mx-auto w-full max-w-5xl">
+          <h2 className="text-shadow mb-6 px-6 text-center text-3xl text-th-button-text md:text-5xl xl:px-0">
+            Test the waters.
+          </h2>
+          <YieldCalculator />
+          <div className="mx-auto max-w-3xl pt-6">
+            <p className="text-center text-sm text-th-fgd-4">
+              This calculator is for educational purposes only. It assumes rates
+              and prices remain constant over time. Take the time to understand
+              the{' '}
+              <Link className="underline md:hover:no-underline" href="/risks">
+                risks
+              </Link>{' '}
+              before depositing any funds.
+            </p>
+          </div>
         </div>
       </div>
       <div className={`bg-th-primary-1 ${WRAPPER_Y_PADDING}`}>
