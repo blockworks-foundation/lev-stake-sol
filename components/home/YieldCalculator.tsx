@@ -254,9 +254,15 @@ const YieldCalculator = () => {
             } yield after ${renderPeriod(form.period)}`}</span>
           </div>
           <div className="flex flex-col items-start">
-            <span className="text-xs text-th-fgd-4">
-              {financialMetrics?.APY.toFixed(2)}% APY
-            </span>
+            <div className="mb-1 flex items-center space-x-1.5">
+              <Image
+                src="/logos/yieldfan.png"
+                alt="Logo"
+                height={16}
+                width={16}
+              />
+              <span className="text-xs font-semibold">Yield Fan</span>
+            </div>
             <span
               className={`font-display text-xl leading-none ${
                 leveragedTotal - positionValue >= 0
@@ -272,22 +278,21 @@ const YieldCalculator = () => {
                   : formatNumericValue(leveragedTotal)
               } ${isSolYield ? 'SOL' : ''}`}
             </span>
-            <span className="mb-2 text-xs text-th-fgd-4">
+            <span className="mb-0.5 text-xs text-th-fgd-4">
               {`Total: ${isSolYield ? '' : '$'}${
                 leveragedTotal > 999
                   ? numberCompacter.format(leveragedTotal)
                   : formatNumericValue(leveragedTotal)
               } ${isSolYield ? 'SOL' : ''}`}
             </span>
-            <div className="flex items-center space-x-1.5">
-              <Image
-                src="/logos/yieldfan.png"
-                alt="Logo"
-                height={16}
-                width={16}
-              />
-              <span className="text-xs font-semibold">Yield Fan</span>
-            </div>
+            <span className="text-xs text-th-fgd-4">
+              {`APY: ${
+                financialMetrics?.APY && !isNaN(financialMetrics.APY)
+                  ? financialMetrics.APY.toFixed(2)
+                  : 0
+              }
+              %`}
+            </span>
           </div>
           <div className="flex items-center justify-center">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-th-bkg-2">
@@ -295,9 +300,15 @@ const YieldCalculator = () => {
             </div>
           </div>
           <div className="flex flex-col items-end">
-            <span className="text-right text-xs text-th-fgd-4">
-              {nativeFinancialMetrics?.APY.toFixed(2)}% APY
-            </span>
+            <div className="mb-1 flex items-center space-x-1.5">
+              <Image
+                src={`/icons/${form.token.toLowerCase()}.svg`}
+                alt="Logo"
+                height={16}
+                width={16}
+              />
+              <span className="text-xs font-semibold">{`${form.token} yield`}</span>
+            </div>
             <span className="text-right font-display text-xl leading-none text-th-bkg-4 md:text-2xl">
               {`${nativeTotal - positionValue > 0 ? '+' : ''}${
                 isSolYield ? '' : '$'
@@ -307,26 +318,25 @@ const YieldCalculator = () => {
                   : formatNumericValue(nativeTotal)
               } ${isSolYield ? 'SOL' : ''}`}
             </span>
-            <span className="mb-2 text-right text-xs text-th-fgd-4">
+            <span className="mb-0.5 text-right text-xs text-th-fgd-4">
               {`Total: ${isSolYield ? '' : '$'}${
                 nativeTotal > 999
                   ? numberCompacter.format(nativeTotal)
                   : formatNumericValue(nativeTotal)
               } ${isSolYield ? 'SOL' : ''}`}
             </span>
-            <div className="flex items-center space-x-1.5">
-              <Image
-                src={`/icons/${form.token.toLowerCase()}.svg`}
-                alt="Logo"
-                height={16}
-                width={16}
-              />
-              <span className="text-xs font-semibold">{form.token}</span>
-            </div>
+            <span className="text-right text-xs text-th-fgd-4">
+              {`APY: ${
+                nativeFinancialMetrics?.APY &&
+                !isNaN(nativeFinancialMetrics.APY)
+                  ? nativeFinancialMetrics.APY.toFixed(2)
+                  : 0
+              }%`}
+            </span>
           </div>
         </div>
-        <div className="h-64 rounded-xl bg-th-bkg-1 p-6">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="h-72 rounded-xl bg-th-bkg-1 p-6">
+          <ResponsiveContainer width="100%" height="90%">
             <LineChart data={chartData}>
               <XAxis
                 axisLine={false}
@@ -375,6 +385,32 @@ const YieldCalculator = () => {
               />
             </LineChart>
           </ResponsiveContainer>
+          <div className="flex justify-center space-x-4">
+            <div className="flex flex-col items-center">
+              <div className="mb-2 h-0.5 w-12 rounded-full bg-th-success" />
+              <div className="flex items-center space-x-1.5">
+                <Image
+                  src="/logos/yieldfan.png"
+                  alt="Logo"
+                  height={16}
+                  width={16}
+                />
+                <span className="text-xs">Yield Fan</span>
+              </div>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="mb-2 h-0.5 w-12 rounded-full bg-th-bkg-4" />
+              <div className="flex items-center space-x-1.5">
+                <Image
+                  src={`/icons/${form.token.toLowerCase()}.svg`}
+                  alt="Logo"
+                  height={16}
+                  width={16}
+                />
+                <span className="text-xs">{`${form.token} yield`}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
