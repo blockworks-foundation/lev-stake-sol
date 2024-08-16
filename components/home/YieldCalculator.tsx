@@ -290,8 +290,7 @@ const YieldCalculator = () => {
                 financialMetrics?.APY && !isNaN(financialMetrics.APY)
                   ? financialMetrics.APY.toFixed(2)
                   : 0
-              }
-              %`}
+              }%`}
             </span>
           </div>
           <div className="flex items-center justify-center">
