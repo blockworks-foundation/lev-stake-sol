@@ -275,7 +275,7 @@ const YieldCalculator = () => {
               }${
                 leveragedTotal > 999
                   ? numberCompacter.format(leveragedTotal - positionValue)
-                  : formatNumericValue(leveragedTotal)
+                  : formatNumericValue(leveragedTotal - positionValue)
               } ${isSolYield ? 'SOL' : ''}`}
             </span>
             <span className="mb-0.5 text-xs text-th-fgd-4">
@@ -314,7 +314,7 @@ const YieldCalculator = () => {
               }${
                 nativeTotal > 999
                   ? numberCompacter.format(nativeTotal - positionValue)
-                  : formatNumericValue(nativeTotal)
+                  : formatNumericValue(nativeTotal - positionValue)
               } ${isSolYield ? 'SOL' : ''}`}
             </span>
             <span className="mb-0.5 text-right text-xs text-th-fgd-4">
