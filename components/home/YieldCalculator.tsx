@@ -254,7 +254,7 @@ const YieldCalculator = () => {
             } yield after ${renderPeriod(form.period)}`}</span>
           </div>
           <div className="flex flex-col items-start">
-            <div className="mb-1 flex items-center space-x-1.5">
+            <div className="mb-2 flex items-center space-x-1.5 md:mb-1">
               <Image
                 src="/logos/yieldfan.png"
                 alt="Logo"
@@ -264,7 +264,7 @@ const YieldCalculator = () => {
               <span className="text-xs font-semibold">Yield Fan</span>
             </div>
             <span
-              className={`font-display text-xl leading-none ${
+              className={`mb-1 font-display text-xl leading-none md:mb-0 ${
                 leveragedTotal - positionValue >= 0
                   ? 'text-th-success'
                   : 'text-th-error'
@@ -299,7 +299,7 @@ const YieldCalculator = () => {
             </div>
           </div>
           <div className="flex flex-col items-end">
-            <div className="mb-1 flex items-center space-x-1.5">
+            <div className="mb-2 flex items-center space-x-1.5 md:mb-1">
               <Image
                 src={`/icons/${form.token.toLowerCase()}.svg`}
                 alt="Logo"
@@ -308,7 +308,7 @@ const YieldCalculator = () => {
               />
               <span className="text-xs font-semibold">{`${form.token} yield`}</span>
             </div>
-            <span className="text-right font-display text-xl leading-none text-th-bkg-4 md:text-2xl">
+            <span className="mb-1 text-right font-display text-xl leading-none text-th-bkg-4 md:mb-0 md:text-2xl">
               {`${nativeTotal - positionValue > 0 ? '+' : ''}${
                 isSolYield ? '' : '$'
               }${
