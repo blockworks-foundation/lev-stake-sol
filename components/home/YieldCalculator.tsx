@@ -251,18 +251,33 @@ const YieldCalculator = () => {
           <div className="col-span-3 mb-3 flex justify-center">
             <span className="rounded-lg bg-th-bkg-2 px-3 py-1 text-th-fgd-1">{`${
               form.token === 'JLP' ? 'USDC' : 'SOL'
-            } value after ${renderPeriod(form.period)}`}</span>
+            } yield after ${renderPeriod(form.period)}`}</span>
           </div>
           <div className="flex flex-col items-start">
-            <span className="font-display text-xl md:text-2xl">
-              {`${isSolYield ? '' : '$'}${
+            <span className="text-xs text-th-fgd-4">
+              {financialMetrics?.APY.toFixed(2)}% APY
+            </span>
+            <span
+              className={`font-display text-xl leading-none ${
+                leveragedTotal - positionValue >= 0
+                  ? 'text-th-success'
+                  : 'text-th-error'
+              } md:text-2xl`}
+            >
+              {`${leveragedTotal - positionValue > 0 ? '+' : ''}${
+                isSolYield ? '' : '$'
+              }${
+                leveragedTotal > 999
+                  ? numberCompacter.format(leveragedTotal - positionValue)
+                  : formatNumericValue(leveragedTotal)
+              } ${isSolYield ? 'SOL' : ''}`}
+            </span>
+            <span className="mb-2 text-xs text-th-fgd-4">
+              {`Total: ${isSolYield ? '' : '$'}${
                 leveragedTotal > 999
                   ? numberCompacter.format(leveragedTotal)
                   : formatNumericValue(leveragedTotal)
               } ${isSolYield ? 'SOL' : ''}`}
-            </span>
-            <span className="mb-2 text-xs">
-              {financialMetrics?.APY.toFixed(2)}% APY
             </span>
             <div className="flex items-center space-x-1.5">
               <Image
@@ -271,7 +286,7 @@ const YieldCalculator = () => {
                 height={16}
                 width={16}
               />
-              <span className="text-xs">Yield Fan</span>
+              <span className="text-xs font-semibold">Yield Fan</span>
             </div>
           </div>
           <div className="flex items-center justify-center">
@@ -280,15 +295,24 @@ const YieldCalculator = () => {
             </div>
           </div>
           <div className="flex flex-col items-end">
-            <span className="text-right font-display text-xl md:text-2xl">
-              {`${isSolYield ? '' : '$'}${
+            <span className="text-right text-xs text-th-fgd-4">
+              {nativeFinancialMetrics?.APY.toFixed(2)}% APY
+            </span>
+            <span className="text-right font-display text-xl leading-none text-th-bkg-4 md:text-2xl">
+              {`${nativeTotal - positionValue > 0 ? '+' : ''}${
+                isSolYield ? '' : '$'
+              }${
+                nativeTotal > 999
+                  ? numberCompacter.format(nativeTotal - positionValue)
+                  : formatNumericValue(nativeTotal)
+              } ${isSolYield ? 'SOL' : ''}`}
+            </span>
+            <span className="mb-2 text-right text-xs text-th-fgd-4">
+              {`Total: ${isSolYield ? '' : '$'}${
                 nativeTotal > 999
                   ? numberCompacter.format(nativeTotal)
                   : formatNumericValue(nativeTotal)
               } ${isSolYield ? 'SOL' : ''}`}
-            </span>
-            <span className="mb-2 text-xs">
-              {nativeFinancialMetrics?.APY.toFixed(2)}% APY
             </span>
             <div className="flex items-center space-x-1.5">
               <Image
@@ -297,7 +321,7 @@ const YieldCalculator = () => {
                 height={16}
                 width={16}
               />
-              <span className="text-xs">{form.token}</span>
+              <span className="text-xs font-semibold">{form.token}</span>
             </div>
           </div>
         </div>
@@ -341,7 +365,11 @@ const YieldCalculator = () => {
                 type="monotone"
                 dataKey="leveragedAmount"
                 dot={false}
-                stroke="var(--success)"
+                stroke={
+                  leveragedTotal - positionValue > 0
+                    ? 'var(--success)'
+                    : 'var(--error)'
+                }
                 strokeWidth={2}
                 strokeLinecap="round"
               />
