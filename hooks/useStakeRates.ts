@@ -79,7 +79,7 @@ const fetchRates = async () => {
     rateData.dualsol = monthlyLstPriceChanges['dualsol'] ?? 0
     rateData.mangosol = monthlyLstPriceChanges['mangosol'] ?? 0
     rateData.compasssol = monthlyLstPriceChanges['compasssol'] ?? 0
-    rateData.stepsol = monthlyLstPriceChanges['stepsol'] ?? 0
+    rateData.stepsol = 0.0672 ?? 0
     return rateData
   } catch (e) {
     return {}
