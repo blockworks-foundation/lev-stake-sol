@@ -113,7 +113,7 @@ const MenuPanel = ({
   return (
     <>
       <div
-        className={`fixed right-0 top-0 z-40 h-screen w-[97%] overflow-hidden bg-th-bkg-2 transition duration-300 ease-in-out ${
+        className={`fixed right-0 top-0 z-40 h-screen w-[97%] overflow-hidden bg-th-primary-1 transition duration-300 ease-in-out ${
           showMenu ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -130,7 +130,15 @@ const MenuPanel = ({
             onClick={closeOnClick}
             shallow
           >
-            Boost!
+            Home
+          </Link>
+          <Link
+            className="block text-xl font-bold text-th-fgd-1"
+            href="/dashboard"
+            onClick={closeOnClick}
+            shallow
+          >
+            Dashboard
           </Link>
           <Link
             className="block text-xl font-bold text-th-fgd-1"
@@ -142,11 +150,11 @@ const MenuPanel = ({
           </Link>
           <Link
             className="block text-xl font-bold text-th-fgd-1"
-            href="/faqs"
+            href="/yield-calculator"
             onClick={closeOnClick}
             shallow
           >
-            FAQs
+            Yield calculator
           </Link>
         </div>
       </div>

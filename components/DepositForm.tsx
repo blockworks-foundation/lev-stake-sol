@@ -297,7 +297,7 @@ function DespositForm({ token: selectedToken, clientContext }: StakeFormProps) {
                 })}
               </div>
             ) : ipAllowed ? (
-              `Boost! ${inputAmount} ${formatTokenSymbol(selectedToken)}`
+              `Add ${inputAmount} ${formatTokenSymbol(selectedToken)}`
             ) : (
               'Country not allowed'
             )}
