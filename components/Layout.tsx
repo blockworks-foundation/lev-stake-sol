@@ -31,7 +31,11 @@ const Layout = ({ children }: { children: ReactNode }) => {
   const { asPath } = useRouter()
 
   const isDashboardLayout = useMemo(() => {
-    return asPath === '/dashboard' || asPath === '/stats'
+    return (
+      asPath === '/dashboard' ||
+      asPath === '/stats' ||
+      asPath === '/yield-calculator'
+    )
   }, [asPath])
 
   const [mounted, setMounted] = useState(false)
@@ -48,7 +52,11 @@ const Layout = ({ children }: { children: ReactNode }) => {
           {isDashboardLayout ? (
             <>
               <TopBar />
-              <div className="mx-auto max-w-3xl px-6 pb-20 md:pb-12 lg:px-12">
+              <div
+                className={`mx-auto ${
+                  asPath !== '/yield-calculator' ? 'max-w-3xl' : ''
+                } px-6 pb-20 md:pb-12 lg:px-12`}
+              >
                 {children}
               </div>
             </>

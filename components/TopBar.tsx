@@ -52,7 +52,11 @@ const TopBar = () => {
               path="/stats"
               text="Stats"
             />
-            {/* <NavLink active={pathname === '/faqs'} path="/faqs" text="FAQs" /> */}
+            <NavLink
+              active={pathname === '/yield-calculator'}
+              path="/yield-calculator"
+              text="Calculator"
+            />
           </>
         ) : null}
       </div>

@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 const YieldCalc: NextPage = () => {
   return (
-    <div className="mx-auto w-full max-w-5xl py-12">
+    <div className="mx-auto w-full max-w-5xl">
       <div className="px-6">
         <h2 className="text-shadow mb-2 px-6 text-center text-3xl text-th-button-text md:text-5xl xl:px-0">
           Yield calculator
