@@ -24,12 +24,7 @@ const fetchHistory = async (
     Array<ActivityFeed>,
     Array<ActivityFeed>,
   ] = await Promise.all([boostResponse.json(), mangoV4Response.json()])
-  console.log(
-    boostResponseParsed,
-    mangoV4ResponseParsed,
-    '@@@@',
-    Array.isArray(boostResponseParsed) && Array.isArray(mangoV4ResponseParsed),
-  )
+
   if (
     Array.isArray(boostResponseParsed) ||
     Array.isArray(mangoV4ResponseParsed)
@@ -54,7 +49,6 @@ const fetchHistory = async (
     // only add to current feed if data request is offset and the mango account hasn't changed
     // const combinedFeed =
     //   offset !== 0 ? loadedFeed.concat(latestFeed) : latestFeed
-    console.log(activity, '####')
     return activity
   } else return null
 }
