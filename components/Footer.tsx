@@ -57,6 +57,12 @@ const Footer = () => {
             >
               Stats
             </Link>
+            <Link
+              className="block text-th-fgd-1 md:hover:text-th-fgd-3"
+              href="/yield-calculator"
+            >
+              Yield calculator
+            </Link>
           </div>
           <div className="col-span-4 space-y-3 md:col-span-1">
             <h4>Important Info</h4>

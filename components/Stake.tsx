@@ -79,7 +79,7 @@ const Stake = () => {
         >
           <div className="mb-4 flex items-center justify-between">
             <div className="h-10 w-10" />
-            <h2>Select token to Boost!</h2>
+            <h2>Select token to add</h2>
             <IconButton
               onClick={() => setShowTokenSelect(false)}
               hideBg
