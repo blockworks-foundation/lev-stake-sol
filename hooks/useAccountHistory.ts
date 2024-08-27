@@ -12,13 +12,35 @@ import { useWallet } from '@solana/wallet-adapter-react'
 const fetchHistory = async (
   mangoAccountPk: string,
 ): Promise<Array<ActivityFeed> | EmptyObject | null> => {
-  const response = await fetch(
-    `${BOOST_DATA_API_URL}/stats/activity-feed?mango-account=${mangoAccountPk}&offset=0&limit=1000`,
+  const [boostResponse, mangoV4Response] = await Promise.all([
+    fetch(
+      `${BOOST_DATA_API_URL}/stats/activity-feed?mango-account=${mangoAccountPk}&offset=0&limit=1000`,
+    ),
+    fetch(
+      `https://api.mngo.cloud/data/v4/stats/activity-feed?mango-account=${mangoAccountPk}&offset=0&limit=1000`,
+    ),
+  ])
+  const [boostResponseParsed, mangoV4ResponseParsed]: [
+    Array<ActivityFeed>,
+    Array<ActivityFeed>,
+  ] = await Promise.all([boostResponse.json(), mangoV4Response.json()])
+  console.log(
+    boostResponseParsed,
+    mangoV4ResponseParsed,
+    '@@@@',
+    Array.isArray(boostResponseParsed) && Array.isArray(mangoV4ResponseParsed),
   )
-  const parsedResponse: Array<ActivityFeed> = await response.json()
-
-  if (Array.isArray(parsedResponse)) {
-    const activity = parsedResponse
+  if (
+    Array.isArray(boostResponseParsed) ||
+    Array.isArray(mangoV4ResponseParsed)
+  ) {
+    const activity = (
+      Array.isArray(boostResponseParsed)
+        ? [...boostResponseParsed]
+        : Array.isArray(mangoV4ResponseParsed)
+        ? [...mangoV4ResponseParsed]
+        : []
+    )
       .map((i) => {
         return {
           ...i,
@@ -32,7 +54,7 @@ const fetchHistory = async (
     // only add to current feed if data request is offset and the mango account hasn't changed
     // const combinedFeed =
     //   offset !== 0 ? loadedFeed.concat(latestFeed) : latestFeed
-
+    console.log(activity, '####')
     return activity
   } else return null
 }
