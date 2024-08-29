@@ -3,14 +3,6 @@ import produce from 'immer'
 import create from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
 import { AnchorProvider, Wallet, web3 } from '@coral-xyz/anchor'
-import {
-  ConfirmOptions,
-  Connection,
-  Keypair,
-  LAMPORTS_PER_SOL,
-  PublicKey,
-  RecentPrioritizationFees,
-} from '@solana/web3.js'
 import { OpenOrders, Order } from '@project-serum/serum/lib/market'
 import { Orderbook } from '@project-serum/serum'
 import { Wallet as WalletAdapter } from '@solana/wallet-adapter-react'
@@ -77,6 +69,14 @@ import groupBy from 'lodash/groupBy'
 import sampleSize from 'lodash/sampleSize'
 import { Token } from 'types/jupiter'
 import { sleep } from 'utils'
+import {
+  ConfirmOptions,
+  Connection,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  RecentPrioritizationFees,
+} from '@solana/web3.js'
 
 const MANGO_BOOST_ID = new PublicKey(
   'zF2vSz6V9g1YHGmfrzsY497NJzbRr84QUrPry4bLQ25',
