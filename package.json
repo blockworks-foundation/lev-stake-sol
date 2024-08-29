@@ -18,7 +18,7 @@
     "find:unused": "next-unused"
   },
   "engines": {
-    "node": ">=18.x"
+    "node": ">=20.x"
   },
   "next-unused": {
     "alias": {
