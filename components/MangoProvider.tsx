@@ -1,14 +1,14 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import mangoStore from '@store/mangoStore'
 import { Keypair } from '@solana/web3.js'
 import useMangoAccount from 'hooks/useMangoAccount'
 import useInterval from './shared/useInterval'
-import { LAST_WALLET_NAME, PRIORITY_FEE_KEY, SECONDS } from 'utils/constants'
+import { LAST_WALLET_NAME, SECONDS } from 'utils/constants'
 import useNetworkSpeed from 'hooks/useNetworkSpeed'
 import { useWallet } from '@solana/wallet-adapter-react'
 import useLocalStorageState from 'hooks/useLocalStorageState'
-import { DEFAULT_PRIORITY_FEE_LEVEL } from './settings/RpcSettings'
 import { getStakableTokensDataForTokenName } from 'utils/tokens'
+import { handleEstimateFeeWithWs } from 'utils/priorityFee'
 
 const set = mangoStore.getState().set
 const actions = mangoStore.getState().actions
@@ -18,11 +18,13 @@ const HydrateStore = () => {
   const selectedToken = mangoStore((s) => s.selectedToken)
   const clientContext =
     getStakableTokensDataForTokenName(selectedToken)?.clientContext
+  const [liteRpcWs, setLiteRpcWs] = useState<null | WebSocket>(null)
+  const updateFee = mangoStore((s) => s.actions.updateFee)
 
   const connection = mangoStore((s) => s.connection)
 
   const slowNetwork = useNetworkSpeed()
-  const { wallet } = useWallet()
+  const { wallet, publicKey } = useWallet()
 
   const [, setLastWalletName] = useLocalStorageState(LAST_WALLET_NAME, '')
 
@@ -87,19 +89,17 @@ const HydrateStore = () => {
   //   (slowNetwork ? 60 : 20) * SECONDS,
   // )
 
-  // estimate the priority fee every 30 seconds
-  useInterval(
-    async () => {
-      if (wallet?.adapter.publicKey) {
-        const priorityFeeMultiplier = Number(
-          localStorage.getItem(PRIORITY_FEE_KEY) ??
-            DEFAULT_PRIORITY_FEE_LEVEL.value,
-        )
-        actions.estimatePriorityFee(priorityFeeMultiplier)
+  //fee estimates
+  // -------------------------------------------------------------------------------------------------------
+  useEffect(() => {
+    if (liteRpcWs === null && publicKey !== null) {
+      try {
+        handleEstimateFeeWithWs(setLiteRpcWs, updateFee)
+      } catch (e) {
+        console.log(e)
       }
-    },
-    (slowNetwork ? 60 : 20) * SECONDS,
-  )
+    }
+  }, [liteRpcWs, publicKey, updateFee])
 
   // The websocket library solana/web3.js uses closes its websocket connection when the subscription list
   // is empty after opening its first time, preventing subsequent subscriptions from receiving responses.

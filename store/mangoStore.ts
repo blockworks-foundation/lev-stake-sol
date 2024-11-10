@@ -32,7 +32,6 @@ import {
   FALLBACK_ORACLES,
   ClientContextKeys,
   MANGO_DATA_API_URL,
-  MAX_PRIORITY_FEE_KEYS,
   PAGINATION_PAGE_LENGTH,
   RPC_PROVIDER_KEY,
   SWAP_MARGIN_KEY,
@@ -63,20 +62,9 @@ import {
   TRITON_DEDICATED_URL,
 } from '@components/settings/RpcSettings'
 import { themeData } from 'utils/theme'
-import maxBy from 'lodash/maxBy'
-import mapValues from 'lodash/mapValues'
-import groupBy from 'lodash/groupBy'
-import sampleSize from 'lodash/sampleSize'
 import { Token } from 'types/jupiter'
 import { sleep } from 'utils'
-import {
-  ConfirmOptions,
-  Connection,
-  Keypair,
-  LAMPORTS_PER_SOL,
-  PublicKey,
-  RecentPrioritizationFees,
-} from '@solana/web3.js'
+import { ConfirmOptions, Connection, Keypair, PublicKey } from '@solana/web3.js'
 
 const MANGO_BOOST_ID = new PublicKey(
   'zF2vSz6V9g1YHGmfrzsY497NJzbRr84QUrPry4bLQ25',
@@ -310,7 +298,7 @@ export type MangoStore = {
     fetchWalletTokens: (walletPk: PublicKey) => Promise<void>
     connectMangoClientWithWallet: (wallet: WalletAdapter) => Promise<void>
     updateConnection: (url: string) => void
-    estimatePriorityFee: (feeMultiplier: number) => Promise<void>
+    updateFee: (fee: number) => Promise<void>
   }
 }
 
@@ -843,65 +831,15 @@ const mangoStore = create<MangoStore>()(
             state.client = newClient
           })
         },
-        estimatePriorityFee: async (feeMultiplier) => {
+        updateFee: async (feeEstimate) => {
           const set = get().set
-          const group = mangoStore.getState().group
-          const client = mangoStore.getState().client
+          const currentFee = get().priorityFee
 
-          if (!group || !client) return
-
-          const altResponse = await connection.getAddressLookupTable(
-            new PublicKey('AgCBUZ6UMWqPLftTxeAqpQxtrfiCyL2HgRfmmM6QTfCj'),
-          )
-
-          const altKeys = altResponse.value?.state.addresses
-          if (!altKeys) return
-
-          const addresses = sampleSize(altKeys, MAX_PRIORITY_FEE_KEYS)
-          const fees = await connection.getRecentPrioritizationFees({
-            lockedWritableAccounts: addresses,
-          })
-
-          if (fees.length < 1) return
-
-          // get max priority fee per slot (and sort by slot from old to new)
-          const maxFeeBySlot = mapValues(groupBy(fees, 'slot'), (items) =>
-            maxBy(items, 'prioritizationFee'),
-          )
-          const maximumFees = Object.values(maxFeeBySlot).sort(
-            (a, b) => a!.slot - b!.slot,
-          ) as RecentPrioritizationFees[]
-
-          // get median of last 20 fees
-          const recentFees = maximumFees.slice(
-            Math.max(maximumFees.length - 20, 0),
-          )
-          const mid = Math.floor(recentFees.length / 2)
-          const medianFee =
-            recentFees.length % 2 !== 0
-              ? recentFees[mid].prioritizationFee
-              : (recentFees[mid - 1].prioritizationFee +
-                  recentFees[mid].prioritizationFee) /
-                2
-          const feeEstimate = Math.min(
-            Math.ceil(medianFee * feeMultiplier),
-            LAMPORTS_PER_SOL * 0.01,
-          )
-
-          //can use any provider doesn't matter both should be same
-          const provider = client.jlp.program.provider as AnchorProvider
-          provider.opts.skipPreflight = true
-
-          const priorityFee = get()?.priorityFee ?? DEFAULT_PRIORITY_FEE
-          const newClient = initMangoClient(provider, {
-            prioritizationFee: priorityFee,
-            fallbackOracleConfig: FALLBACK_ORACLES,
-            multipleConnections: backupConnections,
-          })
-          set((state) => {
-            state.priorityFee = feeEstimate
-            state.client = newClient
-          })
+          if (currentFee !== feeEstimate) {
+            set((state) => {
+              state.priorityFee = feeEstimate
+            })
+          }
         },
       },
     }
