@@ -76,7 +76,7 @@ export const handleEstimateFeeWithWs = (
               ),
               100000,
             )
-            console.log(feeEstimate)
+
             updateFee(feeEstimate)
             lastFee = feeEstimate
             lastProcessedTime = currentTime

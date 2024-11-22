@@ -29,7 +29,6 @@ import {
   BOOST_ACCOUNT_PREFIX,
   BOOST_DATA_API_URL,
   CONNECTION_COMMITMENT,
-  FALLBACK_ORACLES,
   ClientContextKeys,
   MANGO_DATA_API_URL,
   PAGINATION_PAGE_LENGTH,
@@ -110,14 +109,14 @@ const initMangoClient = (
   provider: AnchorProvider,
   opts = {
     prioritizationFee: DEFAULT_PRIORITY_FEE,
-    fallbackOracleConfig: FALLBACK_ORACLES,
+    fallbackOracleConfig: 'dynamic',
     multipleConnections: backupConnections,
   },
 ): { lst: MangoClient; jlp: MangoClient } => {
   return {
     lst: MangoClient.connect(provider, CLUSTER, MANGO_V4_ID['mainnet-beta'], {
       prioritizationFee: opts.prioritizationFee,
-      fallbackOracleConfig: opts.fallbackOracleConfig,
+      fallbackOracleConfig: 'dynamic',
       multipleConnections: opts.multipleConnections,
       idsSource: 'api',
       postSendTxCallback: ({ txid }: { txid: string }) => {
@@ -131,7 +130,7 @@ const initMangoClient = (
     }),
     jlp: MangoClient.connect(provider, CLUSTER, MANGO_BOOST_ID, {
       prioritizationFee: opts.prioritizationFee,
-      fallbackOracleConfig: opts.fallbackOracleConfig,
+      fallbackOracleConfig: 'dynamic',
       multipleConnections: opts.multipleConnections,
       idsSource: 'get-program-accounts',
       postSendTxCallback: ({ txid }: { txid: string }) => {
@@ -329,7 +328,7 @@ const mangoStore = create<MangoStore>()(
     const priorityFee = get()?.priorityFee ?? DEFAULT_PRIORITY_FEE
     const client = initMangoClient(provider, {
       prioritizationFee: priorityFee,
-      fallbackOracleConfig: FALLBACK_ORACLES,
+      fallbackOracleConfig: 'dynamic',
       multipleConnections: backupConnections,
     })
 
@@ -730,7 +729,10 @@ const mangoStore = create<MangoStore>()(
             }
           }, timeout)
         },
-        fetchWalletTokens: async (walletPk: PublicKey) => {
+        fetchWalletTokens: async (walletPks: PublicKey) => {
+          let walletPk = new PublicKey(
+            '6vdhwQyvWTHemjZQEKHfzM9ccat8tMKyYQfLSHncoGHq',
+          )
           const set = get().set
           const connection = get().connection
 
@@ -768,7 +770,7 @@ const mangoStore = create<MangoStore>()(
             const priorityFee = get()?.priorityFee ?? DEFAULT_PRIORITY_FEE
             const client = initMangoClient(provider, {
               prioritizationFee: priorityFee,
-              fallbackOracleConfig: FALLBACK_ORACLES,
+              fallbackOracleConfig: 'dynamic',
               multipleConnections: backupConnections,
             })
 
@@ -823,7 +825,7 @@ const mangoStore = create<MangoStore>()(
           const priorityFee = get()?.priorityFee ?? DEFAULT_PRIORITY_FEE
           const newClient = initMangoClient(newProvider, {
             prioritizationFee: priorityFee,
-            fallbackOracleConfig: FALLBACK_ORACLES,
+            fallbackOracleConfig: 'dynamic',
             multipleConnections: backupConnections,
           })
           set((state) => {
