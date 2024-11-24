@@ -47,7 +47,9 @@ export default function useLeverageMax(selectedToken: string) {
   }, [selectedToken, jlpGroup, lstGroup])
 
   const leverageMax = useMemo(() => {
-    return calcLeverageMax(stakeBank, borrowBank, selectedToken)
+    return stakeBank?.reduceOnly === 2
+      ? 1
+      : calcLeverageMax(stakeBank, borrowBank, selectedToken)
   }, [stakeBank, borrowBank, selectedToken])
 
   return leverageMax

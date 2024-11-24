@@ -17,6 +17,7 @@ export type StakeableTokensData = {
     website: string | undefined
     twitter: string | undefined
   }
+  reduceOnly: boolean
 }
 
 export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
@@ -33,6 +34,7 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
       website: 'https://jup.ag/',
       twitter: 'https://twitter.com/JupiterExchange',
     },
+    reduceOnly: false,
   },
   {
     name: 'USD Coin',
@@ -47,6 +49,7 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
       website: 'https://www.circle.com/en/usdc',
       twitter: 'https://twitter.com/circle',
     },
+    reduceOnly: false,
   },
   {
     name: 'Marinade Staked SOL',
@@ -62,6 +65,7 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
       website: 'https://marinade.finance/',
       twitter: 'https://twitter.com/marinadefinance',
     },
+    reduceOnly: false,
   },
   {
     name: 'Jito Staked SOL',
@@ -77,6 +81,7 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
       website: 'https://www.jito.wtf/',
       twitter: 'https://twitter.com/jito_labs',
     },
+    reduceOnly: false,
   },
   {
     name: 'BlazeStake Staked SOL',
@@ -91,6 +96,7 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
       website: 'https://solblaze.org/',
       twitter: 'https://twitter.com/solblaze_org',
     },
+    reduceOnly: false,
   },
   {
     name: 'JPool Staked SOL',
@@ -105,6 +111,7 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
       website: 'https://jpool.one/',
       twitter: 'https://twitter.com/JPoolSolana',
     },
+    reduceOnly: true,
   },
   {
     name: 'Sanctum Infinity',
@@ -120,6 +127,7 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
       website: 'https://www.sanctum.so/',
       twitter: 'https://twitter.com/sanctumso',
     },
+    reduceOnly: false,
   },
   {
     name: 'SolanaHub Staked SOL',
@@ -134,6 +142,7 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
       website: 'https://www.solanahub.app/',
       twitter: 'https://twitter.com/SolanaHubApp',
     },
+    reduceOnly: true,
   },
   {
     name: 'Simpdigit Staked SOL',
@@ -149,6 +158,7 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
       website: 'https://simpdigit.com/',
       twitter: 'https://twitter.com/simpdigit',
     },
+    reduceOnly: true,
   },
   {
     name: 'Step Finance Staked SOL',
@@ -163,6 +173,7 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
       website: 'https://step.finance/',
       twitter: 'https://twitter.com/StepFinance_',
     },
+    reduceOnly: true,
   },
   {
     name: 'Dual Finance Staked SOL',
@@ -177,6 +188,7 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
       website: '',
       twitter: 'https://x.com/DualFinance',
     },
+    reduceOnly: true,
   },
   {
     name: 'Mango Staked SOL',
@@ -191,6 +203,7 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
       website: 'https://mango.markets/',
       twitter: 'https://x.com/mangomarkets',
     },
+    reduceOnly: true,
   },
   {
     name: 'Solana Compass Staked SOL',
@@ -206,6 +219,7 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
       website: 'https://solanacompass.com/',
       twitter: 'https://twitter.com/SolanaCompass',
     },
+    reduceOnly: true,
   },
 ]
 

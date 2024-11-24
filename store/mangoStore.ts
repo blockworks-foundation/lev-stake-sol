@@ -729,10 +729,7 @@ const mangoStore = create<MangoStore>()(
             }
           }, timeout)
         },
-        fetchWalletTokens: async (walletPks: PublicKey) => {
-          let walletPk = new PublicKey(
-            '6vdhwQyvWTHemjZQEKHfzM9ccat8tMKyYQfLSHncoGHq',
-          )
+        fetchWalletTokens: async (walletPk: PublicKey) => {
           const set = get().set
           const connection = get().connection
 

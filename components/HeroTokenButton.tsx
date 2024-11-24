@@ -22,7 +22,7 @@ const HeroTokenButton = ({
   tokenInfo: StakeableToken
   onClick: () => void
 }) => {
-  const { symbol, name } = tokenInfo.token ?? {}
+  const { symbol, name, reduceOnly } = tokenInfo.token ?? {}
   const { estNetApy } = tokenInfo ?? {}
   const groupLoaded = mangoStore((s) => s.groupLoaded)
 
@@ -60,7 +60,12 @@ const HeroTokenButton = ({
             <div className="text-left">
               <div className="flex items-center">
                 <span className="mr-1.5 text-lg font-bold">
-                  {formatTokenSymbol(symbol)}
+                  {formatTokenSymbol(symbol)}{' '}
+                  {reduceOnly ? (
+                    <small className="text-th-warning">- Reduce Only</small>
+                  ) : (
+                    ''
+                  )}
                 </span>
                 <Tooltip
                   content={
