@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@blockworks-foundation/mango-feeds": "0.1.7",
-    "@blockworks-foundation/mango-v4": "0.33.4",
+    "@blockworks-foundation/mango-v4": "0.33.7",
     "@blockworks-foundation/mango-v4-settings": "0.14.24",
     "@blockworks-foundation/mangolana": "0.0.17",
     "@glitchful-dev/sol-apy-sdk": "3.0.2",

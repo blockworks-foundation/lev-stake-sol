@@ -39,13 +39,13 @@
     bn.js "^5.2.1"
     eslint-config-prettier "^9.0.0"
 
-"@blockworks-foundation/mango-v4@0.33.4":
-  version "0.33.4"
-  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-v4/-/mango-v4-0.33.4.tgz#11f17eb066e1e3456f93b67e67b2920ee9a2872c"
-  integrity sha512-ASsxGYoXTFIYx2ougn9OseUi/y8Vd+KZJ4tFknhB8VtfV8RQ8iTcDVaaVhyZ6zfLJ2D0JBcwFS/DIfY7kzQKug==
+"@blockworks-foundation/mango-v4@0.33.7":
+  version "0.33.7"
+  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-v4/-/mango-v4-0.33.7.tgz#f2f49d1c5e6eb97851419a1dbc0aa26a8fed40dd"
+  integrity sha512-qBYDPsTmIFDwHGLkcB/1rQeJdDKQqM23G+cjoNffBCkrpCKHTYX94m0R5pxqVkE9IYwsdX0Qy1qSX+DzRP3RuQ==
   dependencies:
     "@blockworks-foundation/mango-v4-settings" "0.14.24"
-    "@blockworks-foundation/mangolana" "0.1.0"
+    "@blockworks-foundation/mangolana" "0.1.2"
     "@coral-xyz/anchor" "^0.29.0"
     "@eslint/eslintrc" "^3.1.0"
     "@eslint/js" "^9.8.0"
@@ -80,11 +80,12 @@
     node-fetch "3.3.2"
     ws "^8.16.0"
 
-"@blockworks-foundation/mangolana@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mangolana/-/mangolana-0.1.0.tgz#9dd02720291175cf79210f2a8ad7254e49532a0f"
-  integrity sha512-8rzSq3Ocj8qoiDxd6K84Of0ZcHl9jrmqIjBcfVEU6p8Lp1ABz2zSe+VVZNBnZtbFn35iZvkKHXK1aOJQfcIYgg==
+"@blockworks-foundation/mangolana@0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mangolana/-/mangolana-0.1.2.tgz#3b7ec1cd8a21c2fedd559dabb1e2212278a08ad4"
+  integrity sha512-eU+z1K29M6zzpAqwHcHCoZA+O4g+QPNM4PXsDygueZarqgsG6FehLoqWBV43w3uSFCl8Cb5op+fE/HufQ9xKww==
   dependencies:
+    "@solana/promises" "2.0.0-canary-20240812091942"
     "@solana/web3.js" "^1.95.2"
     bs58 "^5.0.0"
     isomorphic-ws "^5.0.0"
@@ -1320,6 +1321,11 @@
     "@solana/codecs-numbers" "2.0.0-rc.1"
     "@solana/codecs-strings" "2.0.0-rc.1"
     "@solana/errors" "2.0.0-rc.1"
+
+"@solana/promises@2.0.0-canary-20240812091942":
+  version "2.0.0-canary-20240812091942"
+  resolved "https://registry.yarnpkg.com/@solana/promises/-/promises-2.0.0-canary-20240812091942.tgz#e0f1d0c200170a791f120e320b10c446d30644c9"
+  integrity sha512-HLYVZxrXnMatnBBtHCK1qY7T2AEnhI2AL4PY10iZZ98JIO9dE6igRwFlBulC3ts8qBBkivDf0rF6RahvkrHV0A==
 
 "@solana/spl-governance@0.3.27":
   version "0.3.27"
