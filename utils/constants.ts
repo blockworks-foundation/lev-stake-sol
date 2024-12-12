@@ -111,7 +111,7 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
       website: 'https://jpool.one/',
       twitter: 'https://twitter.com/JPoolSolana',
     },
-    reduceOnly: true,
+    reduceOnly: false,
   },
   {
     name: 'Sanctum Infinity',
@@ -142,7 +142,7 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
       website: 'https://www.solanahub.app/',
       twitter: 'https://twitter.com/SolanaHubApp',
     },
-    reduceOnly: true,
+    reduceOnly: false,
   },
   {
     name: 'Simpdigit Staked SOL',
@@ -203,7 +203,7 @@ export const STAKEABLE_TOKENS_DATA: StakeableTokensData[] = [
       website: 'https://mango.markets/',
       twitter: 'https://x.com/mangomarkets',
     },
-    reduceOnly: true,
+    reduceOnly: false,
   },
   {
     name: 'Solana Compass Staked SOL',
