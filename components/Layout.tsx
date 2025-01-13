@@ -57,7 +57,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
                   asPath !== '/yield-calculator' ? 'max-w-3xl' : ''
                 } px-6 pb-20 md:pb-12 lg:px-12`}
               >
-                <div className="z-50 mb-5 bg-white p-5 text-th-fgd-1">
+                <div className="z-50 mb-5 bg-white p-5 text-th-error">
                   Yield fun will be shutting down. Make sure to close your
                   positions before they are forcibly closed next month
                   (February).
@@ -67,7 +67,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
             </>
           ) : (
             <>
-              <div className="z-50 bg-white p-5 text-th-fgd-1">
+              <div className="z-50 bg-white p-5 text-th-error">
                 Yield fun will be shutting down. Make sure to close your
                 positions before they are forcibly closed next month (February).
               </div>
